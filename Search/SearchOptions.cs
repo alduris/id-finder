@@ -2162,27 +2162,32 @@ namespace FinderMod.Search
                         int j = i[9] > 0.5f ? 12 : 11; // accounts for generic i vars + black salamander chance
 
                         // Deal with stupid body parts and stuff
-                        j += 5; // accounts for legs and head
+                        j += 5; // accounts for legs and head (yeah eels only have two legs but they have 4 in the code)
                         j += LizardUtil.NumTailSegments(LizardType.Eel); // 16
 
                         LizardUtil.AxolotlGillsVars(i, ref j, s, out _, out _);
                         LizardUtil.TailGeckoSpritesVars(i, ref j, s, out _, out _);
 
-                        int bodyPattern1 = i[j++] < 0.75 ? 1 : i[j++] < 0.75 ? 2 : 3;
-                        switch (bodyPattern1)
+                        int bodyPattern1 = i[j++] < 0.75f ? 1 : 0;
+                        if (bodyPattern1 == 1)
                         {
-                            case 1:
-                                LizardUtil.LongShoulderScalesVars(i, ref j, s, LizardType.Eel, out _, out _, out _);
+                            LizardUtil.LongShoulderScalesVars(i, ref j, s, LizardType.Eel, out _, out _, out _);
+                            LizardUtil.TailFinVars(i, ref j, LizardType.Eel, out _, out _, out _, out _, out _);
+                        }
+                        else
+                        {
+                            LizardUtil.ShortBodyScalesVars(i, ref j, s, LizardType.Eel, out _, out _);
+                            if (i[j++] < 0.75f)
+                            {
+                                bodyPattern1 = 2;
                                 LizardUtil.TailFinVars(i, ref j, LizardType.Eel, out _, out _, out _, out _, out _);
-                                break;
-                            case 2:
-                                LizardUtil.ShortBodyScalesVars(i, ref j, s, LizardType.Eel, out _, out _);
-                                LizardUtil.TailFinVars(i, ref j, LizardType.Eel, out _, out _, out _, out _, out _);
-                                break;
-                            case 3:
-                                LizardUtil.ShortBodyScalesVars(i, ref j, s, LizardType.Eel, out _, out _);
+                            }
+                            else
+                            {
+                                bodyPattern1 = 3;
                                 LizardUtil.TailTuftVars(i, ref j, s, LizardType.Eel, out _, out _);
-                                break;
+                            }
+                            //
                         }
                         
                         // 1: N/A, 2: BumpHawk, 3: LongShoulderScales, 4: ShortBodyScales, 5: SpineSpikes

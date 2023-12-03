@@ -141,20 +141,13 @@ namespace FinderMod.Search
         private static readonly int[] numGillsRange = new int[] { 2, 8 };
         public static void AxolotlGillsVars(float[] vals, ref int picker, int seed, out float rigor, out int numGills)
         {
-            // Get head size
-            /*float headSize = GetParamHeadSize(type);*/
-
-            // Get other stuff
             rigor = vals[picker++];
-
-            //float headScalar = headSize * Mathf.Pow(vals[picker++], 0.7f);
+            //float gillScalar = GetParamHeadSize(type) * Mathf.Pow(vals[picker++], 0.7f);
             picker++;
 
-            int graphic = SearchUtil.GetRangeAt(seed, scaleSpriteRange, picker++);
-            if (graphic == 2)
+            if (SearchUtil.GetRangeAt(seed, scaleSpriteRange, picker++) == 2)
             {
                 picker++;
-                // graphic = SearchUtil.GetRangeAt(seed, scaleSpriteRange, picker++);
             }
 
             numGills = SearchUtil.GetRangeAt(seed, numGillsRange, picker++);
