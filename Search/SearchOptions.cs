@@ -1059,6 +1059,7 @@ namespace FinderMod.Search
                 {
                     Inputs = new SearchInput[]{
                         new("Wing size", (0.8f, 1.2f)),
+                        new("Leg size", (0.6f, 1.4f)),
                         new("Fatness"),
                         new("Snout length", (0.5f, 1.5f)),
                         new("Body color", InputType.ColorRGB),
@@ -1109,7 +1110,7 @@ namespace FinderMod.Search
                         }
 
                         return new float[] {
-                            wingsSize, fatness, snoutLength,
+                            wingsSize, legsFac, fatness, snoutLength,
                             bodyColor.r, bodyColor.g, bodyColor.b,
                             eyeColor.r, eyeColor.g, eyeColor.b
                         };
@@ -1122,6 +1123,7 @@ namespace FinderMod.Search
                 {
                     Inputs = new SearchInput[]{
                         new("Wing size", (0.4f, 0.8f)),
+                        new("Leg size", (0.48f, 1.12f)),
                         new("Fatness"),
                         new("Snout length"),
                         new("Body color", InputType.ColorRGB),
@@ -1162,7 +1164,7 @@ namespace FinderMod.Search
                         }
 
                         return new float[] {
-                            wingsSize, fatness, snoutLength,
+                            wingsSize, legsFac, fatness, snoutLength,
                             bodyColor.r, bodyColor.g, bodyColor.b,
                             eyeColor.r, eyeColor.g, eyeColor.b
                         };

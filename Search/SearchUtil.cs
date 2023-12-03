@@ -178,7 +178,7 @@ namespace FinderMod.Search
                     threadCount = Math.Max(1, (int)diff);
                 }
             }
-            resultsPer = Math.Min(resultsPer, Math.Abs(range.Item2 - range.Item1));
+            resultsPer = Math.Min(resultsPer, Math.Abs(range.Item2 - range.Item1 + 1));
             tasks = new Task[threadCount];
 
             var results = new (int, float)[threadCount, queries.Length, resultsPer];
