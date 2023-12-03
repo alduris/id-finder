@@ -1886,10 +1886,10 @@ namespace FinderMod.Search
                         // Whitespace,
                         new("Head Color (H)", InputType.Hue, (0.07f, 0.13f)),
                         new("Head Color (L)", InputType.Float, (0.19f, 0.91f)),
-                        /*Whitespace,
+                        Whitespace,
                         new("Body Color (H)", InputType.Hue, (0.075f, 0.125f)),
                         new("Body Color (S)", InputType.Float, (0.3f, 0.9f)),
-                        new("Body Color (L)", InputType.Float, (0.7f, 1f)),*/
+                        new("Body Color (L)", InputType.Float, (0.7f, 1f)),
                     },
                     MSC = true,
                     MinFloats = 124, // 12 (ivars) + 7 (legs & head) + 4 (tail segs) + 43 (LongShoulderScales) + 27 (TailTufts) + 9 (LongHeadScales) + 22
@@ -1974,9 +1974,9 @@ namespace FinderMod.Search
                             hasLHS ? 1 : 0,
                             headH,
                             headL,
-                            /*bodyH,
+                            bodyH,
                             bodyS,
-                            bodyL*/
+                            bodyL
                         };
                     }
                 }
@@ -2066,7 +2066,7 @@ namespace FinderMod.Search
                     }
                 }
             },
-            /*{
+            {
                 "Train Lizard Variations",
                 new Setup
                 {
@@ -2235,7 +2235,7 @@ namespace FinderMod.Search
                         };
                     }
                 }
-            },*/
+            },
             // {},
         };
     }

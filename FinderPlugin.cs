@@ -55,7 +55,7 @@ namespace FinderMod
                 On.GameSession.ctor += GameSessionOnctor;
 
                 // DEBUG STUFF REMOVE LATER
-                /*On.LizardGraphics.ctor += LizardGraphics_ctor;
+                On.LizardGraphics.ctor += LizardGraphics_ctor;
                 On.LizardGraphics.AddCosmetic += LizardGraphics_AddCosmetic;
                 try
                 {
@@ -64,7 +64,7 @@ namespace FinderMod
                 catch (Exception ex)
                 {
                     Logger.LogDebug(ex.Message);
-                }*/
+                }/**/
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
