@@ -32,6 +32,45 @@ namespace FinderMod.Search
         private static readonly int[] bodyScalesPatchRange = new int[] { 4, 15 };
         private static readonly int[] bodyScaleSegmentsRange = new int[] { 1, 4 };
 
+        private static void GeneratePatchPattern(ref int picker, int seed, int[] range, out int numScales)
+        {
+            numScales = SearchUtil.GetRangeAt(seed, range, picker++);
+            picker++;
+            picker += 2 * numScales;
+        }
+        private static void GenerateTwoLines(float[] vals, ref int picker, LizardType type, float startPoint, float maxLength, float lengthExponent, float spacingScale, out int numScales)
+        {
+            float bodyAndTailLength = GetBodyAndTailLength(type, vals);
+            float num = Mathf.Lerp(startPoint + 0.1f, Mathf.Max(startPoint + 0.2f, maxLength), Mathf.Pow(vals[picker++], lengthExponent));
+            float num2 = num * bodyAndTailLength;
+            float num3 = Mathf.Lerp(2f, 9f, vals[picker++]);
+            if (type == LizardType.Blue)
+            {
+                num3 = 2f;
+            }
+            num3 *= spacingScale;
+            int num4 = (int)(num2 / num3);
+            if (num4 < 3)
+            {
+                num4 = 3;
+            }
+            numScales = num4; // * 2;
+        }
+        private static void GenerateSegments(float[] vals, ref int picker, int seed, LizardType type, float startPoint, float maxLength, float lengthExponent, out int numScales)
+        {
+            float bodyAndTailLength = GetBodyAndTailLength(type, vals);
+            float num = Mathf.Lerp(startPoint + 0.1f, Mathf.Max(startPoint + 0.2f, maxLength), Mathf.Pow(vals[picker++], lengthExponent));
+            float num2 = num * bodyAndTailLength;
+            float num3 = Mathf.Lerp(7f, 14f, vals[picker++]);
+            if (type == LizardType.Red)
+            {
+                num3 = Mathf.Min(num3, 11f) * 0.75f;
+            }
+            int num4 = Math.Max(3, (int)(num2 / num3));
+            int num5 = SearchUtil.GetRangeAt(seed, bodyScaleSegmentsRange, picker++) * 2;
+            numScales = num4 * num5;
+        }
+
         private static float GetParamHeadSize(LizardType type)
         {
             return type switch
@@ -246,49 +285,24 @@ namespace FinderMod.Search
 
             // 0 = patches, 1 = two lines, 2 = segments
             numScales = 0;
-            float bodyAndTailLength = GetBodyAndTailLength(type, vals);
             switch (scaleType)
             {
                 case BodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.05f, Random.Range(4, 15), 0.9f, 2f)
-                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
-                        picker++;
-                        picker += 2 * numScales;
+                        GeneratePatchPattern(ref picker, seed, bodyScalesPatchRange, out numScales);
                         break;
                     }
                 case BodyScaleType.TwoLines:
                     {
                         // Two lines, GenerateTwoLines(0.07f, 1f, 1.5f, 3f)
-                        float num = Mathf.Lerp(0.17f, 1f, Mathf.Pow(vals[picker++], 1.5f));
-                        float num2 = num * bodyAndTailLength;
-                        float num3 = Mathf.Lerp(2f, 9f, vals[picker++]);
-                        if (type == LizardType.Blue)
-                        {
-                            num3 = 2f;
-                        }
-                        num3 *= 3f;
-                        int num4 = (int)(num2 / num3);
-                        if (num4 < 3)
-                        {
-                            num4 = 3;
-                        }
-                        numScales = num4 * 2;
+                        GenerateTwoLines(vals, ref picker, type, 0.07f, 1f, 1.5f, 3f, out numScales);
                         break;
                     }
                 case BodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.8f, 5f)
-                        float num = Mathf.Lerp(0.2f, 0.8f, Mathf.Pow(vals[picker++], 5f));
-                        float num2 = num * bodyAndTailLength;
-                        float num3 = Mathf.Lerp(7f, 14f, vals[picker++]);
-                        if (type == LizardType.Red)
-                        {
-                            num3 = Mathf.Min(num3, 11f) * 0.75f;
-                        }
-                        int num4 = Math.Max(3, (int)(num2 / num3));
-                        int num5 = SearchUtil.GetRangeAt(seed, bodyScaleSegmentsRange, picker++) * 2;
-                        numScales = num4 * num5;
+                        GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.8f, 5f, out numScales);
                         break;
                     }
             }
@@ -311,48 +325,24 @@ namespace FinderMod.Search
             else if (type == LizardType.Blue && vals[picker++] < 0.93f) scaleType = BodyScaleType.TwoLines;
 
             numScales = 0;
-            float bodyAndTailLength = GetBodyAndTailLength(type, vals);
             switch (scaleType)
             {
                 case BodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.1f, Random.Range(4, 15), 0.9f, 1.2f)
-                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
-                        picker++;
-                        picker += 2 * numScales;
+                        GeneratePatchPattern(ref picker, seed, bodyScalesPatchRange, out numScales);
                         break;
                     }
                 case BodyScaleType.TwoLines:
                     {
                         // Two lines, GenerateTwoLines(0.1f, 1f, 1.5f, 1f)
-                        float num = Mathf.Lerp(0.2f, 1f, Mathf.Pow(vals[picker++], 1.5f));
-                        float num2 = num * bodyAndTailLength;
-                        float num3 = Mathf.Lerp(2f, 9f, vals[picker++]);
-                        if (type == LizardType.Blue)
-                        {
-                            num3 = 2f;
-                        }
-                        int num4 = (int)(num2 / num3);
-                        if (num4 < 3)
-                        {
-                            num4 = 3;
-                        }
-                        numScales = num4 * 2;
+                        GenerateTwoLines(vals, ref picker, type, 0.1f, 1f, 1.5f, 1f, out numScales);
                         break;
                     }
                 case BodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.9f, (lGraphics.lizard.Template.type == CreatureTemplate.Type.PinkLizard) ? 1.5f : 0.6f)
-                        float num = Mathf.Lerp(0.2f, 0.9f, Mathf.Pow(vals[picker++], type == LizardType.Pink ? 1.5f : 0.5f));
-                        float num2 = num * bodyAndTailLength;
-                        float num3 = Mathf.Lerp(7f, 14f, vals[picker++]);
-                        if (type == LizardType.Red)
-                        {
-                            num3 = Mathf.Min(num3, 11f) * 0.75f;
-                        }
-                        int num4 = Math.Max(3, (int)(num2 / num3));
-                        int num5 = SearchUtil.GetRangeAt(seed, bodyScaleSegmentsRange, picker++) * 2;
-                        numScales = num4 * num5;
+                        GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.9f, type == LizardType.Pink ? 1.5f : 0.6f, out numScales);
                         break;
                     }
             }
@@ -464,32 +454,21 @@ namespace FinderMod.Search
             {
                 scaleType = BodyScaleType.TwoLines;
 
-                float startPoint = 0f;
-                float maxLen = type == LizardType.Red ? 0.3f : (type == LizardType.Blue ? 0.7f : 0.4f);
-                float lenExp = (type == LizardType.Red || type == LizardType.Blue) ? 1f : 1.2f;
-                float spacingScale = (type == LizardType.Red || type == LizardType.Blue) ? 3f : 1.3f;
-
-                float num = Mathf.Lerp(startPoint + 0.1f, Mathf.Max(startPoint + 0.2f, maxLen), Mathf.Pow(vals[picker++], lenExp));
-                float num2 = num * bodyAndTailLength;
-                float num3 = Mathf.Lerp(2f, 9f, vals[picker++]);
-                if (type == LizardType.Blue)
+                if (type == LizardType.Blue || type == LizardType.Red)
                 {
-                    num3 = 2f;
+                    // GenerateTwoLines(0f, (lGraphics.lizard.Template.type == CreatureTemplate.Type.RedLizard) ? 0.3f : 0.7f, 1f, 3f);
+                    GenerateTwoLines(vals, ref picker, type, 0f, type == LizardType.Red ? 0.3f : 0.7f, 1f, 3f, out numScales);
                 }
-                num3 *= spacingScale;
-                int num4 = (int)(num2 / num3);
-                if (num4 < 3)
+                else
                 {
-                    num4 = 3;
+                    // GenerateTwoLines(0f, 0.4f, 1.2f, 1.3f)
+                    GenerateTwoLines(vals, ref picker, type, 0f, 0.4f, 1.2f, 1.3f, out numScales);
                 }
-                numScales = num4 * 2;
             }
             else
             {
                 scaleType = BodyScaleType.Patch;
-                numScales = SearchUtil.GetRangeAt(seed, tailTuft3to7Range, picker++);
-                picker++;
-                picker += 2 * numScales;
+                GeneratePatchPattern(ref picker, seed, tailTuft3to7Range, out numScales);
             }
 
             // Offset for future endeavors
