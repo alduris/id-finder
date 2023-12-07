@@ -98,6 +98,7 @@ namespace FinderMod
             string debugStr = self.lizard.abstractCreature.ID.RandomSeed + ": " + cosmetic.GetType().Name;
             if (cosmetic is Antennae) debugStr += $" (l: {(cosmetic as Antennae).length}, a: {(cosmetic as Antennae).alpha})";
             else if (cosmetic is Whiskers) debugStr += $" (num: {(cosmetic as Whiskers).amount})";
+            else if (cosmetic is TailGeckoScales) debugStr += $" (r: {(cosmetic as TailGeckoScales).rows}, l: {(cosmetic as TailGeckoScales).lines})";
             Logger.LogDebug(debugStr);
             return ret;
         }

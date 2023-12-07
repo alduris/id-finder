@@ -14,7 +14,7 @@ namespace FinderMod.Search
         public int MinFloats;
         public float[,] FloatRanges;
         public int[,] IntRanges;
-        // Parameters: i(nput), p(ersonality), s(eed), f(loat) r(ange start), i(nteger) r(ange start); output: floats mirroring Names
+        // Parameters: i(nput), p(ersonality), s(eed), f(loat) r(ange start), i(nteger) r(ange start); output: floats mirroring Inputs
         // Parameter i is a bunch of concatenated arrays
         public Func<float[], float[], int, int, int, float[]> Apply;
     }

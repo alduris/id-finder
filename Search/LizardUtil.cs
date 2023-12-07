@@ -427,21 +427,24 @@ namespace FinderMod.Search
             // Get rows, lines, and increment picker
             rows = SearchUtil.GetRangeAt(seed, tgsRowsFirstRange, picker++);
             lines = 3;
-            picker += 2;
+            picker++;
 
             // Get tail color for thingy (whites will never have this without modded so /shrug)
             float tailColor = vals[9] > 0.5f ? vals[10] : 0f;
 
             // Pointer offset
             if (tailColor > 0.1f) picker++;
-            // NOTE: in the code, there is a bigScales property that relies on there being no wing scales
 
             // Extra tidbit thing for rows and lines
             if (vals[picker++] < 0.5f)
             {
-                rows += SearchUtil.GetRangeAt(seed, new int[] { 0, SearchUtil.GetRangeAt(seed, tgsRowsSecondRange, picker++) }, picker++);
-                lines += SearchUtil.GetRangeAt(seed, new int[] { 0, SearchUtil.GetRangeAt(seed, tgsLinesSecondRange, picker++) }, picker++);
+                // IMPORTANT: calling Random.Range(a, b) where a == b does not advance the random state
+                int r = SearchUtil.GetRangeAt(seed, tgsRowsSecondRange, picker++);
+                int c = SearchUtil.GetRangeAt(seed, tgsLinesSecondRange, picker++);
+                if (r != 0) rows += SearchUtil.GetRangeAt(seed, new int[] { 0, r }, picker++);
+                if (c != 0) lines += SearchUtil.GetRangeAt(seed, new int[] { 0, c }, picker++);
             }
+            // FinderPlugin.logger.LogDebug(seed + ": " + rows + ", " + lines);
         }
 
         // Min add. values needed: 27
