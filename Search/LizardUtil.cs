@@ -440,11 +440,10 @@ namespace FinderMod.Search
             {
                 // IMPORTANT: calling Random.Range(a, b) where a == b does not advance the random state
                 int r = SearchUtil.GetRangeAt(seed, tgsRowsSecondRange, picker++);
-                int c = SearchUtil.GetRangeAt(seed, tgsLinesSecondRange, picker++);
                 if (r != 0) rows += SearchUtil.GetRangeAt(seed, new int[] { 0, r }, picker++);
+                int c = SearchUtil.GetRangeAt(seed, tgsLinesSecondRange, picker++);
                 if (c != 0) lines += SearchUtil.GetRangeAt(seed, new int[] { 0, c }, picker++);
             }
-            // FinderPlugin.logger.LogDebug(seed + ": " + rows + ", " + lines);
         }
 
         // Min add. values needed: 27
