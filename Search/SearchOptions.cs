@@ -2172,7 +2172,7 @@ namespace FinderMod.Search
                         if (bodyPattern1 == 1)
                         {
                             LizardUtil.LongShoulderScalesVars(i, ref j, s, LizardType.Eel, out _, out _, out _);
-                            LizardUtil.TailFinVars(i, ref j, LizardType.Eel, out _, out _, out _, out _, out _);
+                            LizardUtil.TailFinVars(i, ref j, s, LizardType.Eel, out _, out _, out _, out _, out _);
                         }
                         else
                         {
@@ -2180,14 +2180,13 @@ namespace FinderMod.Search
                             if (i[j++] < 0.75f)
                             {
                                 bodyPattern1 = 2;
-                                LizardUtil.TailFinVars(i, ref j, LizardType.Eel, out _, out _, out _, out _, out _);
+                                LizardUtil.TailFinVars(i, ref j, s, LizardType.Eel, out _, out _, out _, out _, out _);
                             }
                             else
                             {
                                 bodyPattern1 = 3;
                                 LizardUtil.TailTuftVars(i, ref j, s, LizardType.Eel, out _, out _);
                             }
-                            //
                         }
                         
                         // 1: N/A, 2: BumpHawk, 3: LongShoulderScales, 4: ShortBodyScales, 5: SpineSpikes

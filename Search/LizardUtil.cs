@@ -399,21 +399,25 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 14
-        public static void TailFinVars(float[] vals, ref int picker, LizardType type, out float spineLength, out float undersideSize, out float spineScaleX, out int numBumps, out bool colored)
+        private static readonly int[] tailFinGraphicRange = new int[] { 0, 6 };
+        public static void TailFinVars(float[] vals, ref int picker, int seed, LizardType type, out float spineLength, out float undersideSize, out float spineScaleX, out int numBumps, out bool colored)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
             float bumpDiv = Mathf.Lerp(4f, 7f, Mathf.Pow(vals[picker++], 0.7f));
             spineLength = SearchOptions.ClampedRandomVariation(0.5f, 0.17f, 0.5f, vals[picker++], vals[picker++]) * bodyAndTailLength;
             undersideSize = Mathf.Lerp(0.3f, 0.9f, vals[picker++]);
-            picker += 4;
+            picker += 3;
+            int graphic = SearchUtil.GetRangeAt(seed, tailFinGraphicRange, picker++);
             if (type == LizardType.Red)
             {
+                graphic = 0;
+                // NOTE: if lizard has LongBodyScales, it uses the same graphic. Red lizard code doesn't use this yet so didn't put it here.
                 spineLength = SearchOptions.ClampedRandomVariation(0.3f, 0.17f, 0.5f, vals[picker++], vals[picker++]) * bodyAndTailLength;
             }
             numBumps = (int)(spineLength / bumpDiv);
             spineScaleX = Mathf.Lerp(1f, 2f, vals[picker++]);
-            picker += 2;
+            if ((graphic == 3 && vals[picker++] >= 0.5f) || graphic != 0) picker++;
             colored = (vals[picker++] < 0.33333334f);
         }
 
