@@ -417,7 +417,11 @@ namespace FinderMod.Search
             }
             numBumps = (int)(spineLength / bumpDiv);
             spineScaleX = Mathf.Lerp(1f, 2f, vals[picker++]);
-            if ((graphic == 3 && vals[picker++] >= 0.5f) || graphic != 0) picker++;
+            if (graphic == 3 && vals[picker++] < 0.5f)
+            {
+                // do nothing lol
+            }
+            else if (graphic != 0) picker++;
             colored = (vals[picker++] < 0.33333334f);
         }
 
