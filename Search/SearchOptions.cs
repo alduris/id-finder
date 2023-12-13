@@ -655,7 +655,7 @@ namespace FinderMod.Search
                     }
                 }
             },
-            /*{
+            {
                 "Scavenger Back Patterns",
                 new Setup
                 {
@@ -710,7 +710,7 @@ namespace FinderMod.Search
                         };
                     }
                 }
-            },*/
+            },
             
             // Slugpups
             {
@@ -2246,6 +2246,8 @@ namespace FinderMod.Search
                     }
                 }
             },
+
+            // Next thingy here
             // {},
         };
     }
