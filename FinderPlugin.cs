@@ -17,7 +17,7 @@ using UnityEngine;
 namespace FinderMod
 {
     [BepInPlugin("alduris.finder", "ID Finder", "1.2.4")]
-    public partial class FinderPlugin : BaseUnityPlugin
+    internal class FinderPlugin : BaseUnityPlugin
     {
         private FinderOptions Options;
         public static FinderPlugin instance;

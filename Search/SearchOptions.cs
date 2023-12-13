@@ -8,7 +8,7 @@ using BodyScaleType = FinderMod.Search.LizardUtil.BodyScaleType;
 
 namespace FinderMod.Search
 {
-    internal struct Setup {
+    public struct Setup {
         public SearchInput[] Inputs;
         public bool MSC;
         public int MinFloats;
@@ -19,7 +19,7 @@ namespace FinderMod.Search
         public Func<float[], float[], int, int, int, float[]> Apply;
     }
 
-    internal enum InputType
+    public enum InputType
     {
         Label,
         Whitespace,
@@ -32,7 +32,7 @@ namespace FinderMod.Search
         MultiChoice
     }
 
-    internal struct SearchInput
+    public struct SearchInput
     {
         public string Name;
         public string Description;
@@ -70,7 +70,7 @@ namespace FinderMod.Search
         }
     }
 
-    internal static class SearchOptions
+    public static class SearchOptions
     {
         public static SearchInput Whitespace = new(null, InputType.Whitespace);
 
