@@ -332,7 +332,7 @@ namespace FinderMod.Test
             i = 6307;
             TestCase("Train Lizard", i++, new float[] { 1, 2, 1, 0 }); // 6307
             TestCase("Train Lizard", i++, new float[] { 1, 2, 1, 1 });
-            TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 1 }); // ##############################
+            TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 1 });
             TestCase("Train Lizard", i++, new float[] { 3, 1, 0, 0 }); // 6310
             TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 0 });
             TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 1 });
@@ -342,10 +342,10 @@ namespace FinderMod.Test
             TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 0 });
             TestCase("Train Lizard", i++, new float[] { 1, 2, 0, 0 });
             TestCase("Train Lizard", i++, new float[] { 3, 2, 0, 0 });
-            TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 1 }); // ##############################
-            TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 1 }); // 6320  // #####################
+            TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 1 });
+            TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 1 }); // 6320
             TestCase("Train Lizard", i++, new float[] { 1, 2, 1, 0 });
-            TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 1 }); // ##############################
+            TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 1 });
             TestCase("Train Lizard", i++, new float[] { 1, 1, 0, 0 });
             TestCase("Train Lizard", i++, new float[] { 1, 1, 1, 0 });
             TestCase("Train Lizard", i++, new float[] { 1, 2, 1, 0 }); // 6325

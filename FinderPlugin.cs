@@ -55,8 +55,9 @@ namespace FinderMod
                 On.GameSession.ctor += GameSessionOnctor;
 
                 // DEBUG STUFF REMOVE LATER
-                On.LizardGraphics.ctor += LizardGraphics_ctor;
+                /*On.LizardGraphics.ctor += LizardGraphics_ctor;
                 On.LizardGraphics.AddCosmetic += LizardGraphics_AddCosmetic;
+                On.RainWorldGame.Update += RainWorldGame_Update;
                 try
                 {
                     LizardTests.TestAllLizards();
@@ -64,7 +65,7 @@ namespace FinderMod
                 catch (Exception ex)
                 {
                     Logger.LogDebug(ex.Message);
-                }/**/
+                }*/
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
@@ -74,6 +75,24 @@ namespace FinderMod
             {
                 Logger.LogError(ex);
                 throw;
+            }
+        }
+
+        /*private void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
+        {
+            orig(self);
+            if(self.devToolsActive && self.IsArenaSession && Input.GetKeyDown(KeyCode.Backslash))
+            {
+                Room room = self.GetArenaGameSession.room;
+                World world = room.world;
+                WorldCoordinate mousePos = self.GetArenaGameSession.room.GetWorldCoordinate(Futile.mousePosition);
+                for(int i = 6307; i < 6327; i++)
+                {
+                    CreatureTemplate template = StaticWorld.GetCreatureTemplate(MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.TrainLizard);
+                    var ac = new AbstractCreature(world, template, null, mousePos, new EntityID(-1, i));
+                    room.abstractRoom.AddEntity(ac);
+                    ac.RealizeInRoom();
+                }
             }
         }
 
@@ -101,7 +120,7 @@ namespace FinderMod
             else if (cosmetic is TailGeckoScales) debugStr += $" (r: {(cosmetic as TailGeckoScales).rows}, l: {(cosmetic as TailGeckoScales).lines})";
             Logger.LogDebug(debugStr);
             return ret;
-        }
+        }*/
 
         private void RainWorldGameOnShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
         {

@@ -32,9 +32,8 @@ namespace FinderMod.Search
         private static readonly int[] bodyScalesPatchRange = new int[] { 4, 15 };
         private static readonly int[] bodyScaleSegmentsRange = new int[] { 1, 4 };
 
-        private static void GeneratePatchPattern(ref int picker, int seed, int[] range, out int numScales)
+        private static void GeneratePatchPattern(ref int picker, int numScales)
         {
-            numScales = SearchUtil.GetRangeAt(seed, range, picker++);
             picker++;
             picker += 2 * numScales;
         }
@@ -81,7 +80,7 @@ namespace FinderMod.Search
                 LizardType.Cyan => 0.95f,
                 LizardType.Caramel => 1.2f,
                 LizardType.Zoop => 0.9f,
-                LizardType.Train => 0.4f,
+                LizardType.Train => 1.4f,
                 LizardType.Eel => 0.95f,
                 _ => 1f
             };
@@ -287,7 +286,8 @@ namespace FinderMod.Search
                 case BodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.05f, Random.Range(4, 15), 0.9f, 2f)
-                        GeneratePatchPattern(ref picker, seed, bodyScalesPatchRange, out numScales);
+                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
+                        GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
                 case BodyScaleType.TwoLines:
@@ -312,6 +312,8 @@ namespace FinderMod.Search
             if (type == LizardType.Pink) picker++;
             if (type == LizardType.Red && vals[picker++] < 0.3f) picker++;
             picker++;
+
+            // note: extracting scale size is fairly straightforward if want to do that in the future although it also is a bit more code
         }
 
         // Min add. values needed: 33
@@ -327,7 +329,8 @@ namespace FinderMod.Search
                 case BodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.1f, Random.Range(4, 15), 0.9f, 1.2f)
-                        GeneratePatchPattern(ref picker, seed, bodyScalesPatchRange, out numScales);
+                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
+                        GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
                 case BodyScaleType.TwoLines:
@@ -364,12 +367,10 @@ namespace FinderMod.Search
             spineLength = Mathf.Lerp(0.2f, 0.95f, vals[picker++]) * bodyAndTailLength;
             numBumps = (int)(spineLength / bumpDiv);
 
-            picker += 3;
+            picker += 4;
             if (type != LizardType.Blue) picker++;
             // Random.value in the else-if chain is guaranteed to be called exactly once if it's not a blue lizor
             // if it's not a green lizor, it might fail the random value check, but then it's still not a green lizor in the next else if
-            
-            picker++;
 
             int graphic = SearchUtil.GetRangeAt(seed, spineSpikeGraphicRange, picker++);
             if (graphic != 4)
@@ -465,7 +466,8 @@ namespace FinderMod.Search
             else
             {
                 scaleType = BodyScaleType.Patch;
-                GeneratePatchPattern(ref picker, seed, tailTuft3to7Range, out numScales);
+                numScales = SearchUtil.GetRangeAt(seed, tailTuft3to7Range, picker++);
+                GeneratePatchPattern(ref picker, numScales);
             }
 
             // Offset for future endeavors

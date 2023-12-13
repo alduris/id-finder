@@ -390,8 +390,8 @@ namespace FinderMod.Tabs
                                         (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
                                         input.OnValueUpdate += (_, _, _) =>
                                         {
-                                            (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.5f);
-                                            (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.5f);
+                                            (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
+                                            (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
                                         };
                                     }
                                     break;
