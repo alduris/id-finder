@@ -107,6 +107,7 @@ namespace FinderMod.Tabs
                     element.tab.items.Remove(element);
                 }
                 cont_results.items.Clear();
+                cont_results.SetContentSize(0f, true);
                 var label_searching = new OpLabel(10f, cont_results.size.y - 40f, "SEARCHING...", true);
                 label_progress = new OpLabel(10f, cont_results.size.y - 70f, "0.00% complete", false);
                 var button_abort = new OpSimpleButton(new(10f, cont_results.size.y - 100f), new(80f, 24f), "ABORT")
@@ -569,6 +570,7 @@ namespace FinderMod.Tabs
                         element.tab.items.Remove(element);
                     }
                     cont_results.items.Clear();
+                    cont_results.SetContentSize(0f, true);
 
                     // Get some info
                     bool aborted = SearchUtil.abort;

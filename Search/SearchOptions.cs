@@ -1884,8 +1884,8 @@ namespace FinderMod.Search
                         new("Has TailTuft?", InputType.Boolean),
                         new("Has LongHeadScales?", InputType.Boolean),
                         // Whitespace,
-                        new("Head Color (H)", InputType.Hue, (0.07f, 0.13f)),
-                        new("Head Color (L)", InputType.Float, (0.19f, 0.91f)),
+                        new("Effect Color (H)", InputType.Hue, (0.07f, 0.13f)),
+                        new("Effect Color (L)", InputType.Float, (0.19f, 0.91f)),
                         Whitespace,
                         new("Body Color (H)", InputType.Hue, (0.075f, 0.125f)),
                         new("Body Color (S)", InputType.Float, (0.3f, 0.9f)),
@@ -1951,8 +1951,8 @@ namespace FinderMod.Search
                         }
 
                         j += 5;
-                        float headH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[0], i[1]);
-                        float headL = ClampedRandomVariation(0.55f, 0.36f, 0.2f, i[2], i[3]);
+                        float effectH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[0], i[1]);
+                        float effectL = ClampedRandomVariation(0.55f, 0.36f, 0.2f, i[2], i[3]);
                         float bodyS;
                         float bodyL = SearchUtil.GetRangeAt(s, new float[] { 0.7f, 1f }, j++);
                         float bodyH = SearchUtil.GetRangeAt(s, new float[] { 0.075f, 0.125f }, j++); // has to come after bodyL :(
@@ -1960,20 +1960,25 @@ namespace FinderMod.Search
                         if (bodyL >= 0.8f)
                         {
                             bodyS = SearchUtil.GetRangeAt(s, new float[] { 0.4f, 0.9f }, j++);
-                            headH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[j++], i[j++]);
-                            headL = ClampedRandomVariation(0.55f, 0.05f, 0.2f, i[j++], i[j++]);
+                            effectH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[j++], i[j++]);
+                            effectL = ClampedRandomVariation(0.55f, 0.05f, 0.2f, i[j++], i[j++]);
                         }
                         else
                         {
+                            bodyH = SearchUtil.GetRangeAt(s, new float[] { 0.075f, 0.125f }, j++);
                             bodyS = SearchUtil.GetRangeAt(s, new float[] { 0.3f, 0.5f }, j++);
                         }
+
+                        // Convert to and from because of floating point errors causing tests to fail
+                        Vector3 reconverted = Custom.RGB2HSL(Custom.HSL2RGB(bodyH, bodyS, bodyL));
+                        bodyH = reconverted.x; bodyS = reconverted.y; bodyL = reconverted.z;
 
                         return new float[] {
                             bodyDecoration,
                             hasTailTuft ? 1 : 0,
                             hasLHS ? 1 : 0,
-                            headH,
-                            headL,
+                            effectH,
+                            effectL,
                             bodyH,
                             bodyS,
                             bodyL

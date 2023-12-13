@@ -239,15 +239,12 @@ namespace FinderMod.Search
         // Min add. values needed: 9
         public static void LongHeadScalesVars(float[] vals, ref int picker, LizardType type, out float rigor, out bool colored, out float length, out float width)
         {
-            // Head size
-            float headSize = GetParamHeadSize(type);
-
             // Some values
             rigor = vals[picker++];
             picker += 2; // GenerateTwoHorns()
 
-            float num = Mathf.Pow(vals[picker++], 0.7f) * headSize;
-            
+            float num = Mathf.Pow(vals[picker++], 0.7f) * GetParamHeadSize(type);
+
             // Colored?
             colored = vals[picker++] < 0.5f && type != LizardType.White;
 
@@ -266,7 +263,7 @@ namespace FinderMod.Search
             // Length and width and stuff
             float value = vals[picker++];
             picker++;
-            length = Mathf.Lerp(5f, 35f, value * num);
+            length = Mathf.Lerp(5f, 35f, num);
             width = Mathf.Lerp(0.65f, 1.2f, value * num);
         }
 
