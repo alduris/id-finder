@@ -95,7 +95,7 @@ namespace FinderMod.Search
         }
 
 
-        public static readonly Dictionary<string, Setup> Groups = new()
+        internal static readonly Dictionary<string, Setup> Groups = new()
         {
             // Personality
             {
@@ -1953,12 +1953,13 @@ namespace FinderMod.Search
                         j += 5;
                         float effectH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[0], i[1]);
                         float effectL = ClampedRandomVariation(0.55f, 0.36f, 0.2f, i[2], i[3]);
+                        float bodyH;
                         float bodyS;
                         float bodyL = SearchUtil.GetRangeAt(s, new float[] { 0.7f, 1f }, j++);
-                        float bodyH = SearchUtil.GetRangeAt(s, new float[] { 0.075f, 0.125f }, j++); // has to come after bodyL :(
 
                         if (bodyL >= 0.8f)
                         {
+                            bodyH = SearchUtil.GetRangeAt(s, new float[] { 0.075f, 0.125f }, j++);
                             bodyS = SearchUtil.GetRangeAt(s, new float[] { 0.4f, 0.9f }, j++);
                             effectH = WrappedRandomVariation(0.1f, 0.03f, 0.2f, i[j++], i[j++]);
                             effectL = ClampedRandomVariation(0.55f, 0.05f, 0.2f, i[j++], i[j++]);
