@@ -21,19 +21,15 @@ namespace FinderMod
             // Lizard things
             On.LizardGraphics.ctor += LizardGraphics_ctor;
             On.LizardGraphics.AddCosmetic += LizardGraphics_AddCosmetic;
-            try
-            {
-                LizardTests.TestAllLizards();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogDebug(ex.Message);
-            }
+            
+            LizardTests.TestAllLizards();
 
             // Scav things
             On.ScavengerGraphics.ctor += ScavengerGraphics_ctor;
             On.ScavengerCosmetic.HardBackSpikes.ctor += HardBackSpikes_ctor;
             On.ScavengerCosmetic.WobblyBackTufts.ctor += WobblyBackTufts_ctor;
+
+            ScavTests.TestAllScavs();
         }
 
         private void HardBackSpikes_ctor(On.ScavengerCosmetic.HardBackSpikes.orig_ctor orig, ScavengerCosmetic.HardBackSpikes self, ScavengerGraphics owner, int firstSprite)

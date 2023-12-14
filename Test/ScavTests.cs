@@ -27,6 +27,30 @@ namespace FinderMod.Test
             TestCase("Scavenger Colors", 6579, new float[] { 0.009567596f,  0.1991292f,   0.4007898f,  0.9548995f,    0.2762567f,   0.255993f,   0.009567596f,  0.4835517f,   0.7615235f,  0.5132461f,  0.5f });
             TestCase("Scavenger Colors", 6580, new float[] { 0.04574991f,   0.248228f,    0.8041081f,  0.05373043f,   0.803716f,    0.7624683f,  0.04574991f,   0.7686872f,   0.05485548f, 0.06967282f, 0.1f });
             TestCase("Scavenger Colors", 6581, new float[] { 0.09327173f,   0.3449658f,   0.3817644f,  0.09327173f,   0.3449658f,   0.3817644f,  0.09327173f,   0.06665815f,  0.517639f,   0.08954267f, 0.5f });
+
+            // Scavenger Back Patterns                              Type         Pattern  Top          Bottom      Num Size
+            TestCase("Scavenger Back Patterns", 6562, new float[] { 2, IGNORE, IGNORE, 3, 0.04611824f, 0.4158052f, 35, 0.2922258f });
+            TestCase("Scavenger Back Patterns", 6563, new float[] { 2, IGNORE, IGNORE, 3, 0.08988458f, 0.4355393f, 20, 0.6011468f });
+            TestCase("Scavenger Back Patterns", 6564, new float[] { 2, IGNORE, IGNORE, 3, 0.04872464f, 0.8921559f, 14, 0.5401762f });
+            TestCase("Scavenger Back Patterns", 6565, new float[] { 2, IGNORE, IGNORE, 3, 0.1089053f,  0.542159f,  38, 0.06315385f });
+            TestCase("Scavenger Back Patterns", 6566, new float[] { 2, IGNORE, IGNORE, 2, 0.2153272f,  0.8683605f, 20, 0.5299606f });
+            TestCase("Scavenger Back Patterns", 6567, new float[] { 2, IGNORE, IGNORE, 1, 0.07984871f, 0.9036555f, 7,  0.05996877f });
+            TestCase("Scavenger Back Patterns", 6568, new float[] { 2, IGNORE, IGNORE, 3, 0.1562746f,  0.6212453f, 18, 0.2809117f });
+            TestCase("Scavenger Back Patterns", 6569, new float[] { 2, IGNORE, IGNORE, 3, 0.08422018f, 0.720827f,  13, 0.4246287f });
+            TestCase("Scavenger Back Patterns", 6570, new float[] { 2, IGNORE, IGNORE, 3, 0.1870115f,  0.7037598f, 20, 0.3164729f });
+            TestCase("Scavenger Back Patterns", 6571, new float[] { 2, IGNORE, IGNORE, 3, 0.1140204f,  0.5751875f, 20, 0.5231121f });
+            TestCase("Scavenger Back Patterns", 6572, new float[] { 2, IGNORE, IGNORE, 3, 0.05065926f, 0.5326367f, 25, 0.1701946f });
+            TestCase("Scavenger Back Patterns", 6573, new float[] { 1, IGNORE, IGNORE, 1, 0.269342f,   0.8744684f, 8,  0.7447622f });
+            TestCase("Scavenger Back Patterns", 6574, new float[] { 2, IGNORE, IGNORE, 3, 0.0469945f,  0.4323828f, 19, 0.3674024f });
+            TestCase("Scavenger Back Patterns", 6575, new float[] { 2, IGNORE, IGNORE, 3, 0.1745057f,  0.6127298f, 32, 0.6246613f });
+            TestCase("Scavenger Back Patterns", 6576, new float[] { 2, IGNORE, IGNORE, 3, 0.1901461f,  0.7297542f, 19, 0.7010092f });
+            TestCase("Scavenger Back Patterns", 6577, new float[] { 2, IGNORE, IGNORE, 3, 0.1602716f,  0.7158399f, 35, 0.4446268f });
+            TestCase("Scavenger Back Patterns", 6578, new float[] { 1, IGNORE, IGNORE, 2, 0.1454922f,  0.8855549f, 14, 0.7339344f });
+            TestCase("Scavenger Back Patterns", 6579, new float[] { 2, IGNORE, IGNORE, 3, 0.151232f,   0.4849416f, 33, 0.2036929f });
+            TestCase("Scavenger Back Patterns", 6580, new float[] { 2, IGNORE, IGNORE, 3, 0.133683f,   0.7759459f, 14, 0.4389523f });
+            TestCase("Scavenger Back Patterns", 6581, new float[] { 1, IGNORE, IGNORE, 2, 0.1342574f,  0.7211277f, 24, 0.5605704f });
+            // Type (1 = HBS, 2 = WBT), Pattern (1 = SR, 2 = DSR, 3 = RBB)
+
         }
     }
 }

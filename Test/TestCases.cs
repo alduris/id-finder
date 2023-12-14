@@ -6,6 +6,8 @@ namespace FinderMod.Test
 {
     internal static class TestCases
     {
+        public static float IGNORE = float.MaxValue;
+
         public static void TestCase(string group, int id, float[] expected)
         {
             Setup setup = SearchOptions.Groups[group];
@@ -23,6 +25,7 @@ namespace FinderMod.Test
             // Compare
             for (int i = 0; i < expected.Length; i++)
             {
+                if (expected[i] == IGNORE) continue;
                 if (values[i] != expected[i] && !Mathf.Approximately(values[i], expected[i]))
                 {
                     FinderPlugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i]}");
@@ -48,6 +51,7 @@ namespace FinderMod.Test
             // Compare
             for (int i = 0; i < expected.Length; i++)
             {
+                if (expected[i] == IGNORE) continue;
                 if (values[i + offset] != expected[i] && !Mathf.Approximately(values[i + offset], expected[i]))
                 {
                     FinderPlugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i + offset]}");
