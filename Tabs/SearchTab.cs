@@ -382,7 +382,7 @@ namespace FinderMod.Tabs
                                 {
                                     // input = new OpFloatSlider(CosmeticFloat(query.Requests[setIndex] ?? 0f, item.Range.Item1, item.Range.Item2), new(label.pos.x + labelWidth + 6f, y), SLIDER_WIDTH, 4);
                                     input = new OpFloatSlider(CosmeticBind(query.Requests[setIndex] ?? 0f), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH, 4)
-                                    { min = item.Range.Item1, max = item.Range.Item2, description = item.Name };
+                                    { min = item.Range.Item1, max = item.Range.Item2 };
 
                                     if (item.Type == InputType.Hue)
                                     {
@@ -398,11 +398,21 @@ namespace FinderMod.Tabs
                                 }
                             case InputType.Integer:
                                 {
-                                    input = new OpSliderTick(
-                                        CosmeticInt((int)(query.Requests[setIndex] ?? 0),
-                                        (int)item.Range.Item1, (int)item.Range.Item2),
-                                        new(label.pos.x + labelWidth + 6f, y - 4f),
-                                        SLIDER_WIDTH);
+                                    bool big = Math.Abs((int)item.Range.Item1 - (int)item.Range.Item2) > 30;
+                                    if (big)
+                                    {
+                                        input = new OpSlider(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
+                                        { min = (int)item.Range.Item1, max = (int)item.Range.Item2 };
+                                    }
+                                    else
+                                    {
+                                        input = new OpSliderTick(
+                                            CosmeticInt(
+                                                (int)(query.Requests[setIndex] ?? 0),
+                                                (int)item.Range.Item1, (int)item.Range.Item2),
+                                            new(label.pos.x + labelWidth + 6f, y - 4f),
+                                            SLIDER_WIDTH);
+                                    }
                                     //input = new OpSliderTick(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
                                     //    { min = (int)item.Range.Item1, max = (int)item.Range.Item2, description = item.Name };
                                     break;
@@ -468,6 +478,10 @@ namespace FinderMod.Tabs
                             else if (input is OpSliderTick)
                             {
                                 num = (input as OpSliderTick).GetValueFloat();
+                            }
+                            else if (input is OpSlider)
+                            {
+                                num = (input as OpSlider).GetValueFloat();
                             }
                             else if (input is OpCheckBox)
                             {
