@@ -37,22 +37,22 @@ namespace FinderMod.Tabs
 
             // Initialize elements we need
             var combo_allOpts = new OpComboBox(
-                CosmeticBind(""), new(10f, 510f), 250f,
+                CosmeticBind(""), new(10f, 520f), 250f,
                 new List<ListItem>(SearchOptions.Groups.Keys.ToArray()
                     .Where(s => ModManager.MSC || !SearchOptions.Groups[s].MSC)
                     .Select(s => new ListItem(s))
                 )
             );
-            var button_add = new OpSimpleButton(new(280f, 510f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
+            var button_add = new OpSimpleButton(new(280f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
 
-            cont_queries = new OpScrollBox(new(10f, 260f), new(580f, 240f), 0f, false, true, true) { contentSize = 100f };
+            cont_queries = new OpScrollBox(new(10f, 270f), new(580f, 240f), 0f, false, true, true) { contentSize = 100f };
 
-            var input_min = new OpTextBox(CosmeticBind(0), new(50f, 226f), 100f) { description = "Start of search range" };
-            var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 226f), 100f) { description = "End of search range" };
-            var input_find = new OpTextBox(CosmeticBind(1), new(60f, 196f), 60f) { description = "Number of ids to find per result (1-20)" };
-            var input_threads = new OpTextBox(CosmeticBind(2), new(190f, 196f), 60f) { description = "Number of threads to use" };
+            var input_min = new OpTextBox(CosmeticBind(0), new(50f, 236f), 100f) { description = "Start of search range" };
+            var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 236f), 100f) { description = "End of search range" };
+            var input_find = new OpTextBox(CosmeticBind(1), new(60f, 206f), 60f) { description = "Number of ids to find per result (1-20)" };
+            var input_threads = new OpTextBox(CosmeticBind(2), new(190f, 206f), 60f) { description = "Number of threads to use" };
 
-            var button_run = new OpSimpleButton(new(510f, 206f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = color_start };
+            var button_run = new OpSimpleButton(new(510f, 216f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = color_start };
 
             cont_results = new OpScrollBox(new(10f, 10f), new(580f, 160f), 0f, false, true, true);
 
@@ -107,6 +107,8 @@ namespace FinderMod.Tabs
                     element.tab.items.Remove(element);
                 }
                 cont_results.items.Clear();
+                cont_results.SetContentSize(0f, true);
+
                 var label_searching = new OpLabel(10f, cont_results.size.y - 40f, "SEARCHING...", true);
                 label_progress = new OpLabel(10f, cont_results.size.y - 70f, "0.00% complete", false);
                 var button_abort = new OpSimpleButton(new(10f, cont_results.size.y - 100f), new(80f, 24f), "ABORT")
@@ -201,19 +203,19 @@ namespace FinderMod.Tabs
             // Add stuff to tab
             var UIArrPlayerOptions = new UIelement[]
             {
-                new OpLabel(10f, 560f, "Input", true),
-                new OpLabel(10f, 540f, "WARNING: do not leave this tab while searching for ids.", false) { color = color_warn },
+                new OpLabel(10f, 570f, "Input", true),
+                new OpLabel(10f, 550f, "WARNING: do not leave this tab while searching for ids.", false) { color = color_warn },
                 cont_queries,
-                new OpLabel(10f, 226f, "From:"),
+                new OpLabel(10f, 236f, "From:"),
                 input_min,
-                new OpLabel(160f, 226f, "To:"),
+                new OpLabel(160f, 236f, "To:"),
                 input_max,
-                new OpLabel(10f, 196f, "Results:"),
+                new OpLabel(10f, 206f, "Results:"),
                 input_find,
-                new OpLabel(135f, 196f, "Threads:"),
+                new OpLabel(135f, 206f, "Threads:"),
                 input_threads,
                 button_run,
-                new OpLabel(10f, 170f, "Output", true),
+                new OpLabel(10f, 176f, "Output", true),
                 cont_results,
                 combo_allOpts, button_add // For z-index ordering (I hope that's how this works at least)
             };
@@ -380,7 +382,7 @@ namespace FinderMod.Tabs
                                 {
                                     // input = new OpFloatSlider(CosmeticFloat(query.Requests[setIndex] ?? 0f, item.Range.Item1, item.Range.Item2), new(label.pos.x + labelWidth + 6f, y), SLIDER_WIDTH, 4);
                                     input = new OpFloatSlider(CosmeticBind(query.Requests[setIndex] ?? 0f), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH, 4)
-                                    { min = item.Range.Item1, max = item.Range.Item2, description = item.Name };
+                                    { min = item.Range.Item1, max = item.Range.Item2 };
 
                                     if (item.Type == InputType.Hue)
                                     {
@@ -388,19 +390,29 @@ namespace FinderMod.Tabs
                                         (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
                                         input.OnValueUpdate += (_, _, _) =>
                                         {
-                                            (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.5f);
-                                            (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.5f);
+                                            (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
+                                            (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
                                         };
                                     }
                                     break;
                                 }
                             case InputType.Integer:
                                 {
-                                    input = new OpSliderTick(
-                                        CosmeticInt((int)(query.Requests[setIndex] ?? 0),
-                                        (int)item.Range.Item1, (int)item.Range.Item2),
-                                        new(label.pos.x + labelWidth + 6f, y - 4f),
-                                        SLIDER_WIDTH);
+                                    bool big = Math.Abs((int)item.Range.Item1 - (int)item.Range.Item2) > 30;
+                                    if (big)
+                                    {
+                                        input = new OpSlider(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
+                                        { min = (int)item.Range.Item1, max = (int)item.Range.Item2 };
+                                    }
+                                    else
+                                    {
+                                        input = new OpSliderTick(
+                                            CosmeticInt(
+                                                (int)(query.Requests[setIndex] ?? 0),
+                                                (int)item.Range.Item1, (int)item.Range.Item2),
+                                            new(label.pos.x + labelWidth + 6f, y - 4f),
+                                            SLIDER_WIDTH);
+                                    }
                                     //input = new OpSliderTick(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
                                     //    { min = (int)item.Range.Item1, max = (int)item.Range.Item2, description = item.Name };
                                     break;
@@ -466,6 +478,10 @@ namespace FinderMod.Tabs
                             else if (input is OpSliderTick)
                             {
                                 num = (input as OpSliderTick).GetValueFloat();
+                            }
+                            else if (input is OpSlider)
+                            {
+                                num = (input as OpSlider).GetValueFloat();
                             }
                             else if (input is OpCheckBox)
                             {
@@ -569,6 +585,7 @@ namespace FinderMod.Tabs
                         element.tab.items.Remove(element);
                     }
                     cont_results.items.Clear();
+                    cont_results.SetContentSize(0f, true);
 
                     // Get some info
                     bool aborted = SearchUtil.abort;
