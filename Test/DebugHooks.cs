@@ -9,9 +9,9 @@ namespace FinderMod
 {
     internal partial class FinderPlugin
     {
-        private readonly int SPAWN_START_ID = 6307;
+        private readonly int SPAWN_START_ID = UnityEngine.Random.Range(1000,10000);
         private readonly int SPAWN_QUANTITY = 20;
-        private readonly CreatureTemplate.Type SPAWN_TYPE = MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.TrainLizard;
+        private readonly CreatureTemplate.Type SPAWN_TYPE = CreatureTemplate.Type.Scavenger;
 
         public void ApplyDebugHooks()
         {
@@ -29,24 +29,33 @@ namespace FinderMod
             {
                 Logger.LogDebug(ex.Message);
             }
+
+            // Scav things
+            On.ScavengerGraphics.ctor += ScavengerGraphics_ctor;
+            On.ScavengerCosmetic.HardBackSpikes.ctor += HardBackSpikes_ctor;
+            On.ScavengerCosmetic.WobblyBackTufts.ctor += WobblyBackTufts_ctor;
         }
 
-        private void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
+        private void HardBackSpikes_ctor(On.ScavengerCosmetic.HardBackSpikes.orig_ctor orig, ScavengerCosmetic.HardBackSpikes self, ScavengerGraphics owner, int firstSprite)
         {
-            orig(self);
-            if(self.devToolsActive && self.IsArenaSession && Input.GetKeyDown(KeyCode.Backslash))
-            {
-                Room room = self.GetArenaGameSession.room;
-                World world = room.world;
-                WorldCoordinate mousePos = self.GetArenaGameSession.room.GetWorldCoordinate(Futile.mousePosition);
-                for(int i = SPAWN_START_ID; i < SPAWN_START_ID + SPAWN_QUANTITY; i++)
-                {
-                    CreatureTemplate template = StaticWorld.GetCreatureTemplate(SPAWN_TYPE);
-                    var ac = new AbstractCreature(world, template, null, mousePos, new EntityID(-1, i));
-                    room.abstractRoom.AddEntity(ac);
-                    ac.RealizeInRoom();
-                }
-            }
+            orig(self, owner, firstSprite);
+            Logger.LogDebug($"{owner.scavenger.abstractCreature.ID.number}: HardBackSpikes (p: {self.pattern}, n: {self.positions.Length}, t: {self.top}f, b: {self.bottom}f, s: {self.generalSize}f)");
+        }
+
+        private void WobblyBackTufts_ctor(On.ScavengerCosmetic.WobblyBackTufts.orig_ctor orig, ScavengerCosmetic.WobblyBackTufts self, ScavengerGraphics owner, int firstSprite)
+        {
+            orig(self, owner, firstSprite);
+            Logger.LogDebug($"{owner.scavenger.abstractCreature.ID.number}: WobblyBackTufts (p: {self.pattern}, n: {self.positions.Length}, t: {self.top}f, b: {self.bottom}f, s: {self.generalSize}f)");
+        }
+
+        private void ScavengerGraphics_ctor(On.ScavengerGraphics.orig_ctor orig, ScavengerGraphics self, PhysicalObject ow)
+        {
+            orig(self, ow);
+            int id = self.scavenger.abstractCreature.ID.number;
+            Logger.LogDebug($"{id}: body color hsl({self.bodyColor.hue}f, {self.bodyColor.saturation}f, {self.bodyColor.lightness}f)");
+            Logger.LogDebug($"{id}: head color hsl({self.headColor.hue}f, {self.headColor.saturation}f, {self.headColor.lightness}f)");
+            Logger.LogDebug($"{id}: deco color hsl({self.decorationColor.hue}f, {self.decorationColor.saturation}f, {self.decorationColor.lightness}f)");
+            Logger.LogDebug($"{id}: eye color hsl({self.eyeColor.hue}f, {self.eyeColor.saturation}f, {self.eyeColor.lightness}f)");
         }
 
         private void LizardGraphics_ctor(On.LizardGraphics.orig_ctor orig, LizardGraphics self, PhysicalObject ow)
@@ -73,6 +82,24 @@ namespace FinderMod
             else if (cosmetic is TailGeckoScales) debugStr += $" (r: {(cosmetic as TailGeckoScales).rows}, l: {(cosmetic as TailGeckoScales).lines})";
             Logger.LogDebug(debugStr);
             return ret;
+        }
+
+        private void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
+        {
+            orig(self);
+            if(self.devToolsActive && self.IsArenaSession && Input.GetKeyDown(KeyCode.Backslash))
+            {
+                Room room = self.GetArenaGameSession.room;
+                World world = room.world;
+                WorldCoordinate mousePos = self.GetArenaGameSession.room.GetWorldCoordinate(Futile.mousePosition);
+                for(int i = SPAWN_START_ID; i < SPAWN_START_ID + SPAWN_QUANTITY; i++)
+                {
+                    CreatureTemplate template = StaticWorld.GetCreatureTemplate(SPAWN_TYPE);
+                    var ac = new AbstractCreature(world, template, null, mousePos, new EntityID(-1, i));
+                    room.abstractRoom.AddEntity(ac);
+                    ac.RealizeInRoom();
+                }
+            }
         }
     }
 }

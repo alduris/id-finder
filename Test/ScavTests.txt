@@ -1,0 +1,140 @@
+﻿6562: WobblyBackTufts
+      RandomBackBlotch
+      n: 35, t: 0.04611824f, b: 0.4158052f, s: 0.2922258f
+      body color hsl(0.03927018f, 0.1016362f, 0.5098599f)
+      head color hsl(0.2257873f, 0.6311247f, 0.174932f)
+      deco color hsl(0.03927018f, 0.7725409f, 0.3268195f)
+      eye color hsl(0.2269589f, 1, 0.65f)
+6563: WobblyBackTufts
+      RandomBackBlotch
+      n: 20, t: 0.08988458f, b: 0.4355393f, s: 0.6011468f
+      body color hsl(0.008640707f, 0.7348285f, 0.9946128f)
+      head color hsl(0.9958526f, 0.9075065f, 0.6405754f)
+      deco color hsl(0.3375438f, 0.121703f, 0.1194663f)
+      eye color hsl(0.3375438f, 1, 0.1f)
+6564: WobblyBackTufts
+      RandomBackBlotch
+      n: 14, t: 0.04872464f, b: 0.8921559f, s: 0.5401762f
+      body color hsl(0.01822638f, 0.1707397f, 0.2690711f)
+      head color hsl(0.01822638f, 0.1707397f, 0.2690711f)
+      deco color hsl(0.1224235f, 0.1537622f, 0.4812316f)
+      eye color hsl(0.1224235f, 1, 0.5f)
+6565: WobblyBackTufts
+      RandomBackBlotch
+      n: 38, t: 0.1089053f, b: 0.542159f, s: 0.06315385f
+      body color hsl(0.08232065f, 0.003095639f, 0.4367136f)
+      head color hsl(0.08888692f, 0.8277774f, 0.1409272f)
+      deco color hsl(0.08232065f, 0.1403171f, 0.5463402f)
+      eye color hsl(0.1273654f, 1, 0.5f)
+6566: WobblyBackTufts
+      DoubleSpineRidge
+      n: 20, t: 0.2153272f, b: 0.8683605f, s: 0.5299606f
+      body color hsl(0.0675993f, 0.8267188f, 0.8204471f)
+      head color hsl(0.0675993f, 0.8267188f, 0.8204471f)
+      deco color hsl(0.5695145f, 0.03915525f, 0.2191887f)
+      eye color hsl(0.5695145f, 1, 0.1f)
+6567: WobblyBackTufts
+      SpineRidge
+      n: 7, t: 0.07984871f, b: 0.9036555f, s: 0.05996877f
+      body color hsl(0.004825009f, 0.01663712f, 0.6376163f)
+      head color hsl(0.01204274f, 0.8460221f, 0.1495164f)
+      deco color hsl(0.004825009f, 0.1918851f, 0.6509836f)
+      eye color hsl(0.1066455f, 1, 0.5f)
+6568: WobblyBackTufts
+      RandomBackBlotch
+      n: 18, t: 0.1562746f, b: 0.6212453f, s: 0.2809117f
+      body color hsl(0.006453443f, 0.7565702f, 0.6247283f)
+      head color hsl(0.006453443f, 0.7565702f, 0.6247283f)
+      deco color hsl(0.006453443f, 0.5203807f, 0.2605545f)
+      eye color hsl(0.04877108f, 1, 0.1f)
+6569: WobblyBackTufts
+      RandomBackBlotch
+      n: 13, t: 0.08422018f, b: 0.720827f, s: 0.4246287f
+      body color hsl(0.07317828f, 0.2883185f, 0.375261f)
+      head color hsl(0.07317828f, 0.2883185f, 0.375261f)
+      deco color hsl(0.07317828f, 0.4918061f, 0.3427151f)
+      eye color hsl(0.123756f, 1, 0.5f)
+6570: WobblyBackTufts
+      RandomBackBlotch
+      n: 20, t: 0.1870115f, b: 0.7037598f, s: 0.3164729f
+      body color hsl(0.0003771067f, 0.304457f, 0.8566296f)
+      head color hsl(0.0003771067f, 0.2283428f, 0.6334845f)
+      deco color hsl(0.0003771067f, 0.991048f, 0.2044024f)
+      eye color hsl(0.1886323f, 1, 0.1604177f)
+6571: WobblyBackTufts
+      RandomBackBlotch
+      n: 20, t: 0.1140204f, b: 0.5751875f, s: 0.5231121f
+      body color hsl(0.09831458f, 0.9205362f, 0.2911566f)
+      head color hsl(0.09831458f, 0.9205362f, 0.2911566f)
+      deco color hsl(0.09831458f, 0.2903242f, 0.4290386f)
+      eye color hsl(0.1473219f, 1, 0.7004695f)
+6572: WobblyBackTufts
+      RandomBackBlotch
+      n: 25, t: 0.05065926f, b: 0.5326367f, s: 0.1701946f
+      body color hsl(0.07098702f, 0.07248832f, 0.7618944f)
+      head color hsl(0.04472485f, 0.8156875f, 0.1820773f)
+      deco color hsl(0.07098702f, 0.8746629f, 0.4098181f)
+      eye color hsl(0.08820463f, 1, 0.5f)
+6573: HardBackSpikes
+      SpineRidge
+      n: 8, t: 0.269342f, b: 0.8744684f, s: 0.7447622f
+      body color hsl(0.02779202f, 0.5164752f, 0.6566148f)
+      head color hsl(0.02779202f, 0.3873564f, 0.6446329f)
+      deco color hsl(0.02779202f, 0.3346376f, 0.2008889f)
+      eye color hsl(0.08105632f, 1, 0.1f)
+6574: WobblyBackTufts
+      RandomBackBlotch
+      n: 19, t: 0.0469945f, b: 0.4323828f, s: 0.3674024f
+      body color hsl(0.09869953f, 0.05960437f, 0.4857436f)
+      head color hsl(0.6317518f, 0.7143267f, 0.1434734f)
+      deco color hsl(0.6317518f, 0.4986019f, 0.6891977f)
+      eye color hsl(0.6317518f, 1, 0.5f)
+6575: WobblyBackTufts
+      RandomBackBlotch
+      n: 32, t: 0.1745057f, b: 0.6127298f, s: 0.6246613f
+      body color hsl(0.008721007f, 0.2362256f, 0.9356834f)
+      head color hsl(0.04377977f, 0.8417727f, 0.8770241f)
+      deco color hsl(0.04987093f, 0.006763936f, 0.1690136f)
+      eye color hsl(0.04377977f, 1, 0.1f)
+6576: WobblyBackTufts
+      RandomBackBlotch
+      n: 19, t: 0.1901461f, b: 0.7297542f, s: 0.7010092f
+      body color hsl(0.02522365f, 0.2275454f, 0.652414f)
+      head color hsl(0.06965613f, 0.3133495f, 0.2906501f)
+      deco color hsl(0.02522365f, 0.4764195f, 0.5308331f)
+      eye color hsl(0.4838903f, 1, 0.5f)
+6577: WobblyBackTufts
+      RandomBackBlotch
+      n: 35, t: 0.1602716f, b: 0.7158399f, s: 0.4446268f
+      body color hsl(0.06457417f, 0.005561376f, 0.07633376f)
+      head color hsl(0.06457417f, 0.005561376f, 0.07633376f)
+      deco color hsl(0.06457417f, 0.153608f, 0.601204f)
+      eye color hsl(0.1255781f, 1, 0.65f)
+6578: HardBackSpikes
+      DoubleSpineRidge
+      n: 14, t: 0.1454922f, b: 0.8855549f, s: 0.7339344f
+      body color hsl(0.09657335f, 0.7522927f, 0.5382589f)
+      head color hsl(0.09657335f, 0.7522927f, 0.5382589f)
+      deco color hsl(0.1228372f, 0.6966373f, 0.3150999f)
+      eye color hsl(0.1208953f, 1, 0.1f)
+6579: WobblyBackTufts
+      RandomBackBlotch
+      n: 33, t: 0.151232f, b: 0.4849416f, s: 0.2036929f
+      body color hsl(0.009567596f, 0.1991292f, 0.4007898f)
+      head color hsl(0.9548995f, 0.2762567f, 0.255993f)
+      deco color hsl(0.009567596f, 0.4835517f, 0.7615235f)
+      eye color hsl(0.5132461f, 1, 0.5f)
+6580: WobblyBackTufts
+      RandomBackBlotch
+      n: 14, t: 0.133683f, b: 0.7759459f, s: 0.4389523f
+      body color hsl(0.04574991f, 0.248228f, 0.8041081f)
+      head color hsl(0.05373043f, 0.803716f, 0.7624683f)
+      deco color hsl(0.04574991f, 0.7686872f, 0.05485548f)
+      eye color hsl(0.06967282f, 1, 0.1f)
+6581: HardBackSpikes
+      DoubleSpineRidge
+      n: 24, t: 0.1342574f, b: 0.7211277f, s: 0.5605704f
+      body color hsl(0.09327173f, 0.3449658f, 0.3817644f)
+      head color hsl(0.09327173f, 0.3449658f, 0.3817644f)
+      deco color hsl(0.09327173f, 0.06665815f, 0.517639f)
+      eye color hsl(0.08954267f, 1, 0.5f)

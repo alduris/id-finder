@@ -286,7 +286,6 @@ namespace FinderMod.Search
                         Whitespace,
                         // new("Decoration color", InputType.ColorHSL), // used for colored eartler tips
                         new("Eye color (H)", InputType.Hue),
-                        new("Eye color (S)", InputType.Float),
                         new("Eye color (L)", InputType.Float),
                         // new("Eye color", InputType.ColorHSL),
                         // new("Belly color", InputType.ColorHSL)
@@ -476,7 +475,7 @@ namespace FinderMod.Search
                             bodyColor.hue,  bodyColor.saturation,  bodyColor.lightness,
                             headColor.hue,  headColor.saturation,  headColor.lightness,
                             decoColor.hue,  decoColor.saturation,  decoColor.lightness,
-                            eyeColor.hue,   eyeColor.saturation,   eyeColor.lightness,
+                            eyeColor.hue,   /* saturation = 1 */   eyeColor.lightness,
                             // bellyColor.hue, bellyColor.saturation, bellyColor.lightness
                         };
                     }
@@ -667,10 +666,10 @@ namespace FinderMod.Search
                         new("Color type", "1: none (color strength = 0), 2: decoration, 3: head", InputType.MultiChoice, (1, 3)),
                         new("Color strength", InputType.Float),
                         new("Pattern", "1: SpineRidge, 2: DoubleSpineRidge, 3: RandomBackBlotch", InputType.MultiChoice, (1, 3)),
-                        new("Scales start", InputType.Float, (0.02f, 0.3f)),
-                        new("Scales end", InputType.Float, (0.4f, 1f)),
-                        new("Number of scales", "SpineRidge range: (2, 37), DoubleSpineRidge range: (2, 40), RandomBackBlotch range: (4, 40)", InputType.Integer, (2, 40)),
-                        new("General scale size", InputType.Float),
+                        new("Spines start", InputType.Float, (0.02f, 0.3f)),
+                        new("Spines end", InputType.Float, (0.4f, 1f)),
+                        new("Number of spines", "SpineRidge range: (2, 37), DoubleSpineRidge range: (2, 40), RandomBackBlotch range: (4, 40)", InputType.Integer, (2, 40)),
+                        new("General spine size", InputType.Float),
                     },
                     MSC = false,
                     MinFloats = 157, // 86 (colors + before) + 4 (tail) + 59 (WobblyBackTufts) + 8
