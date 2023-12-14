@@ -819,6 +819,7 @@ namespace FinderMod.Search
                         {
                             colorType = i[j++] < 0.5 ? 2 : 3;
                         }
+                        else j++;
 
                         // Inheritance time
                         if (useHardBackSpikes)
