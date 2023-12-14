@@ -22,7 +22,7 @@ namespace FinderMod.Search
             Train,
             Eel
         }
-        public enum BodyScaleType
+        public enum LizardBodyScaleType
         {
             Patch = 0,
             TwoLines = 1,
@@ -267,36 +267,36 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 43
-        public static void LongShoulderScalesVars(float[] vals, ref int picker, int seed, LizardType type, out BodyScaleType scaleType, out int numScales, out bool colored)
+        public static void LongShoulderScalesVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales, out bool colored)
         {
-            scaleType = BodyScaleType.Patch;
+            scaleType = LizardBodyScaleType.Patch;
             if (type != LizardType.Pink || vals[picker++] < 0.33333334f)
             {
-                scaleType = (BodyScaleType) SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
+                scaleType = (LizardBodyScaleType) SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
             }
             else if (type == LizardType.Green || vals[picker++] < 0.5f)
             {
-                scaleType = BodyScaleType.Segments;
+                scaleType = LizardBodyScaleType.Segments;
             }
 
             // 0 = patches, 1 = two lines, 2 = segments
             numScales = 0;
             switch (scaleType)
             {
-                case BodyScaleType.Patch:
+                case LizardBodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.05f, Random.Range(4, 15), 0.9f, 2f)
                         numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
                         GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
-                case BodyScaleType.TwoLines:
+                case LizardBodyScaleType.TwoLines:
                     {
                         // Two lines, GenerateTwoLines(0.07f, 1f, 1.5f, 3f)
                         GenerateTwoLines(vals, ref picker, type, 0.07f, 1f, 1.5f, 3f, out numScales);
                         break;
                     }
-                case BodyScaleType.Segments:
+                case LizardBodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.8f, 5f)
                         GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.8f, 5f, out numScales);
@@ -317,29 +317,29 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 33
-        public static void ShortBodyScalesVars(float[] vals, ref int picker, int seed, LizardType type, out BodyScaleType scaleType, out int numScales)
+        public static void ShortBodyScalesVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
         {
-            scaleType = (BodyScaleType)SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
-            if (type == LizardType.Green && vals[picker++] < 0.7f) scaleType = BodyScaleType.Segments;
-            else if (type == LizardType.Blue && vals[picker++] < 0.93f) scaleType = BodyScaleType.TwoLines;
+            scaleType = (LizardBodyScaleType)SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
+            if (type == LizardType.Green && vals[picker++] < 0.7f) scaleType = LizardBodyScaleType.Segments;
+            else if (type == LizardType.Blue && vals[picker++] < 0.93f) scaleType = LizardBodyScaleType.TwoLines;
 
             numScales = 0;
             switch (scaleType)
             {
-                case BodyScaleType.Patch:
+                case LizardBodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.1f, Random.Range(4, 15), 0.9f, 1.2f)
                         numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
                         GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
-                case BodyScaleType.TwoLines:
+                case LizardBodyScaleType.TwoLines:
                     {
                         // Two lines, GenerateTwoLines(0.1f, 1f, 1.5f, 1f)
                         GenerateTwoLines(vals, ref picker, type, 0.1f, 1f, 1.5f, 1f, out numScales);
                         break;
                     }
-                case BodyScaleType.Segments:
+                case LizardBodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.9f, (lGraphics.lizard.Template.type == CreatureTemplate.Type.PinkLizard) ? 1.5f : 0.6f)
                         GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.9f, type == LizardType.Pink ? 1.5f : 0.6f, out numScales);
@@ -444,13 +444,13 @@ namespace FinderMod.Search
 
         // Min add. values needed: 27
         private static readonly int[] tailTuft3to7Range = new int[] { 3, 7 };
-        public static void TailTuftVars(float[] vals, ref int picker, int seed, LizardType type, out BodyScaleType scaleType, out int numScales)
+        public static void TailTuftVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
             if (vals[picker++] < 0.14285715f || (vals[picker++] < 0.9f && type == LizardType.Blue) || type == LizardType.Red || type == LizardType.Zoop)
             {
-                scaleType = BodyScaleType.TwoLines;
+                scaleType = LizardBodyScaleType.TwoLines;
 
                 if (type == LizardType.Blue || type == LizardType.Red)
                 {
@@ -465,7 +465,7 @@ namespace FinderMod.Search
             }
             else
             {
-                scaleType = BodyScaleType.Patch;
+                scaleType = LizardBodyScaleType.Patch;
                 numScales = SearchUtil.GetRangeAt(seed, tailTuft3to7Range, picker++);
                 GeneratePatchPattern(ref picker, numScales);
             }
