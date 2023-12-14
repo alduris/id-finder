@@ -55,7 +55,7 @@ namespace FinderMod
                 On.GameSession.ctor += GameSessionOnctor;
 
                 // Enable if debug needed
-                ApplyDebugHooks(); // see Test/DebugHooks
+                // ApplyDebugHooks(); // see Test/DebugHooks
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;

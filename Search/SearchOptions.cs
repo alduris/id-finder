@@ -510,7 +510,7 @@ namespace FinderMod.Search
                         float generalMelanin = Custom.PushFromHalf(i[0], 2f);
                         float headSize = ClampedRandomVariation(0.5f, 0.5f, 0.1f, i[1], i[2]);
                         float eyeSize = Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(i[4], Mathf.Pow(headSize, 0.5f), i[5] * 0.4f)), Mathf.Lerp(0.95f, 0.55f, p[5]));
-                        float narrowEyes = (i[6] < Mathf.Lerp(0.3f, 0.7f, p[5])) ? 0f : Mathf.Pow(i[7], Mathf.Lerp(0.5f, 1.5f, p[5]));
+                        float narrowEyes = 1f;
                         float pupilSize = 0f;
 
                         // Calculate how far we have to advance the pointer
@@ -538,7 +538,7 @@ namespace FinderMod.Search
                             }
                         }
 
-                        j += 7; // tick 7 more rolls (hands head color * 3, legs size, arm thickness * 2, wide teeth)
+                        j += 8; // tick 8 more rolls (colored pupils, hands head color * 3, legs size, arm thickness * 2, wide teeth)
                         if (i[j++] >= 0.5f) j++; // tail segments
                         if (i[j++] < 0.25f) j++; // unused scruffy calculation that's still done for some reason
 
@@ -914,7 +914,7 @@ namespace FinderMod.Search
                         float generalMelanin = Custom.PushFromHalf(i[0], 2f);
                         float headSize = ClampedRandomVariation(0.5f, 0.5f, 0.1f, i[1], i[2]);
                         float eyeSize = Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(i[4], Mathf.Pow(headSize, 0.5f), i[5] * 0.4f)), Mathf.Lerp(0.95f, 0.55f, p[5]));
-                        float narrowEyes = (i[6] < Mathf.Lerp(0.3f, 0.7f, p[5])) ? 0f : Mathf.Pow(i[7], Mathf.Lerp(0.5f, 1.5f, p[5]));
+                        float narrowEyes = 1f;
 
                         // Calculate how far we have to advance the pointer
                         int j = 6; // first 6 rolls (gen. melanin, head size * 2, eartler width, eye size * 2)
@@ -935,7 +935,7 @@ namespace FinderMod.Search
 	                        // else deep pupils
                         }
 
-                        j += 8; // tick 8 more rolls (hands head color * 3, legs size, arm thickness * 2, colored eartler tips, wide teeth)
+                        j += 8; // tick 8 more rolls (colored pupils, hands head color * 3, legs size, arm thickness * 2, wide teeth)
                         int tailSegs = ((i[j++] < 0.5f) ? 0 : SearchUtil.GetRangeAt(s, new int[] {1, 5}, j++));
                         if (i[j++] < 0.25f) j++; // unused scruffy calculation that's still done for some reason
 
@@ -1036,7 +1036,6 @@ namespace FinderMod.Search
                         #endregion
 
                         // Scav back thing time!
-                        bool useHardBackSpikes = i[j++] < 0.1f;
                         float colorType = 1;
                         float colored = 0;
                         ScavBodyScalePattern pattern; // 1 = SpineRidge, 2 = DoubleSpineRidge, 3 = RandomBackBlotch
@@ -1045,7 +1044,7 @@ namespace FinderMod.Search
                         float generalSize;
 
                         // BackTuftsAndRidges constructor
-                        j += 2; // graphic
+                        j += 3; // graphic and some check that gets overridden afterwards by elite
                         if (i[j++] < 0.5f) j++;
                         if (i[j++] > generalMelanin)
                         {
@@ -1056,6 +1055,7 @@ namespace FinderMod.Search
                             colorType = i[j++] < 0.5 ? 2 : 3;
                         }
                         else j++;
+
                         // HardBackSpikes (requires 56 random values max)
 
                         // Calculate pattern and generate corresponding attributes
@@ -1077,7 +1077,6 @@ namespace FinderMod.Search
 
                         return new float[]
                         {
-                            useHardBackSpikes ? 1 : 2,
                             colorType,
                             colored,
                             (int)pattern,
