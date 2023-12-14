@@ -664,7 +664,7 @@ namespace FinderMod.Search
                     {
                         new("See hover descriptions at bottom for most inputs", InputType.Label),
                         new("Type", "1: HardBackSpikes, 2: WobblyBackTufts", InputType.MultiChoice, (1, 2)),
-                        new("Coloring", "1: none (color strength = 0), 2: decoration, 3: head", InputType.MultiChoice, (1, 3)),
+                        new("Color type", "1: none (color strength = 0), 2: decoration, 3: head", InputType.MultiChoice, (1, 3)),
                         new("Color strength", InputType.Float),
                         new("Pattern", "1: SpineRidge, 2: DoubleSpineRidge, 3: RandomBackBlotch", InputType.MultiChoice, (1, 3)),
                         new("Scales start", InputType.Float, (0.02f, 0.3f)),
@@ -673,7 +673,7 @@ namespace FinderMod.Search
                         new("General scale size", InputType.Float),
                     },
                     MSC = false,
-                    MinFloats = 113, // 86 (colors + before) + 19 (WobblyBackTufts) + 8
+                    MinFloats = 157, // 86 (colors + before) + 4 (tail) + 59 (WobblyBackTufts) + 8
                     FloatRanges = null, IntRanges = null,
                     Apply = (i, p, s, _, _) =>
                     {
@@ -824,7 +824,7 @@ namespace FinderMod.Search
                         // Inheritance time
                         if (useHardBackSpikes)
                         {
-                            // HardBackSpikes (requires 16 random values max)
+                            // HardBackSpikes (requires 56 random values max)
 
                             // Calculate pattern and generate corresponding attributes
                             pattern = i[j++] < 0.6f ? ScavBodyScalePattern.SpineRidge : ScavBodyScalePattern.DoubleSpineRidge;
@@ -845,7 +845,7 @@ namespace FinderMod.Search
                         }
                         else
                         {
-                            // WobblyBackTufts (requires 19 random values max)
+                            // WobblyBackTufts (requires 59 random values max)
                             
                             // Calculate pattern, tick pointer, and generate corresponding attributes
                             pattern = ScavBodyScalePattern.RandomBackBlotch;

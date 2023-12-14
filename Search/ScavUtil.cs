@@ -23,7 +23,7 @@ namespace FinderMod.Search
             RandomBackBlotch = 3
         }
 
-        // Max values needed: 6
+        // Max values needed: 46
         public static void GeneratePattern(float[] vals, ref int picker, ScavBackType type, ScavBodyScalePattern pattern, out float top, out float bottom, out int numScales)
         {
             switch(pattern)
