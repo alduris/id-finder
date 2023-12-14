@@ -51,6 +51,51 @@ namespace FinderMod.Test
             TestCase("Scavenger Back Patterns", 6581, new float[] { 1, IGNORE, IGNORE, 2, 0.1342574f,  0.7211277f, 24, 0.5605704f });
             // Type (1 = HBS, 2 = WBT), Pattern (1 = SR, 2 = DSR, 3 = RBB)
 
+
+            // Elite scavenger colors                              Body H         Body S        Body L       Head H         Head S       Head L      Deco H         Deco S       Deco L
+            TestCase("Elite Scavenger Colors", 7795, new float[] { 0.001136018f,  0.8451249f,   0.4949799f,  0.001136018f,  0.8451249f, 0.4949799f,  0.8616755f,    0.8868557f,  0.4356378f });
+            TestCase("Elite Scavenger Colors", 7796, new float[] { 2.203775E-05f, 0.036598f,    0.2258678f,  0.9990518f,    0.7276163f, 0.171484f,   0.4731144f,    0.6885896f,  0.4046143f });
+            TestCase("Elite Scavenger Colors", 7797, new float[] { 0.1190408f,    0.49203f,     0.7721173f,  0.1190408f,    0.3690225f, 0.4819592f,  0.1368859f,    0.3375374f,  0.4621389f });
+            TestCase("Elite Scavenger Colors", 7798, new float[] { 0.008530766f,  0.006343696f, 0.2729666f,  0.01633167f,   0.8655018f, 0.09051473f, 0.1421851f,    0.4155952f,  0.5863674f });
+            TestCase("Elite Scavenger Colors", 7799, new float[] { 0.3840314f,    0.7023476f,   0.1583831f,  0.3840314f,    0.7023476f, 0.1583831f,  0.3687373f,    0.5306676f,  0.6660133f });
+            TestCase("Elite Scavenger Colors", 7800, new float[] { 0.00177244f,   0.9586796f,   0.3597798f,  0.00177244f,   0.9586796f, 0.3597798f,  0.00177244f,   0.7420791f,  0.4001982f });
+            TestCase("Elite Scavenger Colors", 7801, new float[] { 0.04008427f,   0.01763009f,  0.7416434f,  0.9502224f,    0.4095998f, 0.2882306f,  0.04008427f,   0.3397519f,  0.7456605f });
+            TestCase("Elite Scavenger Colors", 7802, new float[] { 0.01807125f,   0.7733045f,   0.7825821f,  0.0395337f,    0.5823412f, 0.6524848f,  0.01807125f,   0.5352952f,  0.3294647f });
+            TestCase("Elite Scavenger Colors", 7803, new float[] { 0.0002055083f, 0.001559882f, 0.4025975f,  0.940299f,     0.8864723f, 0.07516699f, 0.0002055083f, 0.4992239f,  0.6218862f });
+            TestCase("Elite Scavenger Colors", 7804, new float[] { 0.03498837f,   0.6321658f,   0.8254362f,  0.03498837f,   0.4741243f, 0.5753596f,  0.03498837f,   0.5248517f,  0.3396667f });
+            TestCase("Elite Scavenger Colors", 7805, new float[] { 0.001209362f,  0.6189785f,   0.9871998f,  0.9410684f,    0.5612665f, 0.6434841f,  0.001209362f,  0.9032965f,  0.342405f });
+            TestCase("Elite Scavenger Colors", 7806, new float[] { 2.421688E-05f, 0.1204021f,   0.3082095f,  0.006482281f,  0.5741996f, 0.2467866f,  2.421688E-05f, 0.5347711f,  0.8325319f });
+            TestCase("Elite Scavenger Colors", 7807, new float[] { 0.06691504f,   0.5324982f,   0.6968583f,  0.08904279f,   0.4687217f, 0.4157182f,  0.06691504f,   0.1282826f,  0.1308671f });
+            TestCase("Elite Scavenger Colors", 7808, new float[] { 0.7638471f,    0.02916162f,  0.31856f,    0.9348224f,    0.7714231f, 0.1286913f,  0.7638471f,    0.4501479f,  0.646425f });
+            TestCase("Elite Scavenger Colors", 7809, new float[] { 0.3572006f,    0.6041891f,   0.01097584f, 0.3572006f,    0.6041891f, 0.01097584f, 0.3572006f,    0.4350207f,  0.2163298f });
+            TestCase("Elite Scavenger Colors", 7810, new float[] { 0.3336366f,    0.9510788f,   0.5589507f,  0.3336366f,    0.9510788f, 0.5589507f,  0.3330438f,    0.4805457f,  0.378161f });
+            TestCase("Elite Scavenger Colors", 7811, new float[] { 0.01587369f,   0.2235081f,   0.4410057f,  0.01587369f,   0.2235081f, 0.4410057f,  0.01156811f,   0.7263564f,  0.4145347f });
+            TestCase("Elite Scavenger Colors", 7812, new float[] { 0.0001444513f, 0.6892556f,   0.820048f,   0.9994635f,    0.793424f,  0.7891791f,  0.3657962f,    0.06069852f, 0.09363019f });
+            TestCase("Elite Scavenger Colors", 7813, new float[] { 1.900745E-05f, 0.02573412f,  0.4005555f,  0.1258937f,    0.8319358f, 0.1140471f,  1.900745E-05f, 0.7156214f,  0.5367416f });
+            TestCase("Elite Scavenger Colors", 7814, new float[] { 7.805145E-10f, 0.9771295f,   0.6494907f,  7.805145E-10f, 0.9771295f, 0.6494907f,  0.06642074f,   0.2719971f,  0.1529266f });
+
+            // Elite scavenger back patterns                           Pattern  Top          Bottom      Num Size
+            TestCase("Elite Scavenger Back Patterns", 7795, 2, new float[] { 2, 0.2395298f,  0.8447037f, 14, 0.4366659f });
+            TestCase("Elite Scavenger Back Patterns", 7796, 2, new float[] { 1, 0.2027242f,  0.8034261f, 7,  0.652213f });
+            TestCase("Elite Scavenger Back Patterns", 7797, 2, new float[] { 1, 0.1674842f,  0.7329226f, 10, 0.5170734f });
+            TestCase("Elite Scavenger Back Patterns", 7798, 2, new float[] { 2, 0.1256906f,  0.670608f,  8,  0.2306415f });
+            TestCase("Elite Scavenger Back Patterns", 7799, 2, new float[] { 2, 0.2587558f,  0.6111765f, 8,  0.3728951f });
+            TestCase("Elite Scavenger Back Patterns", 7800, 2, new float[] { 1, 0.2305054f,  0.7875323f, 4,  0.8728709f });
+            TestCase("Elite Scavenger Back Patterns", 7801, 2, new float[] { 1, 0.2448776f,  0.8951868f, 7,  0.6854035f });
+            TestCase("Elite Scavenger Back Patterns", 7802, 2, new float[] { 1, 0.1697445f,  0.7447858f, 13, 0.7565591f });
+            TestCase("Elite Scavenger Back Patterns", 7803, 2, new float[] { 1, 0.1947737f,  0.9662684f, 8,  0.2035128f });
+            TestCase("Elite Scavenger Back Patterns", 7804, 2, new float[] { 1, 0.2332188f,  0.7945f,    16, 0.4710213f });
+            TestCase("Elite Scavenger Back Patterns", 7805, 2, new float[] { 3, 0.04970961f, 0.8736076f, 22, 0.4442028f });
+            TestCase("Elite Scavenger Back Patterns", 7806, 2, new float[] { 1, 0.1177f,     0.6409903f, 6,  0.7007739f });
+            TestCase("Elite Scavenger Back Patterns", 7807, 2, new float[] { 2, 0.193835f,   0.7888674f, 14, 0.5269699f });
+            TestCase("Elite Scavenger Back Patterns", 7808, 2, new float[] { 3, 0.05012065f, 0.5445747f, 12, 0.9226902f });
+            TestCase("Elite Scavenger Back Patterns", 7809, 2, new float[] { 1, 0.08912542f, 0.8593001f, 8,  0.5668983f });
+            TestCase("Elite Scavenger Back Patterns", 7810, 2, new float[] { 1, 0.237359f,   0.8034862f, 12, 0.9441476f });
+            TestCase("Elite Scavenger Back Patterns", 7811, 2, new float[] { 2, 0.2235446f,  0.9200004f, 26, 0.3437088f });
+            TestCase("Elite Scavenger Back Patterns", 7812, 2, new float[] { 2, 0.2710113f,  0.8539116f, 10, 0.5486535f });
+            TestCase("Elite Scavenger Back Patterns", 7813, 2, new float[] { 3, 0.1211188f,  0.5532407f, 22, 0.4769053f });
+            TestCase("Elite Scavenger Back Patterns", 7814, 2, new float[] { 1, 0.21252f,    0.7039604f, 10, 0.4637166f });
+            // Type hardcoded to HBS; Pattern (1 = SR, 2 = DSR, 3 = RBB)
         }
     }
 }
