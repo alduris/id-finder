@@ -32,7 +32,7 @@ namespace FinderMod.Inputs
 
             // Make label
             var label = new OpLabel(x + LABEL_OFFSET, y, Name);
-            x += LABEL_OFFSET + label.GetDisplaySize().x;
+            x += LABEL_OFFSET + label.GetDisplaySize().x + INPUT_OFFSET;
             inputs.Add(cb);
             inputs.Add(label);
 
