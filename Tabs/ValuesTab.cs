@@ -27,7 +27,7 @@ namespace FinderMod.Tabs
                     .Select(s => new ListItem(s))
                 )
             );
-            inputId = new OpTextBox(CosmeticBind<int>(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f);
+            inputId = new OpTextBox(CosmeticBind<int>(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f) { allowSpace = true };
             outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
 
             AddItems(
