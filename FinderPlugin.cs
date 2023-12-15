@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Logging;
-using FinderMod.Test;
-using LizardCosmetics;
-using RWCustom;
-using UnityEngine;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -16,7 +11,7 @@ using UnityEngine;
 
 namespace FinderMod
 {
-    [BepInPlugin("alduris.finder", "ID Finder", "1.2.4")]
+    [BepInPlugin("alduris.finder", "ID Finder", "1.3.0")]
     internal partial class FinderPlugin : BaseUnityPlugin
     {
         private FinderOptions Options;
