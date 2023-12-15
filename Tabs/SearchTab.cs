@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using FinderMod.Inputs;
 using FinderMod.Search;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
@@ -222,6 +223,23 @@ namespace FinderMod.Tabs
             AddItems(UIArrPlayerOptions);
         }
 
+        // TESTING REMOVE
+        private readonly BaseInput[] testInputs =
+        {
+            new Label("label"),
+            new FloatInput("float", 0f, 2f),
+            new IntInput("int", 0, 5),
+            new BoolInput("bool"),
+            new ColorRGBInput("rgb"),
+            new Whitespace(),
+            new InputGroup("group", new BaseInput[]
+            {
+                new FloatInput("inp1"),
+                new FloatInput("inp2"),
+                new FloatInput("inp3")
+            })
+        };
+
         private void UpdateQueryBox()
         {
             const int SLIDER_WIDTH = 160;
@@ -230,10 +248,12 @@ namespace FinderMod.Tabs
             const float WHITESPACE_AMOUNT = 10f;
             const float BIAS_INPUT_WIDTH = 60f;
             const float BIAS_TEXT_WIDTH = 40f;
+            const float CHECKBOX_OFFSET = 25f;
+            const float LABEL_OFFSET = CHECKBOX_OFFSET + 30f;
             float maxWidth = cont_queries.size.x - 25f; // wrap 10f from slider + 15f slider width. also a constant but I can't make it const
 
             float y = cont_queries.size.y; // start from top of scroll box
-            float height = 10f; // 10f bottom padding accounting
+            // float height = 10f; // 10f bottom padding accounting
             List<UIelement> items = new();
 
             foreach (UIelement element in cont_queries.items)
@@ -249,7 +269,7 @@ namespace FinderMod.Tabs
                 bool first = ReferenceEquals(queries[0], query);
 
                 // Move to next line
-                height += LINE_HEIGHT + 10f; // 10f top padding
+                // height += LINE_HEIGHT + 10f; // 10f top padding
                 y -= LINE_HEIGHT + 10f;      // ditto
 
                 // Create delete button and label
@@ -294,7 +314,47 @@ namespace FinderMod.Tabs
                 items.Add(label_name);
 
                 // Create input row
-                int currIndex = 0;
+                foreach (var input in testInputs)
+                {
+                    // Only add checkbox if there's elements to show
+                    if (input.ValueCount > 0)
+                    {
+                        var checkbox_enabled = new OpCheckBox(CosmeticBind(input.Enabled), new(CHECKBOX_OFFSET, y));
+                        checkbox_enabled.OnValueUpdate += (_, t, f) =>
+                        {
+                            input.Enabled = checkbox_enabled.GetValueBool();
+                            UpdateQueryBox();
+                        };
+                        items.Add(checkbox_enabled);
+                    }
+
+                    // Deal with content
+                    if (input is Whitespace)
+                    {
+                        y -= WHITESPACE_AMOUNT;
+                        // height += WHITESPACE_AMOUNT;
+                    }
+                    else
+                    {
+                        // Offset for the element
+                        y -= LINE_HEIGHT;
+                        // height += LINE_HEIGHT;
+
+                        // Create label
+                        var label = new OpLabel(LABEL_OFFSET, y, input.Name);
+                        var labelWidth = label.GetDisplaySize().x; // label.size.x;
+                        items.Add(label);
+
+                        // Create elements
+                        if (input.Enabled)
+                        {
+                            if (input is InputGroup) (input as InputGroup).parent = cont_queries;
+                            var element = input.GetUI(LABEL_OFFSET, LABEL_OFFSET + labelWidth + 4f, ref y);
+                            items.Add(element);
+                        }
+                    }
+                }
+                /*int currIndex = 0;
                 for (int i = 0; i < query.Setup.Inputs.Count(); i++)
                 {
                     SearchInput item = query.Setup.Inputs[i];
@@ -337,7 +397,7 @@ namespace FinderMod.Tabs
 
                     // Create label
                     var label = new OpLabel(55, y, query.Setup.Inputs[i].Name);
-                    var labelWidth = label.size.x;
+                    var labelWidth = label.GetDisplaySize().x; // label.size.x;
 
                     // Add items
                     items.Add(checkbox_enabled);
@@ -560,12 +620,13 @@ namespace FinderMod.Tabs
 
                     items.Add(new OpLabel(biasStartX, y, "Bias:"));
                     items.Add(input_bias);
-                }
+                }*/
 
                 // Add items
                 cont_queries.AddItems(items.ToArray());
             }
 
+            float height = cont_queries.size.y - y + 10f * queries.Count;
             cont_queries.SetContentSize(height, true);
         }
 
