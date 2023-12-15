@@ -12,7 +12,7 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
 {
-    internal class SearchTab : FinderTab
+    internal class SearchTab : BaseTab
     {
         public SearchTab(OptionInterface owner) : base(owner, "Search")
         {

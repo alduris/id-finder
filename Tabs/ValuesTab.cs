@@ -8,7 +8,7 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
 {
-    internal class ValuesTab : FinderTab
+    internal class ValuesTab : BaseTab
     {
         public ValuesTab(OptionInterface option) : base(option, "Values")
         {
