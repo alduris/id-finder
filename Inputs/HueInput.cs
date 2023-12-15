@@ -1,4 +1,6 @@
-﻿using Menu.Remix.MixedUI;
+﻿using System;
+using System.Collections.Generic;
+using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using RWCustom;
 
@@ -11,17 +13,20 @@ namespace FinderMod.Inputs
             Wrap = true;
         }
 
-        public override UIelement GetUI(float tx, float x, ref float y)
+        public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {
-            OpFloatSlider input = base.GetUI(tx, x, ref y) as OpFloatSlider;
-            input.colorEdge = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
-            input.colorFill = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
-            input.OnValueChanged += (_, _, _) =>
+            base.AddUI(x, ref y, inputs, UpdateQueryBox);
+            if (Enabled)
             {
+                OpFloatSlider input = inputs.GetLastObject() as OpFloatSlider;
                 input.colorEdge = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
                 input.colorFill = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
-            };
-            return input;
+                input.OnValueChanged += (_, _, _) =>
+                {
+                    input.colorEdge = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
+                    input.colorFill = Custom.HSL2RGB(input.GetValueFloat(), 1f, 0.625f);
+                };
+            }
         }
     }
 }

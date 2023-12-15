@@ -248,8 +248,8 @@ namespace FinderMod.Tabs
             const float WHITESPACE_AMOUNT = 10f;
             const float BIAS_INPUT_WIDTH = 60f;
             const float BIAS_TEXT_WIDTH = 40f;
-            const float CHECKBOX_OFFSET = 25f;
-            const float LABEL_OFFSET = CHECKBOX_OFFSET + 30f;
+            const float LEFT_MARGIN = 25f;
+            const float LABEL_OFFSET = LEFT_MARGIN + 30f;
             float maxWidth = cont_queries.size.x - 25f; // wrap 10f from slider + 15f slider width. also a constant but I can't make it const
 
             float y = cont_queries.size.y; // start from top of scroll box
@@ -314,45 +314,10 @@ namespace FinderMod.Tabs
                 items.Add(label_name);
 
                 // Create input row
+                y -= LINE_HEIGHT;
                 foreach (var input in testInputs)
                 {
-                    // Only add checkbox if there's elements to show
-                    if (input.ValueCount > 0)
-                    {
-                        var checkbox_enabled = new OpCheckBox(CosmeticBind(input.Enabled), new(CHECKBOX_OFFSET, y));
-                        checkbox_enabled.OnValueUpdate += (_, t, f) =>
-                        {
-                            input.Enabled = checkbox_enabled.GetValueBool();
-                            UpdateQueryBox();
-                        };
-                        items.Add(checkbox_enabled);
-                    }
-
-                    // Deal with content
-                    if (input is Whitespace)
-                    {
-                        y -= WHITESPACE_AMOUNT;
-                        // height += WHITESPACE_AMOUNT;
-                    }
-                    else
-                    {
-                        // Offset for the element
-                        y -= LINE_HEIGHT;
-                        // height += LINE_HEIGHT;
-
-                        // Create label
-                        var label = new OpLabel(LABEL_OFFSET, y, input.Name);
-                        var labelWidth = label.GetDisplaySize().x; // label.size.x;
-                        items.Add(label);
-
-                        // Create elements
-                        if (input.Enabled)
-                        {
-                            if (input is InputGroup) (input as InputGroup).parent = cont_queries;
-                            var element = input.GetUI(LABEL_OFFSET, LABEL_OFFSET + labelWidth + 4f, ref y);
-                            items.Add(element);
-                        }
-                    }
+                    input.AddUI(LEFT_MARGIN, ref y, items, UpdateQueryBox);
                 }
                 /*int currIndex = 0;
                 for (int i = 0; i < query.Setup.Inputs.Count(); i++)

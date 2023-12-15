@@ -1,4 +1,6 @@
-﻿using Menu.Remix.MixedUI;
+﻿using System;
+using System.Collections.Generic;
+using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
 using static FinderMod.OpUtil;
@@ -18,11 +20,32 @@ namespace FinderMod.Inputs
         }
         public FloatInput(string name) : this(name, 0f, 1f) { }
 
-        public override UIelement GetUI(float tx, float x, ref float y)
+        public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {
-            var input = new OpFloatSlider(CosmeticBind(value), new Vector2(x, y - 4f), 160, 4) { min = min, max = max };
-            input.OnValueChanged += (_, _, _) => { value = input.GetValueFloat(); };
-            return input;
+            // Make checkbox
+            var cb = new OpCheckBox(CosmeticBind(Enabled), new(x, y));
+            cb.OnValueUpdate += (_, t, f) =>
+            {
+                Enabled = cb.GetValueBool();
+                UpdateQueryBox();
+            };
+
+            // Make label
+            var label = new OpLabel(x + LABEL_OFFSET, y, Name);
+            x += LABEL_OFFSET + label.GetDisplaySize().x;
+            inputs.Add(cb);
+            inputs.Add(label);
+
+            // Make input
+            if (Enabled)
+            {
+                var input = new OpFloatSlider(CosmeticBind(value), new Vector2(x, y - 4f), 160, 4) { min = min, max = max };
+                input.OnValueChanged += (_, _, _) => { value = input.GetValueFloat(); };
+
+                inputs.Add(input);
+            }
+
+            y -= LINE_HEIGHT;
         }
 
         public override float? GetValue(int index)

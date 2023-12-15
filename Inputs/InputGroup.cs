@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -19,67 +20,36 @@ namespace FinderMod.Inputs
             this.inputs = inputs;
         }
 
-        private OpScrollBox UpdateContainer(OpScrollBox container)
+        public override void AddUI(float x, ref float y, List<UIelement> elements, Action UpdateQueryBox)
         {
-            // Clear out existing children if there are any
-            if (container != null)
+            // Make checkbox
+            var cb = new OpCheckBox(CosmeticBind(Enabled), new(x, y));
+            cb.OnValueUpdate += (_, t, f) =>
             {
-                foreach (UIelement el in container.items)
-                {
-                    el.Deactivate();
-                    el.tab.items.Remove(el);
-                }
-            }
+                Enabled = cb.GetValueBool();
+                UpdateQueryBox();
+            };
 
-            // Create the new children
-            List<UIelement> children = new List<UIelement>();
-            List<(BaseInput, OpCheckBox)> cbs = new List<(BaseInput, OpCheckBox)>();
-            float y = 0f;
-            foreach (var inp in inputs)
+            // Make label
+            var label = new OpLabel(x + LABEL_OFFSET, y, Name);
+            x += LABEL_OFFSET;
+
+            // Make inputs
+            y -= LINE_HEIGHT;
+
+            if (Enabled)
             {
+                // Add items
                 float temp = y;
-                var cb = new OpCheckBox(CosmeticBind(inp.Enabled), new Vector2(PADDING, y));
-                var label = new OpLabel(30f, y, inp.Name);
-                var el = inp.Enabled ? inp.GetUI(PADDING + 30f, PADDING + 36f + label.GetDisplaySize().x, ref y) : null;
+                foreach (var inp in inputs)
+                {
+                    inp.AddUI(x + PADDING + label.GetDisplaySize().x, ref y, elements, UpdateQueryBox);
+                }
 
-                y += 30f;
-                children.Add(cb);
-                cbs.Add((inp, cb));
-                children.Add(label);
-                if (el != null) children.Add(el);
+                // Make bounding box
+                var container = new OpRect(new Vector2(x, y - PADDING), new Vector2(600f - x - PADDING, temp - y));
+                y -= LINE_HEIGHT + PADDING;
             }
-
-            // Create scrollbox if it doesn't exist
-            if (container == null)
-            {
-                container = new OpScrollBox(new Vector2(0f, 0f), new Vector2(600f, y + 2 * PADDING), y + 2 * PADDING, false, true, false);
-                parent.AddItems(container);
-            }
-
-            // Add event listeners to checkboxes now that container is guaranteed to exist
-            foreach (var (inp, cb) in cbs)
-            {
-
-                cb.OnValueChanged += (_, _, _) => {
-                    inp.Enabled = cb.GetValueBool();
-                    UpdateContainer(container);
-                };
-            }
-
-            // Add the children
-            y += PADDING;
-            children.ForEach(el => { el.pos = new Vector2(el.pos.x, y - el.pos.y); });
-            container.AddItems(children.ToArray());
-            return container;
-        }
-
-        public override UIelement GetUI(float tx, float x, ref float y)
-        {
-            var container = UpdateContainer(null);
-            container.pos = new Vector2(tx, y - container.size.y);
-            container.size = new Vector2(600f - tx - PADDING, container.size.y);
-
-            return container;
         }
 
         public override float? GetValue(int index)

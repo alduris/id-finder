@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
@@ -11,9 +12,10 @@ namespace FinderMod.Inputs
             this.text = text;
         }
 
-        public override UIelement GetUI(float tx, float x, ref float y)
+        public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {
-            throw new NotImplementedException();
+            inputs.Add(new OpLabel(x, y, text));
+            y -= LINE_HEIGHT;
         }
 
         public override float? GetValue(int index)
