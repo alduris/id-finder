@@ -4,7 +4,7 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    internal class Label : BaseInput
+    public class Label : BaseInput
     {
         private readonly string text;
         public Label(string text) : base(text, 0)

@@ -8,7 +8,7 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Inputs
 {
-    internal class InputGroup : BaseInput
+    public class InputGroup : BaseInput
     {
         private const float PADDING = 8f;
         private const float HEIGHT_OFFSET = LINE_HEIGHT - 24f;

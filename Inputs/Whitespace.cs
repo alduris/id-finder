@@ -4,7 +4,7 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    internal class Whitespace : BaseInput
+    public class Whitespace : BaseInput
     {
         private const float WHITESPACE_AMOUNT = LINE_HEIGHT / 3;
         public Whitespace() : base("", 0) { }
