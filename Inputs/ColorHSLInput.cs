@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Menu.Remix.MixedUI;
 using RWCustom;
 using UnityEngine;
@@ -76,6 +73,17 @@ namespace FinderMod.Inputs
                 elements.Add(rect);
                 elements.Add(container);
             }
+        }
+
+        public override float? GetValue(int index)
+        {
+            return index switch
+            {
+                0 => h.GetValue(index),
+                1 => s.GetValue(index),
+                2 => l.GetValue(index),
+                _ => throw new NotImplementedException()
+            };
         }
 
         private void UpdateColor()
