@@ -224,7 +224,7 @@ namespace FinderMod.Tabs
         }
 
         // TESTING REMOVE
-        private readonly BaseInput[] testInputs =
+        private readonly BaseInput[] testInputs = new BaseInput[]
         {
             new Label("label"),
             new FloatInput("float", 0f, 2f),
@@ -238,7 +238,8 @@ namespace FinderMod.Tabs
                 new FloatInput("inp2"),
                 new FloatInput("inp3")
             }),
-            new Label("label 2")
+            new Label("label 2"),
+            new ColorHSLInput("hsl"),
         };
 
         private void UpdateQueryBox()

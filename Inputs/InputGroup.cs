@@ -10,10 +10,10 @@ namespace FinderMod.Inputs
 {
     public class InputGroup : BaseInput
     {
-        private const float PADDING = 8f;
-        private const float HEIGHT_OFFSET = LINE_HEIGHT - 24f;
+        protected const float PADDING = 8f;
+        protected const float HEIGHT_OFFSET = LINE_HEIGHT - 24f;
 
-        private readonly BaseInput[] inputs;
+        protected readonly BaseInput[] inputs;
         public OpScrollBox parent;
         
         public InputGroup(string name, BaseInput[] inputs) : base(name, inputs.Aggregate(0, (val, inp) => val + inp.ValueCount))

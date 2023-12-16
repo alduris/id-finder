@@ -32,7 +32,7 @@ namespace FinderMod.Inputs
 
             // Make label
             var label = new OpLabel(x + LABEL_OFFSET, y, Name);
-            x += LABEL_OFFSET + label.GetDisplaySize().x + INPUT_OFFSET;
+            x += LABEL_OFFSET + label.GetDisplaySize().x + INPUT_OFFSET * 2;
             inputs.Add(cb);
             inputs.Add(label);
 
@@ -40,7 +40,7 @@ namespace FinderMod.Inputs
             if (Enabled)
             {
                 var input = new OpFloatSlider(CosmeticBind(value), new Vector2(x, y - 4f), 160, 4) { min = min, max = max };
-                input.OnValueChanged += (_, _, _) => { value = input.GetValueFloat(); };
+                input.OnValueUpdate += (_, _, _) => { value = input.GetValueFloat(); };
 
                 inputs.Add(input);
             }
