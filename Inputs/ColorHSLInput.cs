@@ -86,6 +86,11 @@ namespace FinderMod.Inputs
             };
         }
 
+        public override string ToString()
+        {
+            return $"hsl({h.GetValue(0).ToString() ?? "??"}, {s.GetValue(0).ToString() ?? "??"}, {l.GetValue(0).ToString() ?? "??"})";
+        }
+
         private void UpdateColor()
         {
             if (!h.Enabled && !s.Enabled && !l.Enabled)
