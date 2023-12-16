@@ -237,7 +237,8 @@ namespace FinderMod.Tabs
                 new FloatInput("inp1"),
                 new FloatInput("inp2"),
                 new FloatInput("inp3")
-            })
+            }),
+            new Label("label 2")
         };
 
         private void UpdateQueryBox()
@@ -588,6 +589,7 @@ namespace FinderMod.Tabs
                 }*/
 
                 // Add items
+                items.Reverse();
                 cont_queries.AddItems(items.ToArray());
             }
 

@@ -11,6 +11,7 @@ namespace FinderMod.Inputs
     internal class InputGroup : BaseInput
     {
         private const float PADDING = 8f;
+        private const float HEIGHT_OFFSET = LINE_HEIGHT - 24f;
 
         private readonly BaseInput[] inputs;
         public OpScrollBox parent;
@@ -33,22 +34,25 @@ namespace FinderMod.Inputs
             // Make label
             var label = new OpLabel(x + LABEL_OFFSET, y, Name);
             x += LABEL_OFFSET;
+            elements.Add(cb);
+            elements.Add(label);
 
             // Make inputs
             y -= LINE_HEIGHT;
-
             if (Enabled)
             {
                 // Add items
                 float temp = y;
+                y -= PADDING;
                 foreach (var inp in inputs)
                 {
-                    inp.AddUI(x + PADDING + label.GetDisplaySize().x, ref y, elements, UpdateQueryBox);
+                    inp.AddUI(x + PADDING, ref y, elements, UpdateQueryBox);
                 }
+                y -= PADDING;
 
                 // Make bounding box
-                var container = new OpRect(new Vector2(x, y - PADDING), new Vector2(600f - x - PADDING, temp - y));
-                y -= LINE_HEIGHT + PADDING;
+                var container = new OpRect(new Vector2(x, y + LINE_HEIGHT), new Vector2(580f - x * 2, temp - y - HEIGHT_OFFSET));
+                elements.Add(container);
             }
         }
 
