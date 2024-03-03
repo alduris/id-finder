@@ -113,7 +113,10 @@ namespace FinderMod.Search
             return num - Mathf.Floor(num);
         }
 
-        internal static readonly Dictionary<string, IOption> Options;
+        internal static readonly Dictionary<string, IOption> Options = new()
+        {
+            { "Personality", new OptionPersonality() }
+        };
 
         internal static readonly Dictionary<string, Setup> Groups = new()
         {
