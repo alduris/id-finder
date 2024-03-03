@@ -14,168 +14,21 @@
   </PropertyGroup><!---->
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\REFERENCES\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="0Harmony20">
-      <HintPath>..\REFERENCES\0Harmony20.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!--<Reference Include="Assembly-CSharp">
-      <HintPath>..\REFERENCES\PUBLIC-Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>-->
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\REFERENCES\STRIPPED-Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\REFERENCES\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>..\REFERENCES\BepInEx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>..\REFERENCES\BepInEx.Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx.Preloader">
-      <HintPath>..\REFERENCES\BepInEx.Preloader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="com.rlabrecque.steamworks.net">
-      <HintPath>..\REFERENCES\com.rlabrecque.steamworks.net.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="GoKit">
-      <HintPath>..\REFERENCES\GoKit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="HarmonyXInterop">
-      <HintPath>..\REFERENCES\HarmonyXInterop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="HOOKS-Assembly-CSharp">
-      <HintPath>..\REFERENCES\HOOKS-Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\REFERENCES\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\REFERENCES\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\REFERENCES\Mono.Cecil.Pdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\REFERENCES\Mono.Cecil.Rocks.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod">
-      <HintPath>..\REFERENCES\MonoMod.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>..\REFERENCES\MonoMod.RuntimeDetour.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>..\REFERENCES\MonoMod.Utils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\REFERENCES\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\REFERENCES\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\REFERENCES\UnityEngine.ImageConversionModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\REFERENCES\UnityEngine.InputLegacyModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CustomRegions">
-      <HintPath>..\REFERENCES\CustomRegions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="EnumExtender">
-      <HintPath>..\REFERENCES\EnumExtender.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AutoUpdate">
-      <HintPath>..\REFERENCES\AutoUpdate.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ConfigMachine">
-      <HintPath>..\REFERENCES\ConfigMachine.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="../REFERENCES/*.*">
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Core">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Data">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Drawing">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.IO.Compression.FileSystem">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Numerics">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Runtime.Serialization">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Xml">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Update="System.Xml.Linq">
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
+    
+  <Target Name="GenerateMod" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <RemovePlugins Include="./output/plugins/*.dll" />
+    </ItemGroup>
+    <ItemGroup>
+      <CopyPlugins Include="$(TargetPath)" />
+    </ItemGroup>
+        
+    <Delete Files="@(RemovePlugins)" />
+    <Copy SourceFiles="@(CopyPlugins)" DestinationFolder="./output/plugins/" />
+  </Target>
 
 </Project>
