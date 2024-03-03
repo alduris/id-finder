@@ -4,7 +4,7 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    public abstract class BaseInput
+    public abstract class BaseInput(string name, int inputs)
     {
         protected const float LINE_HEIGHT = 30f;
         protected const float LABEL_OFFSET = 32f;
@@ -15,14 +15,8 @@ namespace FinderMod.Inputs
         public bool Wrap = false;
 
         // These are set by the config itself
-        public int ValueCount { get; protected set; }
-        public string Name { get; protected set; }
-
-        public BaseInput(string name, int inputs)
-        {
-            ValueCount = inputs;
-            Name = name;
-        }
+        public int ValueCount { get; protected set; } = inputs;
+        public string Name { get; protected set; } = name;
 
         public abstract float? GetValue(int index);
 

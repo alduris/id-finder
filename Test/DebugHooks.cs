@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace FinderMod
 {
-    internal partial class FinderPlugin
+    internal partial class Plugin
     {
         public void ApplyDebugHooks()
         {

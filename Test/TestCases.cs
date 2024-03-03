@@ -28,7 +28,7 @@ namespace FinderMod.Test
                 if (expected[i] == IGNORE) continue;
                 if (values[i] != expected[i] && !Mathf.Approximately(values[i], expected[i]))
                 {
-                    FinderPlugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i]}");
+                    Plugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i]}");
                     //throw new Exception($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i]}");
                 }
             }
@@ -54,7 +54,7 @@ namespace FinderMod.Test
                 if (expected[i] == IGNORE) continue;
                 if (values[i + offset] != expected[i] && !Mathf.Approximately(values[i + offset], expected[i]))
                 {
-                    FinderPlugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i + offset]}");
+                    Plugin.logger.LogDebug($"{group} test case {id} failed at result {i}! Expected: {expected[i]}; Found: {values[i + offset]}");
                 }
             }
         }

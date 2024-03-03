@@ -2,33 +2,31 @@
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>./output/newest/plugins</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
-  </PropertyGroup><!---->
+  </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="../REFERENCES/*.*">
+    <Reference Include="../REFERENCES/*.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
     
-  <Target Name="GenerateMod" AfterTargets="PostBuildEvent">
+  <Target Name="GenerateMod" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ItemGroup>
-      <RemovePlugins Include="./output/plugins/*.dll" />
-    </ItemGroup>
-    <ItemGroup>
-      <CopyPlugins Include="$(TargetPath)" />
+      <RemovePlugins Include="./output/newest/plugins/*.pdb" />
     </ItemGroup>
         
     <Delete Files="@(RemovePlugins)" />
-    <Copy SourceFiles="@(CopyPlugins)" DestinationFolder="./output/plugins/" />
   </Target>
 
 </Project>

@@ -12,19 +12,19 @@ using BepInEx.Logging;
 namespace FinderMod
 {
     [BepInPlugin("alduris.finder", "ID Finder", "1.3.0")]
-    internal partial class FinderPlugin : BaseUnityPlugin
+    internal partial class Plugin : BaseUnityPlugin
     {
-        private FinderOptions Options;
-        public static FinderPlugin instance;
+        private readonly Options Options;
+        public static Plugin instance;
         public static ManualLogSource logger;
 
-        public FinderPlugin()
+        public Plugin()
         {
             try
             {
                 instance = this;
                 logger = base.Logger;
-                Options = new FinderOptions(this, base.Logger);
+                Options = new Options(this, base.Logger);
             }
             catch (Exception ex)
             {

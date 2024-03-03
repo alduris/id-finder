@@ -8,18 +8,13 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Inputs
 {
-    public class InputGroup : BaseInput
+    public class InputGroup(string name, BaseInput[] inputs) : BaseInput(name, inputs.Aggregate(0, (val, inp) => val + inp.ValueCount))
     {
         protected const float PADDING = 8f;
         protected const float HEIGHT_OFFSET = LINE_HEIGHT - 24f;
 
-        protected readonly BaseInput[] inputs;
+        protected readonly BaseInput[] inputs = inputs;
         public OpScrollBox parent;
-        
-        public InputGroup(string name, BaseInput[] inputs) : base(name, inputs.Aggregate(0, (val, inp) => val + inp.ValueCount))
-        {
-            this.inputs = inputs;
-        }
 
         public override void AddUI(float x, ref float y, List<UIelement> elements, Action UpdateQueryBox)
         {

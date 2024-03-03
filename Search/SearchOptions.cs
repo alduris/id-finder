@@ -6,9 +6,27 @@ using UnityEngine;
 using LizardType = FinderMod.Search.LizardUtil.LizardType;
 using LizardBodyScaleType = FinderMod.Search.LizardUtil.LizardBodyScaleType;
 using ScavBodyScalePattern = FinderMod.Search.ScavUtil.ScavBodyScalePattern;
+using FinderMod.Search.Options;
 
 namespace FinderMod.Search
 {
+    public struct Personality
+    {
+        public float Aggression;
+        public float Bravery;
+        public float Dominance;
+        public float Energy;
+        public float Nervous;
+        public float Sympathy;
+    }
+
+    public struct SearchData
+    {
+        public int Seed;
+        public int FloatStart;
+        public int IntStart;
+    }
+
     public struct Setup {
         public SearchInput[] Inputs;
         public bool MSC;
@@ -95,6 +113,7 @@ namespace FinderMod.Search
             return num - Mathf.Floor(num);
         }
 
+        internal static readonly Dictionary<string, IOption> Options;
 
         internal static readonly Dictionary<string, Setup> Groups = new()
         {
@@ -102,10 +121,10 @@ namespace FinderMod.Search
             {
                 "Personality",
                 new Setup {
-                    Inputs = new SearchInput[] {
+                    Inputs = [
                         new("Aggression"), new("Bravery"), new("Dominance"), new("Energy"), new("Nervous"), new("Sympathy")
                         // "Aggression", "Bravery", "Dominance", "Energy", "Nervous", "Sympathy"
-                    },
+                    ],
                     MSC = false,
                     MinFloats = 9,
                     FloatRanges = null, IntRanges = null,

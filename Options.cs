@@ -4,11 +4,11 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod
 {
-    internal class FinderOptions : OptionInterface
+    internal class Options : OptionInterface
     {
         private readonly ManualLogSource logger;
 
-        public FinderOptions(FinderPlugin modInstance, ManualLogSource loggerSource)
+        public Options(Plugin modInstance, ManualLogSource loggerSource)
         {
             logger = loggerSource;
         }

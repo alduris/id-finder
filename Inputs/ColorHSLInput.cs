@@ -8,17 +8,12 @@ namespace FinderMod.Inputs
 {
     public class ColorHSLInput : InputGroup
     {
-        private BaseInput h;
-        private BaseInput s;
-        private BaseInput l;
+        private readonly BaseInput h;
+        private readonly BaseInput s;
+        private readonly BaseInput l;
         private Color display;
 
-        public ColorHSLInput(string name) : base(name, new BaseInput[]
-        {
-            new HueInput("H"),
-            new FloatInput("S"),
-            new FloatInput("L")
-        })
+        public ColorHSLInput(string name) : base(name, [ new HueInput("H"), new FloatInput("S"), new FloatInput("L") ])
         {
             h = inputs[0];
             s = inputs[1];
