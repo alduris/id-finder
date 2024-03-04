@@ -13,17 +13,12 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
 {
-    internal class SearchTab : BaseTab
+    internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
-        public SearchTab(OptionInterface owner) : base(owner, "Search")
-        {
-            queries = new List<PreQuery>();
-        }
-        
         private OpScrollBox cont_queries;
         private OpScrollBox cont_results;
         private OpLabel label_progress;
-        private List<PreQuery> queries;
+        private List<NewQuery> queries = [];
         private DateTime startTime;
 
         // private Query[] currRequest;
@@ -39,8 +34,8 @@ namespace FinderMod.Tabs
             // Initialize elements we need
             var combo_allOpts = new OpComboBox(
                 CosmeticBind(""), new(10f, 520f), 250f,
-                new List<ListItem>(SearchOptions.Groups.Keys.ToArray()
-                    .Where(s => ModManager.MSC || !SearchOptions.Groups[s].MSC)
+                new List<ListItem>(SearchOptions.Options.Keys.ToArray()
+                    .Where(s => ModManager.MSC || !SearchOptions.Options[s].MSC)
                     .Select(s => new ListItem(s))
                 )
             );
@@ -65,17 +60,16 @@ namespace FinderMod.Tabs
 
                 if (waitingForResults) return;
 
-                if (SearchOptions.Groups.TryGetValue(value, out var setup))
+                if (SearchOptions.Options.TryGetValue(value, out var option))
                 {
-                    int count = SearchOptions.GetNumOutputs(setup.Inputs);
-                    int[] biasArr = new int[setup.Inputs.Length];
+                    int count = option.NumOutputs;
+                    float[] biasArr = new float[count];
                     for (int i = 0; i < biasArr.Length; i++) biasArr[i] = 1;
-                    queries.Add(new PreQuery
+                    queries.Add(new NewQuery
                     {
                         Name = value,
                         Requests = new float?[count],
                         Biases = biasArr,
-                        Setup = setup,
                         Linked = false
                     });
                     UpdateQueryBox();
@@ -121,53 +115,8 @@ namespace FinderMod.Tabs
                 cont_results.AddItems(label_searching, label_progress, button_abort);
                 cont_results.SetContentSize(80f, true);
 
-                List<Query> arrQueries = new();
-                foreach (PreQuery prequery in queries)
-                {
-                    if (prequery.Linked)
-                    {
-                        Query query = arrQueries.Last();
-
-                        // Add setup
-                        Setup[] newSetups = new Setup[query.Setups.Length + 1];
-                        for (int i = 0; i < query.Setups.Length; i++)
-                        {
-                            newSetups[i] = query.Setups[i];
-                        }
-                        newSetups[newSetups.Length - 1] = prequery.Setup;
-
-                        query.Setups = newSetups;
-
-                        // Add request
-                        float?[][] newRequests = new float?[query.Requests.Length + 1][];
-                        int[][] newBiases = new int[query.Biases.Length + 1][];
-                        for (int i = 0; i < query.Requests.Length; i++)
-                        {
-                            newRequests[i] = query.Requests[i];
-                        }
-                        for (int i = 0; i < query.Biases.Length; i++)
-                        {
-                            newBiases[i] = query.Biases[i];
-                        }
-                        newRequests[newRequests.Length - 1] = prequery.Requests;
-                        newBiases[newBiases.Length - 1] = prequery.Biases;
-
-                        query.Requests = newRequests;
-                        query.Biases = newBiases;
-                    }
-                    else
-                    {
-                        arrQueries.Add(new Query
-                        {
-                            Name = prequery.Name,
-                            Setups = new Setup[] { prequery.Setup },
-                            Requests = new float?[][] { prequery.Requests },
-                            Biases = new int[][] { prequery.Biases }
-                        });
-                    }
-                }
                 startTime = DateTime.Now;
-                SearchUtil.Search(arrQueries.ToArray(), range, threads, resultsPer);
+                SearchUtil.Search([.. queries], range, threads, resultsPer);
             };
 
             input_threads.OnValueChanged += (_, _, old) =>
@@ -266,7 +215,7 @@ namespace FinderMod.Tabs
             cont_queries.items.Clear();
             cont_queries.SetContentSize(0);
 
-            foreach (PreQuery query in queries)
+            foreach (NewQuery query in queries)
             {
                 bool first = ReferenceEquals(queries[0], query);
 

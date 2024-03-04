@@ -1,6 +1,7 @@
 ﻿using System;
 using MoreSlugcats;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace FinderMod.Search
 {
@@ -28,9 +29,9 @@ namespace FinderMod.Search
             TwoLines = 1,
             Segments = 2
         }
-        private static readonly int[] bodyScaleTypeRange = new int[] { 0, 3 };
-        private static readonly int[] bodyScalesPatchRange = new int[] { 4, 15 };
-        private static readonly int[] bodyScaleSegmentsRange = new int[] { 1, 4 };
+        private static readonly (int, int) bodyScaleTypeRange = (0, 3);
+        private static readonly (int, int) bodyScalesPatchRange = (4, 15);
+        private static readonly (int, int) bodyScaleSegmentsRange = (1, 4);
 
         private static void GeneratePatchPattern(ref int picker, int numScales)
         {
@@ -55,7 +56,7 @@ namespace FinderMod.Search
             }
             numScales = num4; // * 2;
         }
-        private static void GenerateSegments(float[] vals, ref int picker, int seed, LizardType type, float startPoint, float maxLength, float lengthExponent, out int numScales)
+        private static void GenerateSegments(float[] vals, ref int picker, Random.State[] states, LizardType type, float startPoint, float maxLength, float lengthExponent, out int numScales)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
             float num = Mathf.Lerp(startPoint + 0.1f, Mathf.Max(startPoint + 0.2f, maxLength), Mathf.Pow(vals[picker++], lengthExponent));
@@ -66,7 +67,7 @@ namespace FinderMod.Search
                 num3 = Mathf.Min(num3, 11f) * 0.75f;
             }
             int num4 = Math.Max(3, (int)(num2 / num3));
-            int num5 = SearchUtil.GetRangeAt(seed, bodyScaleSegmentsRange, picker++) * 2;
+            int num5 = SearchUtil.GetRangeAt(bodyScaleSegmentsRange, picker++, states) * 2;
             numScales = num4 * num5;
         }
 
@@ -175,20 +176,20 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 35
-        private static readonly int[] scaleSpriteRange = new int[] { 0, 6 };
-        private static readonly int[] numGillsRange = new int[] { 2, 8 };
-        public static void AxolotlGillsVars(float[] vals, ref int picker, int seed, out float rigor, out int numGills)
+        private static readonly (int, int) scaleSpriteRange = (0, 6);
+        private static readonly (int, int) numGillsRange = (2, 8);
+        public static void AxolotlGillsVars(float[] vals, ref int picker, Random.State[] states, out float rigor, out int numGills)
         {
             rigor = vals[picker++];
             //float gillScalar = GetParamHeadSize(type) * Mathf.Pow(vals[picker++], 0.7f);
             picker++;
 
-            if (SearchUtil.GetRangeAt(seed, scaleSpriteRange, picker++) == 2)
+            if (SearchUtil.GetRangeAt(scaleSpriteRange, picker++, states) == 2)
             {
                 picker++;
             }
 
-            numGills = SearchUtil.GetRangeAt(seed, numGillsRange, picker++);
+            numGills = SearchUtil.GetRangeAt(numGillsRange, picker++, states);
 
             // Offset picker
             picker += 2 + 4 * numGills;
@@ -267,12 +268,12 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 43
-        public static void LongShoulderScalesVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales, out bool colored)
+        public static void LongShoulderScalesVars(float[] vals, ref int picker, Random.State[] states, LizardType type, out LizardBodyScaleType scaleType, out int numScales, out bool colored)
         {
             scaleType = LizardBodyScaleType.Patch;
             if (type != LizardType.Pink || vals[picker++] < 0.33333334f)
             {
-                scaleType = (LizardBodyScaleType) SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
+                scaleType = (LizardBodyScaleType) SearchUtil.GetRangeAt(bodyScaleTypeRange, picker++, states);
             }
             else if (type == LizardType.Green || vals[picker++] < 0.5f)
             {
@@ -286,7 +287,7 @@ namespace FinderMod.Search
                 case LizardBodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.05f, Random.Range(4, 15), 0.9f, 2f)
-                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
+                        numScales = SearchUtil.GetRangeAt(bodyScalesPatchRange, picker++, states);
                         GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
@@ -299,7 +300,7 @@ namespace FinderMod.Search
                 case LizardBodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.8f, 5f)
-                        GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.8f, 5f, out numScales);
+                        GenerateSegments(vals, ref picker, states, type, 0.1f, 0.8f, 5f, out numScales);
                         break;
                     }
             }
@@ -317,9 +318,9 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 33
-        public static void ShortBodyScalesVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
+        public static void ShortBodyScalesVars(float[] vals, ref int picker, Random.State[] states, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
         {
-            scaleType = (LizardBodyScaleType)SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
+            scaleType = (LizardBodyScaleType)SearchUtil.GetRangeAt(bodyScaleTypeRange, picker++, states);
             if (type == LizardType.Green && vals[picker++] < 0.7f) scaleType = LizardBodyScaleType.Segments;
             else if (type == LizardType.Blue && vals[picker++] < 0.93f) scaleType = LizardBodyScaleType.TwoLines;
 
@@ -329,7 +330,7 @@ namespace FinderMod.Search
                 case LizardBodyScaleType.Patch:
                     {
                         // Patches, GeneratePatchPattern(0.1f, Random.Range(4, 15), 0.9f, 1.2f)
-                        numScales = SearchUtil.GetRangeAt(seed, bodyScalesPatchRange, picker++);
+                        numScales = SearchUtil.GetRangeAt(bodyScalesPatchRange, picker++, states);
                         GeneratePatchPattern(ref picker, numScales);
                         break;
                     }
@@ -342,7 +343,7 @@ namespace FinderMod.Search
                 case LizardBodyScaleType.Segments:
                     {
                         // Segments, GenerateSegments(0.1f, 0.9f, (lGraphics.lizard.Template.type == CreatureTemplate.Type.PinkLizard) ? 1.5f : 0.6f)
-                        GenerateSegments(vals, ref picker, seed, type, 0.1f, 0.9f, type == LizardType.Pink ? 1.5f : 0.6f, out numScales);
+                        GenerateSegments(vals, ref picker, states, type, 0.1f, 0.9f, type == LizardType.Pink ? 1.5f : 0.6f, out numScales);
                         break;
                     }
             }
@@ -357,9 +358,9 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 14
-        private static readonly int[] spineSpikeGraphicRange = new int[] { 0, 5 };
-        // private static readonly int[] spineSpikeColoredRange = new int[] { 0, 3 };
-        public static void SpineSpikesVars(float[] vals, ref int picker, int seed, LizardType type, out float spineLength, out int numBumps)
+        private static readonly (int, int) spineSpikeGraphicRange = (0, 5);
+        // private static readonly (int, int) spineSpikeColoredRange = (0, 3);
+        public static void SpineSpikesVars(float[] vals, ref int picker, Random.State[] states, LizardType type, out float spineLength, out int numBumps)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
@@ -372,7 +373,7 @@ namespace FinderMod.Search
             // Random.value in the else-if chain is guaranteed to be called exactly once if it's not a blue lizor
             // if it's not a green lizor, it might fail the random value check, but then it's still not a green lizor in the next else if
 
-            int graphic = SearchUtil.GetRangeAt(seed, spineSpikeGraphicRange, picker++);
+            int graphic = SearchUtil.GetRangeAt(spineSpikeGraphicRange, picker++, states);
             if (graphic != 4)
             {
                 if (graphic != 3 || vals[picker++] >= 0.5f) picker++;
@@ -387,8 +388,8 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 14
-        private static readonly int[] tailFinGraphicRange = new int[] { 0, 6 };
-        public static void TailFinVars(float[] vals, ref int picker, int seed, LizardType type, out float spineLength, out float undersideSize, out float spineScaleX, out int numBumps, out bool colored)
+        private static readonly (int, int) tailFinGraphicRange = (0, 6);
+        public static void TailFinVars(float[] vals, ref int picker, Random.State[] states, LizardType type, out float spineLength, out float undersideSize, out float spineScaleX, out int numBumps, out bool colored)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
@@ -396,7 +397,7 @@ namespace FinderMod.Search
             spineLength = SearchOptions.ClampedRandomVariation(0.5f, 0.17f, 0.5f, vals[picker++], vals[picker++]) * bodyAndTailLength;
             undersideSize = Mathf.Lerp(0.3f, 0.9f, vals[picker++]);
             picker += 3;
-            int graphic = SearchUtil.GetRangeAt(seed, tailFinGraphicRange, picker++);
+            int graphic = SearchUtil.GetRangeAt(tailFinGraphicRange, picker++, states);
             if (type == LizardType.Red)
             {
                 graphic = 0;
@@ -414,14 +415,14 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 9
-        private static readonly int[] tgsRowsFirstRange = new int[] { 7, 14 };
-        // private static readonly int[] tgsLinesFirstRange = new int[] { 3, 4 };
-        private static readonly int[] tgsRowsSecondRange = new int[] { 0, 7 };
-        private static readonly int[] tgsLinesSecondRange = new int[] { 0, 3 };
-        public static void TailGeckoSpritesVars(float[] vals, ref int picker, int seed, out int rows, out int lines)
+        private static readonly (int, int) tgsRowsFirstRange = (7, 14);
+        // private static readonly (int, int) tgsLinesFirstRange = (3, 4);
+        private static readonly (int, int) tgsRowsSecondRange = (0, 7);
+        private static readonly (int, int) tgsLinesSecondRange = (0, 3);
+        public static void TailGeckoSpritesVars(float[] vals, ref int picker, Random.State[] states, out int rows, out int lines)
         {
             // Get rows, lines, and increment picker
-            rows = SearchUtil.GetRangeAt(seed, tgsRowsFirstRange, picker++);
+            rows = SearchUtil.GetRangeAt(tgsRowsFirstRange, picker++, states);
             lines = 3;
             picker++;
 
@@ -435,16 +436,16 @@ namespace FinderMod.Search
             if (vals[picker++] < 0.5f)
             {
                 // IMPORTANT: calling Random.Range(a, b) where a == b does not advance the random state
-                int r = SearchUtil.GetRangeAt(seed, tgsRowsSecondRange, picker++);
-                if (r != 0) rows += SearchUtil.GetRangeAt(seed, new int[] { 0, r }, picker++);
-                int c = SearchUtil.GetRangeAt(seed, tgsLinesSecondRange, picker++);
-                if (c != 0) lines += SearchUtil.GetRangeAt(seed, new int[] { 0, c }, picker++);
+                int r = SearchUtil.GetRangeAt(tgsRowsSecondRange, picker++, states);
+                if (r != 0) rows += SearchUtil.GetRangeAt((0, r), picker++, states);
+                int c = SearchUtil.GetRangeAt(tgsLinesSecondRange, picker++, states);
+                if (c != 0) lines += SearchUtil.GetRangeAt((0, c), picker++, states);
             }
         }
 
         // Min add. values needed: 27
-        private static readonly int[] tailTuft3to7Range = new int[] { 3, 7 };
-        public static void TailTuftVars(float[] vals, ref int picker, int seed, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
+        private static readonly (int, int) tailTuft3to7Range = (3, 7);
+        public static void TailTuftVars(float[] vals, ref int picker, Random.State[] states, LizardType type, out LizardBodyScaleType scaleType, out int numScales)
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
@@ -466,7 +467,7 @@ namespace FinderMod.Search
             else
             {
                 scaleType = LizardBodyScaleType.Patch;
-                numScales = SearchUtil.GetRangeAt(seed, tailTuft3to7Range, picker++);
+                numScales = SearchUtil.GetRangeAt(tailTuft3to7Range, picker++, states);
                 GeneratePatchPattern(ref picker, numScales);
             }
 
@@ -477,11 +478,11 @@ namespace FinderMod.Search
         }
 
         // Min add. values needed: 48
-        private static readonly int[] numWhiskersRange = new[] { 3, 5 };
-        public static void WhiskersVars(float[] vals, ref int picker, int seed, out int numWhiskers)
+        private static readonly (int, int) numWhiskersRange = (3, 5);
+        public static void WhiskersVars(float[] vals, ref int picker, Random.State[] states, out int numWhiskers)
         {
             // Number of whiskers
-            numWhiskers = SearchUtil.GetRangeAt(seed, numWhiskersRange, picker++);
+            numWhiskers = SearchUtil.GetRangeAt(numWhiskersRange, picker++, states);
 
             // Offset for next usage
             picker += numWhiskers * 9 + (numWhiskers - 1) * 4;

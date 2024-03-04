@@ -1,39 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RWCustom;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 //using System.Threading;
 
 namespace FinderMod.Search
 {
-    internal class Query
+    /*internal class Query
     {
         public string Name;
         public Setup[] Setups;
         // Null = not searching that value, otherwise try to get close to the value if possible
         public float?[][] Requests;
         public int[][] Biases;
-    }
+    }*/
     internal class NewQuery
     {
         public string Name;
-        public int Length;
         public float?[] Requests;
-        public int[] Biases;
+        public float[] Biases;
         public bool Linked;
     }
-    internal class PreQuery
+    /*internal class PreQuery
     {
         public string Name;
         public Setup Setup;
         public float?[] Requests;
         public int[] Biases;
         public bool Linked;
-    }
+    }*/
 
     internal class SearchUtil
     {
@@ -130,18 +127,16 @@ namespace FinderMod.Search
         public static string abortReason;
         public static double[] progress;
 
-        public static async void Search(Query[] queries, (int, int) range, int threadCount, int resultsPer)
+        public static async void Search(NewQuery[] queries, (int, int) range, int threadCount, int resultsPer)
         {
             // Create threads
-            unchecked
+            uint diff = PositiveDirGap(range.Item1, range.Item2, 1);
+            if (diff < threadCount)
             {
-                uint diff = PositiveDirGap(range.Item1, range.Item2, 1);
-                if (diff < threadCount)
-                {
-                    threadCount = Math.Max(1, (int)diff);
-                }
+                threadCount = Math.Max(1, (int)diff);
             }
-            resultsPer = Math.Min(resultsPer, Math.Abs(range.Item2 - range.Item1 + 1));
+            if ((int)diff > 0 && diff < resultsPer) resultsPer = (int)diff;
+
             tasks = new Task[threadCount];
 
             var results = new (int, float)[threadCount, queries.Length, resultsPer];
@@ -247,8 +242,8 @@ namespace FinderMod.Search
                 foreach (NewQuery query in queries)
                 {
                     var option = SearchOptions.Options[query.Name];
-                    option.DetermineMaxFloats(ref floatCount);
-                    outputCount = Math.Max(outputCount, option.CreateInputs().Sum(x => x.ValueCount));
+                    floatCount = Math.Max(floatCount, option.MinFloats);
+                    outputCount = Math.Max(outputCount, option.NumOutputs);
                 }
                 float[] floats = new float[floatCount];
                 Random.State[] states = new Random.State[floatCount];
@@ -277,7 +272,7 @@ namespace FinderMod.Search
                         if (!query.Linked) compute = 0f;
 
                         float?[] requests = query.Requests;
-                        int[] biases = query.Biases;
+                        float[] biases = query.Biases;
 
                         runnables[j].Invoke(floats, output, new SearchData
                         {
@@ -298,7 +293,7 @@ namespace FinderMod.Search
                         {
                             if (requests[k] != null)
                             {
-                                compute += output[k] * biases[k];
+                                compute += Mathf.Abs(requests[k].Value - output[k]) * biases[k];
                             }
                         }
                         

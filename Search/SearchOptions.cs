@@ -127,7 +127,7 @@ namespace FinderMod.Search
             { "Elite Scavenger Colors", new OEliteScavColors() },
         };
 
-        internal static readonly Dictionary<string, Setup> Groups = new()
+        /*internal static readonly Dictionary<string, Setup> Groups = new()
         {
             
             // Scavs
@@ -271,7 +271,7 @@ namespace FinderMod.Search
                         }*/
 
                         // Performance attributes
-                        float wgt = 0.65f; // body weight
+                        /*float wgt = 0.65f; // body weight
                         float vz0 = -0.2f; // visibility (standing)
                         float vz1 = 0.6f;  // visibility (crouching)
                         float lou = 0.5f;  // loudness factor
@@ -290,7 +290,6 @@ namespace FinderMod.Search
                         tun *= 0.85f + 0.15f * met + 0.15f * (1f - bal) + 0.1f * (1f - stl);
 
                         return new float[] {
-                            /*bal, met, stl,*/ // siz, wde, h, s, l, drk ? 1f : 0f, eye,
                             wgt, vz0, vz1, lou, lng, pol, tun, spd
                         };
                     }
@@ -1099,7 +1098,7 @@ namespace FinderMod.Search
                         else
                             LizardUtil.TailTuftVars(i, ref j, s, LizardType.Red, out _, out _);*/
 
-                        return new float[] {
+                        /*return new float[] {
                             bodyDecoration,
                             hasTailFin ? 2f : 1f,
                             hasExtraTailTuft ? 1f : 0f,
@@ -1669,6 +1668,6 @@ namespace FinderMod.Search
 
             // Next thingy here
             // {},
-        };
+        };*/
     }
 }
