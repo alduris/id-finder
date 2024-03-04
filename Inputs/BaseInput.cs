@@ -13,6 +13,7 @@ namespace FinderMod.Inputs
         // This can be publicly changed
         public bool Enabled = false;
         public bool Wrap = false;
+        public string Description = "";
 
         // These are set by the config itself
         public int ValueCount { get; protected set; } = inputs;

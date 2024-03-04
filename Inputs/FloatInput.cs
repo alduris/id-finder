@@ -17,6 +17,7 @@ namespace FinderMod.Inputs
         {
             this.min = min;
             this.max = max;
+            value = Math.Min(max, Math.Max(min, 0f));
         }
         public FloatInput(string name) : this(name, 0f, 1f) { }
 

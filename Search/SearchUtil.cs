@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RWCustom;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 //using System.Threading;
@@ -15,6 +17,14 @@ namespace FinderMod.Search
         // Null = not searching that value, otherwise try to get close to the value if possible
         public float?[][] Requests;
         public int[][] Biases;
+    }
+    internal class NewQuery
+    {
+        public string Name;
+        public int Length;
+        public float?[] Requests;
+        public int[] Biases;
+        public bool Linked;
     }
     internal class PreQuery
     {
@@ -33,7 +43,7 @@ namespace FinderMod.Search
          * Takes an input array and fills it with as many random floats as you need.
          * Modifies input array in an attempt to save on memory allocation.
          */
-        public static void GetRandomFloats(int seed, int length, float[] floats)
+        public static void GetRandomFloats(int seed, int length, float[] floats, Random.State[] states)
         {
             lock (_RandomLock)
             {
@@ -43,71 +53,29 @@ namespace FinderMod.Search
                 Random.InitState(seed);
                 for(int i = 0; i < length; i++)
                 {
+                    states[i] = Random.state;
                     floats[i] = Random.value;
                 }
 
                 Random.state = temp;
             }
         }
-        public static void GetRandomRanges(int seed, float[,] ranges, float[] output, int offset)
-        {
-            if (ranges == null) return;
 
-            lock (_RandomLock)
-            {
-                Random.State temp = Random.state;
-
-                // Get floats
-                Random.InitState(seed);
-                for(int i = 0; i < ranges.GetLength(0); i++)
-                {
-                    output[i + offset] = Random.Range(ranges[i, 0], ranges[i, 1]);
-                }
-
-                Random.state = temp;
-            }
-            //return floats;
-        }
-        public static void GetRandomRanges(int seed, int[,] ranges, float[] output, int offset)
-        {
-            if (ranges == null) return;
-
-            lock (_RandomLock)
-            {
-                Random.State temp = Random.state;
-
-                // Get floats
-                Random.InitState(seed);
-                for(int i = 0; i < ranges.GetLength(0); i++)
-                {
-                    output[i + offset] = Random.Range(ranges[i,0], ranges[i,1]);
-                }
-
-                Random.state = temp;
-            }
-            // return ints;
-        }
-        public static float GetRangeAt(int seed, float[] range, int index)
+        public static float GetRangeAt((float, float) range, int index, Random.State[] states)
         {
             float res;
-            float store = 0f;
             lock (_RandomLock)
             {
                 Random.State temp = Random.state;
 
-                // Get floats
-                Random.InitState(seed);
-                for (int i = 0; i < index; i++)
-                {
-                    store += Random.value;
-                }
-                res = Random.Range(range[0], range[1]);
+                Random.state = states[index];
+                res = Random.Range(range.Item1, range.Item2);
 
                 Random.state = temp;
             }
             return res;
         }
-        public static int GetRangeAt(int seed, int[] range, int index)
+        public static int GetRangeAt((int, int) range, int index, Random.State[] states)
         {
             int res;
             float store = 0f;
@@ -115,13 +83,8 @@ namespace FinderMod.Search
             {
                 Random.State temp = Random.state;
 
-                // Get floats
-                Random.InitState(seed);
-                for (int i = 0; i < index; i++)
-                {
-                    store += Random.value;
-                }
-                res = Random.Range(range[0], range[1]);
+                Random.state = states[index];
+                res = Random.Range(range.Item1, range.Item2);
 
                 Random.state = temp;
             }
@@ -261,7 +224,7 @@ namespace FinderMod.Search
             tasks = null;
         }
 
-        private static void SearchHelper((int, float)[,,] results, int threadId, int min, int max, Query[] queries)
+        private static void SearchHelper((int, float)[,,] results, int threadId, int min, int max, NewQuery[] queries)
         {
             try {
                 int i = min;
@@ -279,122 +242,94 @@ namespace FinderMod.Search
                 }
                 
                 // Count how many random values we need to get (guaranteed at least 9 floats, personality requires it)
-                int floatCount = 9, rangeCount = 0, intRangeCount = 0;
-                for (int j = 0; j < queries.Length; j++)
+                int floatCount = 9;
+                int outputCount = 0;
+                foreach (NewQuery query in queries)
                 {
-                    for (int k = 0; k < queries[j].Setups.Length; k++)
-                    {
-                        floatCount = Math.Max(floatCount, queries[j].Setups[k].MinFloats);
-                        rangeCount = Math.Max(rangeCount, queries[j].Setups[k].FloatRanges?.GetLength(0) ?? 0);
-                        intRangeCount = Math.Max(intRangeCount, queries[j].Setups[k].IntRanges?.GetLength(0) ?? 0);
-                    }
+                    var option = SearchOptions.Options[query.Name];
+                    option.DetermineMaxFloats(ref floatCount);
+                    outputCount = Math.Max(outputCount, option.CreateInputs().Sum(x => x.ValueCount));
                 }
-                float[] floats = new float[floatCount + rangeCount + intRangeCount];
+                float[] floats = new float[floatCount];
+                Random.State[] states = new Random.State[floatCount];
                 float[] personality = new float[6];
-                int frStart = floatCount;
-                int irStart = floatCount + rangeCount;
+
+                float[] output = new float[outputCount];
+                Action<float[], float[], SearchData>[] runnables = [.. queries.Select(x => (Action<float[], float[], SearchData>)SearchOptions.Options[x.Name].Run)];
 
                 // Run the loop
                 do
                 {
                     if (abort) break;
                     // Get the initial random numbers
-                    GetRandomFloats(i, floatCount, floats);
+                    GetRandomFloats(i, floatCount, floats, states);
 
                     // Find personality
                     FillPersonality(floats, personality);
 
                     // Check every query
+                    float compute = 0f;
                     for (int j = 0; j < queries.Length; j++)
                     {
                         if (abort) break;
 
-                        Query query = queries[j];
-                        float compute = 0f;
+                        NewQuery query = queries[j];
+                        if (!query.Linked) compute = 0f;
 
-                        // Check every joined request in the query too
-                        for (int k = 0; k < query.Setups.Length; k++)
+                        float?[] requests = query.Requests;
+                        int[] biases = query.Biases;
+
+                        runnables[j].Invoke(floats, output, new SearchData
                         {
-                            Setup setup = query.Setups[k];
-                            float?[] requests = query.Requests[k];
-                            int[] biases = query.Biases[k];
+                            Seed = i,
+                            Personality = new Personality
+                            { 
+                                Aggression = personality[0],
+                                Bravery = personality[1],
+                                Dominance = personality[2],
+                                Energy = personality[3],
+                                Nervous = personality[4],
+                                Sympathy = personality[5]
+                            },
+                            States = states 
+                        });
 
-                            // Get other random numbers
-                            if (rangeCount > 0)
+                        for (int k = 0; k < query.Requests.Length; k++)
+                        {
+                            if (requests[k] != null)
                             {
-                                GetRandomRanges(i, setup.FloatRanges, floats, floatCount);
+                                compute += output[k] * biases[k];
                             }
-                            if (intRangeCount > 0)
+                        }
+                        
+                        // Determine new minimum if needed
+                        if (j == queries.Length - 1 || !queries[j + 1].Linked)
+                        {
+                            if (resultsPer == 1)
                             {
-                                // Yeah I'm putting ints in a float array. What're ya gonna do about it?
-                                GetRandomRanges(i, setup.IntRanges, floats, floatCount + rangeCount);
+                                // Only need to replace the top value
+                                if (compute < topValues[j, 0].Item2)
+                                {
+                                    topValues[j, 0] = (i, compute);
+                                }
                             }
-
-                            // Calculate results
-                            float[] values = setup.Apply(floats, personality, i, frStart, irStart);
-                            int colorInpCount = 0;
-                            int inputPtr = 0;
-
-                            for (int l = 0; l < requests.Length; l++)
+                            else
                             {
-                                // Deal with whitespace and label stuff that we want to skip
-                                InputType type = InputType.Float; // assigned so visual studio doesn't throw a fit
-                                while (inputPtr < setup.Inputs.Length)
+                                // Need to sort in new values
+                                uint ptr = PositiveDirGap(min, i, 1);
+                                if (ptr < 0 || ptr >= resultsPer)
                                 {
-                                    type = setup.Inputs[inputPtr].Type;
-                                    if (type != InputType.Whitespace && type != InputType.Label) break;
-                                    inputPtr++;
+                                    ptr = (uint)resultsPer - 1;
                                 }
-
-                                // Deal with id if it's good and stuff
-                                if (requests[l] != null)
+                                if (topValues[j, ptr].Item2 > compute)
                                 {
-                                    bool wrap = setup.Inputs[inputPtr].Wrap || type == InputType.Hue;
-                                    float value = wrap ? WrapDistance(values[l], (float)requests[l]) : Distance(values[l], (float)requests[l]);
-                                    value *= biases[inputPtr];
-                                    compute += value;
-                                }
-
-                                // Deal with checking if we need to wrap
-                                if (type == InputType.ColorRGB)
-                                {
-                                    if (colorInpCount == 2)
+                                    while (ptr > 0 && topValues[j, ptr - 1].Item2 > compute)
                                     {
-                                        colorInpCount = 0;
-                                        inputPtr++;
+                                        topValues[j, ptr] = topValues[j, ptr - 1];
+                                        ptr--;
                                     }
-                                    else colorInpCount++;
+                                    topValues[j, ptr] = (i, compute);
                                 }
-                                else
-                                {
-                                    inputPtr++;
-                                }
-                            }
-                        }
-
-                        // Determine new minimum
-                        if (resultsPer == 1)
-                        {
-                            if (compute < topValues[j, 0].Item2)
-                            {
-                                topValues[j, 0] = (i, compute);
-                            }
-                        }
-                        else
-                        {
-                            uint ptr = PositiveDirGap(min, i, 1);
-                            if (ptr < 0 || ptr >= resultsPer)
-                            {
-                                ptr = (uint)resultsPer - 1;
-                            }
-                            if (topValues[j, ptr].Item2 > compute)
-                            {
-                                while (ptr > 0 && topValues[j, ptr - 1].Item2 > compute)
-                                {
-                                    topValues[j, ptr] = topValues[j, ptr - 1];
-                                    ptr--;
-                                }
-                                topValues[j, ptr] = (i, compute);
                             }
                         }
                     }

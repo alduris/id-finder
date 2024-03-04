@@ -3,7 +3,7 @@ using FinderMod.Inputs;
 
 namespace FinderMod.Search.Options
 {
-    internal class OptionPersonality() : IOption(6)
+    internal class OPersonality() : IOption(9, false)
     {
         public override BaseInput[] CreateInputs()
         {
@@ -17,14 +17,15 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override void Run(float[] input, float[] output, Personality personality, SearchData data)
+        public override void Run(float[] i, float[] o, SearchData data)
         {
-            output[0] = personality.Aggression;
-            output[1] = personality.Bravery;
-            output[2] = personality.Dominance;
-            output[3] = personality.Energy;
-            output[4] = personality.Nervous;
-            output[5] = personality.Sympathy;
+            var p = data.Personality;
+            o[0] = p.Aggression;
+            o[1] = p.Bravery;
+            o[2] = p.Dominance;
+            o[3] = p.Energy;
+            o[4] = p.Nervous;
+            o[5] = p.Sympathy;
         }
     }
 }

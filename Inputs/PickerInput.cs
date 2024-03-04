@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
@@ -7,17 +8,19 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Inputs
 {
-    public class IntInput : BaseInput
+    internal class PickerInput : BaseInput
     {
-        private readonly int min;
-        private readonly int max;
-        private int value;
+        private readonly Dictionary<string, int> values;
+        private string key;
 
-        public IntInput(string name, int min, int max) : base(name, 1)
+        public PickerInput(string name, List<string> options) : base(name, 1)
         {
-            this.min = min;
-            this.max = max;
-            value = Math.Min(max, Math.Max(min, 0));
+            foreach (var option in options)
+            {
+                int i = 0;
+                values[option] = i++;
+            }
+            key = options[0];
         }
 
         public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
@@ -39,8 +42,8 @@ namespace FinderMod.Inputs
             // Make input
             if (Enabled)
             {
-                var input = new OpSlider(CosmeticBind(value), new Vector2(x, y - 4f), 160) { min = min, max = max };
-                input.OnValueChanged += (_, _, _) => { value = input.GetValueInt(); };
+                var input = new OpComboBox(CosmeticBind(key), new Vector2(x, y - 4f), 160, values.Keys.ToArray());
+                input.OnValueChanged += (_, _, _) => { key = input.value; };
 
                 inputs.Add(input);
             }
@@ -50,12 +53,12 @@ namespace FinderMod.Inputs
 
         public override float? GetValue(int index)
         {
-            return Enabled ? value : null;
+            return Enabled ? values[key] : null;
         }
 
         public override string ToString()
         {
-            return Name + ": " + value;
+            return $"{Name}: {key}";
         }
     }
 }

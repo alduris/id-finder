@@ -4,13 +4,9 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    public class Label : BaseInput
+    public class Label(string text) : BaseInput(text, 0)
     {
-        private readonly string text;
-        public Label(string text) : base(text, 0)
-        {
-            this.text = text;
-        }
+        private readonly string text = text;
 
         public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {

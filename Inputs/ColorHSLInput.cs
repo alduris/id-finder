@@ -11,6 +11,7 @@ namespace FinderMod.Inputs
         private readonly BaseInput h;
         private readonly BaseInput s;
         private readonly BaseInput l;
+        private readonly float[] defaults = new float[3];
         private Color display;
 
         public ColorHSLInput(string name) : base(name, [ new HueInput("H"), new FloatInput("S"), new FloatInput("L") ])
@@ -19,6 +20,30 @@ namespace FinderMod.Inputs
             s = inputs[1];
             l = inputs[2];
             display = new(0f, 0f, 0f);
+        }
+
+        public ColorHSLInput(string name, float? hv, float? sv, float? lv) : base(name, [
+            hv == null ? new HueInput("H") : new Label($"H: {hv.Value}"),
+            sv == null ? new HueInput("S") : new Label($"S: {sv.Value}"),
+            lv == null ? new HueInput("L") : new Label($"L: {lv.Value}")
+        ])
+        {
+            if (hv is null)
+                h = inputs[0];
+            else
+                defaults[0] = hv.Value;
+
+            if (sv is null)
+                s = inputs[1];
+            else
+                defaults[1] = sv.Value;
+
+            if (lv is null)
+                l = inputs[2];
+            else
+                defaults[2] = lv.Value;
+
+            display = new(h == null ? 0f : hv.Value, s == null ? 0f : sv.Value, l == null ? 0f : lv.Value);
         }
 
         public override void AddUI(float x, ref float y, List<UIelement> elements, Action UpdateQueryBox)
@@ -72,18 +97,20 @@ namespace FinderMod.Inputs
 
         public override float? GetValue(int index)
         {
-            return index switch
-            {
-                0 => h.GetValue(index),
-                1 => s.GetValue(index),
-                2 => l.GetValue(index),
-                _ => throw new NotImplementedException()
-            };
+            List<float?> list = [];
+            if (h is not Label) list.Add(h.GetValue(0));
+            if (s is not Label) list.Add(s.GetValue(0));
+            if (l is not Label) list.Add(l.GetValue(0));
+
+            return list[index];
         }
 
         public override string ToString()
         {
-            return $"hsl({h.GetValue(0).ToString() ?? "??"}, {s.GetValue(0).ToString() ?? "??"}, {l.GetValue(0).ToString() ?? "??"})";
+            string hs = h is Label ? h.GetValue(0).ToString() ?? "??" : defaults[0].ToString();
+            string ss = s is Label ? s.GetValue(0).ToString() ?? "??" : defaults[1].ToString();
+            string ls = l is Label ? l.GetValue(0).ToString() ?? "??" : defaults[2].ToString();
+            return $"hsl({hs}, {ss}, {ls})";
         }
 
         private void UpdateColor()
@@ -94,7 +121,10 @@ namespace FinderMod.Inputs
             }
             else
             {
-                display = Custom.HSL2RGB((h.GetValue(0) % 1f) ?? 0f, s.GetValue(0) ?? 1f, l.GetValue(0) ?? 0.5f, 1f);
+                float hf = h is Label ? (h.GetValue(0) % 1f) ?? 0f : defaults[0];
+                float sf = h is Label ? (s.GetValue(0) % 1f) ?? 1f : defaults[1];
+                float lf = h is Label ? (l.GetValue(0) % 1f) ?? 0.5f : defaults[2];
+                display = Custom.HSL2RGB(hf, sf, lf);
             }
         }
     }

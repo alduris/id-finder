@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RWCustom;
 using UnityEngine;
 
 namespace FinderMod.Search
@@ -18,9 +13,9 @@ namespace FinderMod.Search
 
         public enum ScavBodyScalePattern
         {
-            SpineRidge = 1,
-            DoubleSpineRidge = 2,
-            RandomBackBlotch = 3
+            SpineRidge = 0,
+            DoubleSpineRidge = 1,
+            RandomBackBlotch = 2
         }
 
         // Max values needed: 46
