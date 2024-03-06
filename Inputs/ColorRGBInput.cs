@@ -7,11 +7,9 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Inputs
 {
-    public class ColorRGBInput : BaseInput
+    public class ColorRGBInput(string name) : BaseInput(name, 3)
     {
         private Color value;
-
-        public ColorRGBInput(string name) : base(name, 3) { }
 
         public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {
@@ -51,6 +49,15 @@ namespace FinderMod.Inputs
             if      (index == 0) return value.r;
             else if (index == 1) return value.g;
             else                 return value.b;
+        }
+
+        public override void SetValues(bool enabled, List<float> values)
+        {
+            base.SetValues(enabled, values);
+            if (enabled)
+            {
+                value = new Color(values[0], values[1], values[2]);
+            }
         }
 
         public override string ToString()

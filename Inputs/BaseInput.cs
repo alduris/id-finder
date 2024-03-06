@@ -21,6 +21,11 @@ namespace FinderMod.Inputs
 
         public abstract float? GetValue(int index);
 
+        public virtual void SetValues(bool enabled, List<float> values)
+        {
+            Enabled = enabled;
+        }
+
         public abstract void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox);
 
         public override abstract string ToString();

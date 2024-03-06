@@ -7,11 +7,9 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Inputs
 {
-    public class BoolInput : BaseInput
+    public class BoolInput(string name) : BaseInput(name, 1)
     {
         private bool value;
-
-        public BoolInput(string name) : base(name, 1) { }
 
         public override void AddUI(float x, ref float y, List<UIelement> inputs, Action UpdateQueryBox)
         {
@@ -48,6 +46,15 @@ namespace FinderMod.Inputs
         public override float? GetValue(int index)
         {
             return Enabled ? (value ? 1f : 0f) : null;
+        }
+
+        public override void SetValues(bool enabled, List<float> values)
+        {
+            base.SetValues(enabled, values);
+            if (enabled)
+            {
+                value = values[0] == 1f;
+            }
         }
 
         public override string ToString()

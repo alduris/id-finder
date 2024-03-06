@@ -53,6 +53,15 @@ namespace FinderMod.Inputs
             return Enabled ? value : null;
         }
 
+        public override void SetValues(bool enabled, List<float> values)
+        {
+            base.SetValues(enabled, values);
+            if (Enabled)
+            {
+                value = (int)values[0];
+            }
+        }
+
         public override string ToString()
         {
             return Name + ": " + value;

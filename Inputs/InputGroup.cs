@@ -70,6 +70,17 @@ namespace FinderMod.Inputs
             }).GetValue(index - i);
         }
 
+        public override void SetValues(bool enabled, List<float> values)
+        {
+            base.SetValues(enabled, values);
+            int ptr = 0;
+            foreach (var inp in inputs)
+            {
+                inp.SetValues(enabled, values.GetRange(ptr, inp.ValueCount));
+                ptr += inp.ValueCount;
+            }
+        }
+
         public override string ToString()
         {
             List<string> strs = inputs.Select(inp => inp.ToString()).ToList();

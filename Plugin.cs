@@ -24,7 +24,7 @@ namespace FinderMod
             {
                 instance = this;
                 logger = base.Logger;
-                Options = new Options(this, base.Logger);
+                Options = new Options(base.Logger);
             }
             catch (Exception ex)
             {
@@ -45,15 +45,12 @@ namespace FinderMod
             try
             {
                 if (IsInit) return;
-
-                On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
-                On.GameSession.ctor += GameSessionOnctor;
+                IsInit = true;
 
                 // Enable if debug needed
                 // ApplyDebugHooks(); // see Test/DebugHooks
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
-                IsInit = true;
                 Logger.LogInfo("Loaded successfully");
             }
             catch (Exception ex)
@@ -61,22 +58,6 @@ namespace FinderMod
                 Logger.LogError(ex);
                 throw;
             }
-        }
-
-        private void RainWorldGameOnShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
-        {
-            orig(self);
-            ClearMemory();
-        }
-        private void GameSessionOnctor(On.GameSession.orig_ctor orig, GameSession self, RainWorldGame game)
-        {
-            orig(self, game);
-            ClearMemory();
-        }
-
-        private void ClearMemory()
-        {
-            // Options.ClearMemory();
         }
     }
 }

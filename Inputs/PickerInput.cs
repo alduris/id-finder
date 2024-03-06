@@ -56,6 +56,23 @@ namespace FinderMod.Inputs
             return Enabled ? values[key] : null;
         }
 
+        public override void SetValues(bool enabled, List<float> thisvalues)
+        {
+            base.SetValues(enabled, thisvalues);
+            if (enabled)
+            {
+                int val = (int)thisvalues[0];
+                foreach (var v in values.AsEnumerable())
+                {
+                    if (v.Value == val)
+                    {
+                        key = v.Key;
+                        break;
+                    }
+                }
+            }
+        }
+
         public override string ToString()
         {
             return $"{Name}: {key}";

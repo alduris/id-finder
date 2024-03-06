@@ -4,26 +4,21 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod
 {
-    internal class Options : OptionInterface
+    internal class Options(ManualLogSource loggerSource) : OptionInterface
     {
-        private readonly ManualLogSource logger;
-
-        public Options(Plugin modInstance, ManualLogSource loggerSource)
-        {
-            logger = loggerSource;
-        }
+        private readonly ManualLogSource logger = loggerSource;
 
         public override void Initialize()
         {
             base.Initialize();
 
             // Initialize tabs
-            this.Tabs = new OpTab[]
-            {
+            this.Tabs =
+            [
                 new SearchTab(this),
                 new ValuesTab(this)
                 // new HelpTab(this)
-            };
+            ];
             
             foreach (var tab in this.Tabs)
             {

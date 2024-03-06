@@ -173,23 +173,23 @@ namespace FinderMod.Tabs
         }
 
         // TESTING REMOVE
-        private readonly BaseInput[] testInputs = new BaseInput[]
-        {
+        /*private readonly BaseInput[] testInputs =
+        [
             new Label("label"),
             new FloatInput("float", 0f, 2f),
             new IntInput("int", 0, 5),
             new BoolInput("bool"),
             new ColorRGBInput("rgb"),
             new Whitespace(),
-            new InputGroup("group", new BaseInput[]
-            {
+            new InputGroup("group",
+            [
                 new FloatInput("inp1"),
                 new FloatInput("inp2"),
                 new FloatInput("inp3")
-            }),
+            ]),
             new Label("label 2"),
             new ColorHSLInput("hsl"),
-        };
+        ];*/
 
         private void UpdateQueryBox()
         {
@@ -265,15 +265,33 @@ namespace FinderMod.Tabs
                 items.Add(label_name);
 
                 // Create input row
+                var inputs = SearchOptions.Options[query.Name].CreateInputs();
                 y -= LINE_HEIGHT;
-                foreach (var input in testInputs)
+                int ptr = 0;
+
+                foreach (var input in inputs)
                 {
+                    List<float> floats = [];
+                    if (query.Requests[ptr] != null)
+                    {
+                        for (int i = 0; i < input.ValueCount; i++)
+                        {
+                            floats.Add(query.Requests[ptr].GetValueOrDefault(0f));
+                        }
+                    }
+                    input.SetValues(query.Requests[ptr] != null, floats); // todo: better way for checking enabled
+
                     input.AddUI(LEFT_MARGIN, ref y, items, UpdateQueryBox);
                 }
 
+                /*foreach (var input in testInputs)
+                {
+                    input.AddUI(LEFT_MARGIN, ref y, items, UpdateQueryBox);
+                }*/
+
                 // Add items
                 items.Reverse();
-                cont_queries.AddItems(items.ToArray());
+                cont_queries.AddItems([.. items]);
             }
 
             float height = cont_queries.size.y - y + 10f * queries.Count;
