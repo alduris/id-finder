@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <LangVersion>11</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -104,22 +104,6 @@
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\REFERENCES\UnityEngine.InputLegacyModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CustomRegions">
-      <HintPath>..\REFERENCES\CustomRegions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="EnumExtender">
-      <HintPath>..\REFERENCES\EnumExtender.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AutoUpdate">
-      <HintPath>..\REFERENCES\AutoUpdate.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ConfigMachine">
-      <HintPath>..\REFERENCES\ConfigMachine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

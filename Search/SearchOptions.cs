@@ -1097,7 +1097,7 @@ namespace FinderMod.Search
                     {
                         new("Size"), new("Wideness"),
                         Whitespace,
-                        new("Color (H)", InputType.Float), new("Color (S)", InputType.Float), new("Color (L)", "Inverse if dark", (0.75f, 1f)),
+                        new("Color (H)", InputType.Float), new("Color (S)", InputType.Float), new("Color (L)", "Inverse if dark", (0.65f, 1f)),
                         new("Dark?", InputType.Boolean), new("Eye (L)", "Inverse if dark"),
                     },
                     MSC = true,

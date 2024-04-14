@@ -153,6 +153,8 @@ namespace FinderMod.Search
 
         public static uint PositiveDirGap(int i, int j, int div)
         {
+            if (i - 1 == j) return 0xffffffffu / (uint)div; // edge case fix thingy
+
             // Unchecked type cast because we want the negative bit to count as a 2**31 bit without throwing errors (it does otherwise for some reason)
             uint a = unchecked((uint)i), b = unchecked((uint)j + 1);
             uint dist = b > a ? (b - a) : 0xffffffffu - (a - b);
@@ -177,8 +179,11 @@ namespace FinderMod.Search
                 {
                     threadCount = Math.Max(1, (int)diff);
                 }
+                if (diff < resultsPer)
+                {
+                    resultsPer = Math.Min(resultsPer, (int)diff);
+                }
             }
-            resultsPer = Math.Min(resultsPer, Math.Abs(range.Item2 - range.Item1 + 1));
             tasks = new Task[threadCount];
 
             var results = new (int, float)[threadCount, queries.Length, resultsPer];
