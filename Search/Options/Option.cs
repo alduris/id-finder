@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
+    /// <summary>
+    /// A search option. Fill out <see cref="elements"/> in the constructor, and keep references so you can use the values in <see cref="Execute"/>.
+    /// </summary>
+    /// <param name="name"></param>
     public abstract class Option(string name)
     {
         private readonly string name = name;
@@ -49,7 +53,7 @@ namespace FinderMod.Search.Options
             }
         }
 
-        public abstract void Execute();
+        public abstract void Execute(int start, int end);
 
         internal event Action OnDelete;
         internal event Action OnLink;
