@@ -7,9 +7,9 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Tabs
 {
-    internal abstract class FinderTab : OpTab
+    internal abstract class BaseTab : OpTab
     {
-        public FinderTab(OptionInterface option, string name) : base(option, name) { }
+        public BaseTab(OptionInterface option, string name) : base(option, name) { }
 
         public abstract void Initialize();
         public abstract void Update();

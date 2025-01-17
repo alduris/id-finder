@@ -4,11 +4,11 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod
 {
-    internal class FinderOptions : OptionInterface
+    internal class Options : OptionInterface
     {
         private readonly ManualLogSource logger;
 
-        public FinderOptions(FinderPlugin modInstance, ManualLogSource loggerSource)
+        public Options(Plugin modInstance, ManualLogSource loggerSource)
         {
             logger = loggerSource;
         }
@@ -27,7 +27,7 @@ namespace FinderMod
             
             foreach (var tab in this.Tabs)
             {
-                (tab as FinderTab).Initialize();
+                (tab as BaseTab).Initialize();
             }
 
             logger.LogInfo("Initialized options menu");
@@ -39,7 +39,7 @@ namespace FinderMod
 
             foreach (var tab in this.Tabs)
             {
-                (tab as FinderTab).Update();
+                (tab as BaseTab).Update();
             }
         }
 
@@ -47,7 +47,7 @@ namespace FinderMod
         {
             foreach (var tab in this.Tabs)
             {
-                (tab as FinderTab).ClearMemory();
+                (tab as BaseTab).ClearMemory();
             }
         }
 

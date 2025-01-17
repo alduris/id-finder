@@ -2,7 +2,7 @@
 
 namespace FinderMod.Tabs
 {
-    internal class HelpTab : FinderTab
+    internal class HelpTab : BaseTab
     {
         public HelpTab(OptionInterface option) : base(option, "Help") { }
         private static string HELP_TEXT = "Lorem ipsum dolor sit amet";
