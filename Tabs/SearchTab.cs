@@ -14,6 +14,8 @@ namespace FinderMod.Tabs
 {
     internal class SearchTab : BaseTab
     {
+        internal static SearchTab instance = null;
+
         public SearchTab(OptionInterface owner) : base(owner, "Search")
         {
             queries = new List<PreQuery>();
@@ -30,6 +32,7 @@ namespace FinderMod.Tabs
 
         public override void Initialize()
         {
+            instance = this;
             queries.Clear();
 
             // Get max number of threads we can use
@@ -222,7 +225,7 @@ namespace FinderMod.Tabs
             AddItems(UIArrPlayerOptions);
         }
 
-        private void UpdateQueryBox()
+        internal void UpdateQueryBox()
         {
             const int SLIDER_WIDTH = 160;
             const float SHORT_INPUT_WIDTH = 60f;
@@ -407,7 +410,7 @@ namespace FinderMod.Tabs
                                     else
                                     {
                                         input = new OpSliderTick(
-                                            CosmeticInt(
+                                            CosmeticRange(
                                                 (int)(query.Requests[setIndex] ?? 0),
                                                 (int)item.Range.Item1, (int)item.Range.Item2),
                                             new(label.pos.x + labelWidth + 6f, y - 4f),
@@ -540,7 +543,7 @@ namespace FinderMod.Tabs
 
                     // Slap a multiplier input onto that thing
                     // biasStartX = 590f - BIAS_TEXT_WIDTH - BIAS_INPUT_WIDTH;
-                    OpUpdown input_bias = new(CosmeticInt(query.Biases[i], 1, 9999), new(biasStartX + BIAS_TEXT_WIDTH, y - 4f), BIAS_INPUT_WIDTH) { description = "Bias" };
+                    OpUpdown input_bias = new(CosmeticRange(query.Biases[i], 1, 9999), new(biasStartX + BIAS_TEXT_WIDTH, y - 4f), BIAS_INPUT_WIDTH) { description = "Bias" };
                     int j = i;
                     input_bias.OnValueChanged += (_, _, _) =>
                     {
@@ -662,6 +665,7 @@ namespace FinderMod.Tabs
         {
             queries.Clear();
             waitingForResults = false;
+            instance = null;
             SearchUtil.Abort("clearing memory");
         }
     }
