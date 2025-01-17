@@ -209,7 +209,7 @@ namespace FinderMod.Search
                     int max = range.Item1 + gap * (i+1) - 1;
                     if (i == threadCount - 1) max = range.Item2;
                     int j = i;
-                    FinderPlugin.logger.LogInfo("THREAD " + i + ": " + min + ", " + max);
+                    Plugin.logger.LogInfo("THREAD " + i + ": " + min + ", " + max);
                     tasks[i] = Task.Run(() => SearchHelper(results, j, min, max, queries));
                 }
                 for (int i = 0; i < threadCount; i++)
@@ -420,12 +420,12 @@ namespace FinderMod.Search
                         results[threadId, j, k] = topValues[j, k];
                     }
                 }
-                FinderPlugin.logger.LogInfo("Thread " + threadId + (abort ? " aborted" : " finished"));
+                Plugin.logger.LogInfo("Thread " + threadId + (abort ? " aborted" : " finished"));
             }
             catch (Exception e)
             {
-                FinderPlugin.logger.LogError("Thread " + threadId + " encountered exception: " + e.Message);
-                FinderPlugin.logger.LogError(e);
+                Plugin.logger.LogError("Thread " + threadId + " encountered exception: " + e.Message);
+                Plugin.logger.LogError(e);
                 Abort("encountered exception");
             }
         }
