@@ -52,8 +52,9 @@ namespace FinderMod.Search
 
         public float Range(float min, float max)
         {
-            // Actual code converts to float10 and then back to float, which I think is the cause of the precision problems.
-            return (float)((NextU32() & 0x7FFFFFu) * 1.192093E-07 * (min - max)) + max;
+            // This is still not 100% accurate due to some floating point errors but is what the original code does basically
+            float f = (NextU32() & 0x7FFFFFu) * 1.192093E-07f;
+            return (((1.0f - f) * max) + (f * min));
         }
     }
 }
