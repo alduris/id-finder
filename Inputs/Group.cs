@@ -13,25 +13,6 @@ namespace FinderMod.Inputs
 
         private OpRect rect = null;
         public readonly List<IElement> children = children;
-        public List<Input> Inputs
-        {
-            get
-            {
-                var list = new List<Input>();
-                foreach (var element in children)
-                {
-                    if (element is Input)
-                    {
-                        list.Add(element as Input);
-                    }
-                    else if (element is Group)
-                    {
-                        list.AddRange((element as Group).Inputs);
-                    }
-                }
-                return list;
-            }
-        }
 
         public float Height => children.Sum(x => x is ISpecialGroupHeight y ? y.GroupHeight : x.Height) + MARGIN * Math.Max(0, children.Count - 1) + 2 * PADDING;
 

@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class FloatInput(string name, float min, float max, float init) : RangedInput<float>(name, init)
+    public class FloatInput(string name, float min, float max) : RangedInput<float>(name, (min + max) / 2)
     {
         private readonly float min = min, max = max;
+
+        /// <summary>
+        /// Initializes with min=0, max=1
+        /// </summary>
+        /// <param name="name">The name of the input</param>
+        public FloatInput(string name) : this(name, 0f, 1f) { }
 
         public override float Height => 24f;
 

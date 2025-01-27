@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FinderMod.Search;
+using FinderMod.Search.Options;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -12,19 +13,15 @@ using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
 {
-    internal class SearchTab : BaseTab
+    internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
         internal static SearchTab instance = null;
-
-        public SearchTab(OptionInterface owner) : base(owner, "Search")
-        {
-            queries = new List<PreQuery>();
-        }
         
         private OpScrollBox cont_queries;
         private OpScrollBox cont_results;
         private OpLabel label_progress;
-        private List<PreQuery> queries;
+        private List<Option> options = [];
+        private Threadmaster? threadmaster = null;
         private DateTime startTime;
 
         // private Query[] currRequest;
@@ -33,7 +30,7 @@ namespace FinderMod.Tabs
         public override void Initialize()
         {
             instance = this;
-            queries.Clear();
+            options.Clear();
 
             // Get max number of threads we can use
             ThreadPool.GetMaxThreads(out int maxThreads, out _);
@@ -69,24 +66,15 @@ namespace FinderMod.Tabs
 
                 if (SearchOptions.Groups.TryGetValue(value, out var setup))
                 {
-                    int count = SearchOptions.GetNumOutputs(setup.Inputs);
-                    int[] biasArr = new int[setup.Inputs.Length];
-                    for (int i = 0; i < biasArr.Length; i++) biasArr[i] = 1;
-                    queries.Add(new PreQuery
-                    {
-                        Name = value,
-                        Requests = new float?[count],
-                        Biases = biasArr,
-                        Setup = setup,
-                        Linked = false
-                    });
+#warning implement
+                    throw new NotImplementedException();
                     UpdateQueryBox();
                 }
             };
 
             button_run.OnClick += _ =>
             {
-                if (waitingForResults || queries.Count == 0) return;
+                if (waitingForResults || options.Count == 0) return;
 
                 // Set up and validate search request
                 (int, int) range = (input_min.valueInt, input_max.valueInt);
@@ -123,53 +111,9 @@ namespace FinderMod.Tabs
                 cont_results.AddItems(label_searching, label_progress, button_abort);
                 cont_results.SetContentSize(80f, true);
 
-                List<Query> arrQueries = new();
-                foreach (PreQuery prequery in queries)
-                {
-                    if (prequery.Linked)
-                    {
-                        Query query = arrQueries.Last();
-
-                        // Add setup
-                        Setup[] newSetups = new Setup[query.Setups.Length + 1];
-                        for (int i = 0; i < query.Setups.Length; i++)
-                        {
-                            newSetups[i] = query.Setups[i];
-                        }
-                        newSetups[newSetups.Length - 1] = prequery.Setup;
-
-                        query.Setups = newSetups;
-
-                        // Add request
-                        float?[][] newRequests = new float?[query.Requests.Length + 1][];
-                        int[][] newBiases = new int[query.Biases.Length + 1][];
-                        for (int i = 0; i < query.Requests.Length; i++)
-                        {
-                            newRequests[i] = query.Requests[i];
-                        }
-                        for (int i = 0; i < query.Biases.Length; i++)
-                        {
-                            newBiases[i] = query.Biases[i];
-                        }
-                        newRequests[newRequests.Length - 1] = prequery.Requests;
-                        newBiases[newBiases.Length - 1] = prequery.Biases;
-
-                        query.Requests = newRequests;
-                        query.Biases = newBiases;
-                    }
-                    else
-                    {
-                        arrQueries.Add(new Query
-                        {
-                            Name = prequery.Name,
-                            Setups = new Setup[] { prequery.Setup },
-                            Requests = new float?[][] { prequery.Requests },
-                            Biases = new int[][] { prequery.Biases }
-                        });
-                    }
-                }
                 startTime = DateTime.Now;
-                SearchUtil.Search(arrQueries.ToArray(), range, threads, resultsPer);
+                threadmaster = new Threadmaster(options, threads, resultsPer, range, false);
+                //SearchUtil.Search(arrQueries.ToArray(), range, threads, resultsPer);
             };
 
             input_threads.OnValueChanged += (_, _, old) =>
@@ -227,349 +171,30 @@ namespace FinderMod.Tabs
 
         internal void UpdateQueryBox()
         {
-            const int SLIDER_WIDTH = 160;
-            const float SHORT_INPUT_WIDTH = 60f;
-            const float LINE_HEIGHT = 30f; // must be at minimum 24f
             const float WHITESPACE_AMOUNT = 10f;
-            const float BIAS_INPUT_WIDTH = 60f;
-            const float BIAS_TEXT_WIDTH = 40f;
-            float maxWidth = cont_queries.size.x - 25f; // wrap 10f from slider + 15f slider width. also a constant but I can't make it const
 
-            float y = cont_queries.size.y; // start from top of scroll box
-            float height = 10f; // 10f bottom padding accounting
-            List<UIelement> items = new();
-
+            // Remove old
             foreach (UIelement element in cont_queries.items)
             {
-                element.Deactivate();
-                element.tab.items.Remove(element);
+                element.tab._RemoveItem(element);
             }
             cont_queries.items.Clear();
             cont_queries.SetContentSize(0);
 
-            foreach (PreQuery query in queries)
+            // Add new
+            float y = cont_queries.size.y; // start from top of scroll box
+            List<UIelement> items = [];
+
+            foreach (Option option in options)
             {
-                bool first = ReferenceEquals(queries[0], query);
-
-                // Move to next line
-                height += LINE_HEIGHT + 10f; // 10f top padding
-                y -= LINE_HEIGHT + 10f;      // ditto
-
-                // Create delete button and label
-                // Delete button doesn't show if linked
-                if (!query.Linked)
-                {
-                    var button_delete = new OpSimpleButton(new(10f, y), new(24, 24), "\xd7")
-                    {
-                        colorEdge = color_del,
-                        colorFill = color_del,
-                        description = "Delete search query"
-                    };
-                    button_delete.OnClick += _ => {
-                        if (waitingForResults) return;
-                        int i = queries.IndexOf(query);
-                        queries.Remove(query);
-                        if (queries.Count > i && queries[i].Linked)
-                        {
-                            queries[i].Linked = false;
-                        }
-                        UpdateQueryBox();
-                    };
-                    items.Add(button_delete);
-                }
-
-                // Create link button
-                var button_link = new OpSimpleButton(new(40f, y), new(24, 24), query.Linked ? "\u2212" : "+")
-                {
-                    colorEdge = color_link,
-                    colorFill = color_link,
-                    description = (query.Linked ? "Unlink" : "Link") + " search query with above",
-                    greyedOut = first
-                };
-                button_link.OnClick += _ => {
-                    if (first || waitingForResults) return;
-                    query.Linked = !query.Linked;
-                    UpdateQueryBox();
-                };
-                items.Add(button_link);
-
-                var label_name = new OpLabel(70f, y, query.Name, true); // 70f = 10f (left padding) + 2 * 24f (button width) + 2 * 6f (margin)
-                items.Add(label_name);
-
-                // Create input row
-                int currIndex = 0;
-                for (int i = 0; i < query.Setup.Inputs.Count(); i++)
-                {
-                    SearchInput item = query.Setup.Inputs[i];
-                    if (item.Type == InputType.Whitespace)
-                    {
-                        y -= WHITESPACE_AMOUNT;
-                        height += WHITESPACE_AMOUNT;
-                        continue;
-                    }
-                    else if (item.Type == InputType.Label)
-                    {
-                        y -= LINE_HEIGHT;
-                        height += LINE_HEIGHT;
-                        items.Add(new OpLabel(25f, y, item.Name));
-                        continue;
-                    }
-
-                    // Adjust index for future reference (rgb color has 3 inputs)
-                    int setIndex = currIndex;
-                    if (item.Type == InputType.ColorRGB)
-                    {
-                        currIndex += 3;
-                    }
-                    else
-                    {
-                        currIndex++;
-                    }
-
-                    // Make room for new row
-                    height += LINE_HEIGHT;
-                    y -= LINE_HEIGHT;
-
-                    // Create use checkbox
-                    var checkbox_enabled = new OpCheckBox(CosmeticBind(query.Requests[setIndex] is not null), new(25f, y));
-                    checkbox_enabled.OnValueUpdate += (_, t, f) =>
-                    {
-                        query.Requests[setIndex] = (checkbox_enabled.GetValueBool() ? 0f : null);
-                        UpdateQueryBox();
-                    };
-
-                    // Create label
-                    var label = new OpLabel(55, y, query.Setup.Inputs[i].Name);
-                    var labelWidth = label.size.x;
-
-                    // Add items
-                    items.Add(checkbox_enabled);
-                    items.Add(label);
-
-                    // Skip creating input if it will be unused to prevent confusion
-                    if (query.Requests[setIndex] is null)
-                    {
-                        continue;
-                    }
-
-                    // Create the input
-                    float biasStartX = 0f;
-                    if (item.Type == InputType.Boolean)
-                    {
-                        // Special case for booleans (a button that changes)
-                        bool enabled = (query.Requests[setIndex] == 1f);
-                        OpSimpleButton button = new(new(label.pos.x + labelWidth + 6f, y), new(40f, 24f), enabled ? "Yes" : "No")
-                        {
-                            description = item.Name + (item.Description != null ? " (" + item.Description + ")" : "")
-                        };
-                        button.OnClick += _ =>
-                        {
-                            enabled = !enabled;
-                            query.Requests[setIndex] = (enabled ? 1f : 0f);
-                            button.text = (enabled ? "Yes" : "No");
-                        };
-
-                        biasStartX = button.pos.x + button.size.x + 16f;
-
-                        items.Add(button);
-                    }
-                    else
-                    {
-                        // Create input like normal
-                        UIconfig input;
-                        switch (item.Type)
-                        {
-                            default:
-                            case InputType.Float:
-                            case InputType.Hue:
-                                {
-                                    // input = new OpFloatSlider(CosmeticFloat(query.Requests[setIndex] ?? 0f, item.Range.Item1, item.Range.Item2), new(label.pos.x + labelWidth + 6f, y), SLIDER_WIDTH, 4);
-                                    input = new OpFloatSlider(CosmeticBind(query.Requests[setIndex] ?? 0f), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH, 4)
-                                    { min = item.Range.Item1, max = item.Range.Item2 };
-
-                                    if (item.Type == InputType.Hue)
-                                    {
-                                        (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
-                                        (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
-                                        input.OnValueUpdate += (_, _, _) =>
-                                        {
-                                            (input as OpFloatSlider).colorEdge = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
-                                            (input as OpFloatSlider).colorFill = Custom.HSL2RGB((input as OpFloatSlider).GetValueFloat(), 1f, 0.625f);
-                                        };
-                                    }
-                                    break;
-                                }
-                            case InputType.Integer:
-                                {
-                                    bool big = Math.Abs((int)item.Range.Item1 - (int)item.Range.Item2) > 30;
-                                    if (big)
-                                    {
-                                        input = new OpSlider(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
-                                        { min = (int)item.Range.Item1, max = (int)item.Range.Item2 };
-                                    }
-                                    else
-                                    {
-                                        input = new OpSliderTick(
-                                            CosmeticRange(
-                                                (int)(query.Requests[setIndex] ?? 0),
-                                                (int)item.Range.Item1, (int)item.Range.Item2),
-                                            new(label.pos.x + labelWidth + 6f, y - 4f),
-                                            SLIDER_WIDTH);
-                                    }
-                                    //input = new OpSliderTick(CosmeticBind((int)(query.Requests[setIndex] ?? 0)), new(label.pos.x + labelWidth + 6f, y - 4f), SLIDER_WIDTH)
-                                    //    { min = (int)item.Range.Item1, max = (int)item.Range.Item2, description = item.Name };
-                                    break;
-                                }
-                            case InputType.Boolean:
-                                {
-                                    // Technically this is unreachable code but keeping it for reference
-                                    input = new OpCheckBox(CosmeticBind(query.Requests[setIndex] == 1f), new(label.pos.x + labelWidth + 6f, y));
-                                    break;
-                                }
-                            case InputType.ColorRGB:
-                                {
-                                    // Figure out color to put in there (RGB vs HSL)
-                                    Color color;
-                                    color = new Color(query.Requests[setIndex] ?? 0.5f, query.Requests[setIndex + 1] ?? 0.5f, query.Requests[setIndex + 2] ?? 0.5f);
-                                    input = new OpColorPicker(CosmeticBind(color), new(55f, y));
-
-                                    // Make room for the color input
-                                    y -= input.size.y;
-                                    height += input.size.y;
-                                    input.pos = new(input.pos.x, input.pos.y - input.size.y);
-                                    break;
-                                }
-                            case InputType.MultiChoice:
-                                {
-                                    // Add options
-                                    List<string> choices = new();
-                                    for(int k = 1; k <= (int)(item.Range.Item2 - item.Range.Item1) + 1; k++)
-                                    {
-                                        choices.Add(k.ToString());
-                                    }
-                                    
-                                    // Make sure value is within bounds (initially it might not be)
-                                    if (query.Requests[setIndex] < item.Range.Item1)
-                                        query.Requests[setIndex] = item.Range.Item1;
-
-                                    // Continue!
-                                    input = new OpComboBox(
-                                        CosmeticBind(query.Requests[setIndex].ToString()),
-                                        new(label.pos.x + labelWidth + 6f, y),
-                                        SHORT_INPUT_WIDTH,
-                                        choices.ToArray()
-                                    );
-                                    break;
-                                }
-                        }
-                        input.description = item.Name + (item.Description != null ? " (" + item.Description + ")" : "");
-
-                        //var input = new OpTextBox(OpUtil.CosmeticBind(query.Requests[i]?.ToString() ?? ""), new(x, y), inputWidth) { description = query.Setup.Names[i].Name };
-                        input.OnValueChanged += (_, value, oldValue) =>
-                        {
-                            if (query.Requests[setIndex] is null || input.greyedOut)
-                            {
-                                return;
-                            }
-
-                            // Turn into an actual number
-                            float num = 0f;
-                            if (input is OpFloatSlider)
-                            {
-                                num = (input as OpFloatSlider).GetValueFloat();
-                            }
-                            else if (input is OpSliderTick)
-                            {
-                                num = (input as OpSliderTick).GetValueFloat();
-                            }
-                            else if (input is OpSlider)
-                            {
-                                num = (input as OpSlider).GetValueFloat();
-                            }
-                            else if (input is OpCheckBox)
-                            {
-                                // Again, unreachable code but oh well :P (was for boolean inputs)
-                                num = (input as OpCheckBox).GetValueBool() ? 1f : 0f;
-                            }
-                            else if (input is OpColorPicker picker)
-                            {
-                                if (item.Type == InputType.ColorRGB)
-                                {
-                                    query.Requests[setIndex] = picker.valueColor.r;
-                                    query.Requests[setIndex + 1] = picker.valueColor.g;
-                                    query.Requests[setIndex + 2] = picker.valueColor.b;
-                                }
-                                else
-                                {
-                                    Vector3 hsl = Custom.RGB2HSL(picker.valueColor);
-                                    query.Requests[setIndex] = hsl.x;
-                                    query.Requests[setIndex + 1] = hsl.y;
-                                    query.Requests[setIndex + 2] = hsl.z;
-                                }
-                                return;
-                            }
-                            else if (input is OpComboBox)
-                            {
-                                if (int.TryParse(input.value, out int n))
-                                {
-                                    if (n < item.Range.Item1)
-                                    {
-                                        num = item.Range.Item1;
-                                    }
-                                    else if (n > item.Range.Item2)
-                                    {
-                                        num = item.Range.Item2;
-                                    }
-                                    else
-                                    {
-                                        num = n;
-                                    }
-                                }
-                                else
-                                {
-                                    input.value = query.Requests[setIndex].ToString();
-                                    return;
-                                }
-                            }
-
-                            // Update value
-                            query.Requests[setIndex] = num;
-                        };
-
-                        // Add input to box
-                        items.Add(input);
-                        biasStartX = input.pos.x + input.size.x + 16f;
-                    }
-
-                    // Slap a multiplier input onto that thing
-                    // biasStartX = 590f - BIAS_TEXT_WIDTH - BIAS_INPUT_WIDTH;
-                    OpUpdown input_bias = new(CosmeticRange(query.Biases[i], 1, 9999), new(biasStartX + BIAS_TEXT_WIDTH, y - 4f), BIAS_INPUT_WIDTH) { description = "Bias" };
-                    int j = i;
-                    input_bias.OnValueChanged += (_, _, _) =>
-                    {
-                        try
-                        {
-                            if (input_bias.valueInt < 1) input_bias.valueInt = 1;
-                        }
-                        catch
-                        {
-                            input_bias.valueInt = 1;
-                        }
-                        finally
-                        {
-                            query.Biases[j] = input_bias.valueInt;
-                        }
-                    };
-
-                    items.Add(new OpLabel(biasStartX, y, "Bias:"));
-                    items.Add(input_bias);
-                }
-
-                // Add items
-                cont_queries.AddItems(items.ToArray());
+                option.CreateOptions(ref y, items);
+            }
+            foreach (UIelement element in items)
+            {
+                cont_queries.AddItems(element);
             }
 
-            cont_queries.SetContentSize(height, true);
+            cont_queries.SetContentSize(cont_queries.size.y - y + 2 * WHITESPACE_AMOUNT, true);
         }
 
         public override void Update()
@@ -663,7 +288,7 @@ namespace FinderMod.Tabs
 
         public override void ClearMemory()
         {
-            queries.Clear();
+            options.Clear();
             waitingForResults = false;
             instance = null;
             SearchUtil.Abort("clearing memory");

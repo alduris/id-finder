@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class IntInput(string name, int min, int max, int init) : RangedInput<int>(name, init)
+    public class IntInput(string name, int min, int max) : RangedInput<int>(name, (min + max) / 2)
     {
         private readonly int min = min, max = max;
 

@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class HueInput(string name, float min, float max, float init) : FloatInput(name, Mathf.Clamp01(min), Mathf.Clamp01(max), Mathf.Clamp01(init))
+    public class HueInput(string name, float min, float max) : FloatInput(name, min, max)
     {
+        public HueInput(string name) : this(name, 0f, 1f) { }
+
         protected override UIconfig GetElement(Vector2 pos)
         {
             var el = base.GetElement(pos) as OpFloatSlider;

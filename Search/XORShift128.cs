@@ -14,6 +14,14 @@ namespace FinderMod.Search
             w = (uint)(MT19937 * z + 1);
         }
 
+        public void InitState(uint seed)
+        {
+            x = seed;
+            y = MT19937 * x + 1;
+            z = MT19937 * y + 1;
+            w = MT19937 * z + 1;
+        }
+
         public void InitState(uint x, uint y, uint z, uint w)
         {
             this.x = x;
@@ -29,8 +37,11 @@ namespace FinderMod.Search
             x = y; y = z; z = w;
             return w = w ^ (w >> 19) ^ t ^ (t >> 8);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint XORShift() => NextU32();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Range(int min, int max)
         {
             if (max - min == 0) return min;
@@ -50,6 +61,7 @@ namespace FinderMod.Search
 
         public float Value => (NextU32() & 0x7FFFFF) * 1.192093E-07f;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Range(float min, float max)
         {
             // This is accurate to how the original code does it, though is often off by an insignificant amount (usually 1 or 2 bits on the very low end).

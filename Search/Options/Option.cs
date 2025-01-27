@@ -9,36 +9,18 @@ namespace FinderMod.Search.Options
     /// <summary>
     /// A search option. Fill out <see cref="elements"/> in the constructor, and keep references so you can use the values in <see cref="Execute"/>.
     /// </summary>
-    /// <param name="name"></param>
-    public abstract class Option(string name)
+    /// <param name="key">Serves as both the internal key the option will be identified as</param>
+    public abstract class Option(string key)
     {
-        private readonly string name = name;
+        private readonly string name = key;
 
         internal bool firstOption = false;
+        internal bool linked = false;
 
         /// <summary>
         /// The elements to show in the space. Must be added to in the constructor.
         /// </summary>
-        protected readonly List<IElement> elements = [];
-
-        protected List<Input> Inputs {
-            get
-            {
-                var list = new List<Input>();
-                foreach (var element in elements)
-                {
-                    if (element is Input)
-                    {
-                        list.Add(element as Input);
-                    }
-                    else if (element is Group)
-                    {
-                        list.AddRange((element as Group).Inputs);
-                    }
-                }
-                return list;
-            }
-        }
+        protected List<IElement> elements;
 
         public void CreateOptions(ref float y, List<UIelement> output)
         {
@@ -56,9 +38,14 @@ namespace FinderMod.Search.Options
             deleteButton.OnClick += (_) => OnDelete?.Invoke();
             var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), "+") { colorEdge = OpUtil.color_link, colorFill = OpUtil.color_link };
             if (firstOption)
+            {
+                linked = !linked;
                 linkButton.OnClick += (_) => OnLink?.Invoke();
+            }
             else
+            {
                 linkButton.greyedOut = true;
+            }
             output.Add(deleteButton);
             output.Add(linkButton);
 
@@ -72,7 +59,12 @@ namespace FinderMod.Search.Options
             }
         }
 
-        public abstract void Execute(int start, int end);
+        /// <summary>
+        /// Execution, assuming an arbitrary given seed.
+        /// </summary>
+        /// <param name="Random">The random number generator correlating with the seed.</param>
+        /// <returns>The calculated distance</returns>
+        public abstract float Execute(XORShift128 Random);
 
         internal event Action OnDelete;
         internal event Action OnLink;
