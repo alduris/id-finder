@@ -164,15 +164,15 @@ namespace FinderMod.Search.Options
 
             float r = 0f;
 
-            if (body.HueInput.enabled) r += Distance(bodyColor.hue, body.HueInput);
+            if (body.HueInput.enabled) r += WrapDistance(bodyColor.hue, body.HueInput.Value);
             if (body.SatInput.enabled) r += Distance(bodyColor.saturation, body.SatInput);
             if (body.LightInput.enabled) r += Distance(bodyColor.lightness, body.LightInput);
 
-            if (head.HueInput.enabled) r += Distance(headColor.hue, head.HueInput);
+            if (head.HueInput.enabled) r += WrapDistance(headColor.hue, head.HueInput.Value);
             if (head.SatInput.enabled) r += Distance(headColor.saturation, head.SatInput);
             if (head.LightInput.enabled) r += Distance(headColor.lightness, head.LightInput);
 
-            if (deco.HueInput.enabled) r += Distance(decoColor.hue, deco.HueInput);
+            if (deco.HueInput.enabled) r += WrapDistance(decoColor.hue, deco.HueInput.Value);
             if (deco.SatInput.enabled) r += Distance(decoColor.saturation, deco.SatInput);
             if (deco.LightInput.enabled) r += Distance(decoColor.lightness, deco.LightInput);
 

@@ -123,6 +123,12 @@ namespace FinderMod.Search.Options
             return Mathf.Abs(num - target.Value);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float DistanceIf(float num, Input<float> target)
+        {
+            if (target.enabled) return Mathf.Abs(num - target.Value);
+            return 0f;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static float WrapDistance(float num, float target)
         {
             return Mathf.Min(Mathf.Abs(num - target), Mathf.Abs(num - (target + 1)), Mathf.Abs(num - (target - 1)));
