@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
+using RWCustom;
+using Unity.Burst;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -65,6 +68,68 @@ namespace FinderMod.Search.Options
         /// <param name="Random">The random number generator correlating with the seed.</param>
         /// <returns>The calculated distance</returns>
         public abstract float Execute(XORShift128 Random);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Helper stuff
+
+        protected struct Personality
+        {
+            public Personality(XORShift128 Random)
+            {
+                var (x,y,z,w) = (Random.x, Random.y, Random.z, Random.w);
+
+                sym = Custom.PushFromHalf(Random.Value, 1.5f); // sympathy
+                nrg = Custom.PushFromHalf(Random.Value, 1.5f); // energy
+                brv = Custom.PushFromHalf(Random.Value, 1.5f); // bravery
+
+                nrv = Mathf.Lerp(Random.Value, Mathf.Lerp(nrg, 1f - brv, 0.5f), Mathf.Pow(Random.Value, 0.25f)); // nervous; uses energy and bravery
+                agg = Mathf.Lerp(Random.Value, (nrg + brv) / 2f * (1f - sym), Mathf.Pow(Random.Value, 0.25f));   // aggression; uses energy, bravery, and sympathy
+                dom = Mathf.Lerp(Random.Value, (nrg + brv + agg) / 3f, Mathf.Pow(Random.Value, 0.25f));          // dominance; uses energy, bravery, and aggression
+
+                nrv = Custom.PushFromHalf(nrv, 2.5f); // nervous
+                agg = Custom.PushFromHalf(agg, 2.5f); // aggression
+
+                Random.InitState(x,y,z,w);
+            }
+
+            public float agg;
+            public float brv;
+            public float dom;
+            public float nrg;
+            public float nrv;
+            public float sym;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        {
+            return Mathf.Clamp(baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation, 0f, 1f);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        {
+            float num = baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation + 1f;
+            return num - Mathf.Floor(num);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float Distance(float num, float target)
+        {
+            return Mathf.Abs(num - target);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float Distance(float num, Input<float> target)
+        {
+            return Mathf.Abs(num - target.Value);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float WrapDistance(float num, float target)
+        {
+            return Mathf.Min(Mathf.Abs(num - target), Mathf.Abs(num - (target + 1)), Mathf.Abs(num - (target - 1)));
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Internal events
 
         internal event Action OnDelete;
         internal event Action OnLink;

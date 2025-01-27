@@ -128,14 +128,6 @@ namespace FinderMod.Search
             return res;
         }
 
-        public static float Distance(float num, float target)
-        {
-            return Mathf.Abs(num - target);
-        }
-        public static float WrapDistance(float num, float target)
-        {
-            return Mathf.Min(Mathf.Abs(num - target), Mathf.Abs(num - (target + 1)), Mathf.Abs(num - (target - 1)));
-        }
         
         public static void FillPersonality(float[] i, float[] p)
         {

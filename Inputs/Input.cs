@@ -16,6 +16,7 @@ namespace FinderMod.Inputs
     public abstract class Input<T>(string name, T init) : IElement, ISpecialGroupHeight
     {
         public string name = name;
+        public string description = null;
         private string LabelText => name + (enabled && !inputOnNewLine ? ":  " : ""); // yes the two spaces are intentional
         public bool enabled = true;
         protected bool inputOnNewLine = false;
@@ -53,6 +54,7 @@ namespace FinderMod.Inputs
                 var elX = x + 34f + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
                 var element = GetElement(new Vector2(elX, y));
                 element.OnValueChanged += Element_OnValueChanged;
+                if (description != null) element.description = description;
                 elements.Add(element);
             }
         }

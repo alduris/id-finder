@@ -2,7 +2,7 @@
 using MoreSlugcats;
 using UnityEngine;
 
-namespace FinderMod.Search
+namespace FinderMod.Search.Util
 {
     internal static class LizardUtil
     {
@@ -153,7 +153,7 @@ namespace FinderMod.Search
             {
                 float num2 = 8f * bodySizeFacParam;
                 num2 *= (tailSegments - i) / (float)tailSegments;
-                float num3 = (((i > 0) ? 8f : 16f) + num2) / 2f;
+                float num3 = ((i > 0 ? 8f : 16f) + num2) / 2f;
                 num3 *= tailLengthFactorParam * tailLengthIVar;
                 tailLength += num3;
             }
@@ -272,7 +272,7 @@ namespace FinderMod.Search
             scaleType = LizardBodyScaleType.Patch;
             if (type != LizardType.Pink || vals[picker++] < 0.33333334f)
             {
-                scaleType = (LizardBodyScaleType) SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
+                scaleType = (LizardBodyScaleType)SearchUtil.GetRangeAt(seed, bodyScaleTypeRange, picker++);
             }
             else if (type == LizardType.Green || vals[picker++] < 0.5f)
             {
@@ -305,7 +305,7 @@ namespace FinderMod.Search
             }
 
             picker += 3;
-            colored = (type == LizardType.Green || type == LizardType.Red || vals[picker++] < 0.4f);
+            colored = type == LizardType.Green || type == LizardType.Red || vals[picker++] < 0.4f;
 
             // Offset for any other code
             picker += 2;
@@ -410,7 +410,7 @@ namespace FinderMod.Search
                 // do nothing lol
             }
             else if (graphic != 0) picker++;
-            colored = (vals[picker++] < 0.33333334f);
+            colored = vals[picker++] < 0.33333334f;
         }
 
         // Min add. values needed: 9
@@ -448,7 +448,7 @@ namespace FinderMod.Search
         {
             float bodyAndTailLength = GetBodyAndTailLength(type, vals);
 
-            if (vals[picker++] < 0.14285715f || (vals[picker++] < 0.9f && type == LizardType.Blue) || type == LizardType.Red || type == LizardType.Zoop)
+            if (vals[picker++] < 0.14285715f || vals[picker++] < 0.9f && type == LizardType.Blue || type == LizardType.Red || type == LizardType.Zoop)
             {
                 scaleType = LizardBodyScaleType.TwoLines;
 
@@ -494,7 +494,7 @@ namespace FinderMod.Search
             numScales = vals[picker++] < 0.2f ? 3 : 2;
 
             // Offsetting
-            if(vals[picker++] >= 0.4f) picker++;
+            if (vals[picker++] >= 0.4f) picker++;
 
             // Scale length
             float sturdy = vals[picker++];

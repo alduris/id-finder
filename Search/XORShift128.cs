@@ -39,7 +39,13 @@ namespace FinderMod.Search
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public uint XORShift() => NextU32();
+        public void Shift() => NextU32();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Shift(int n)
+        {
+            for (int i = 0; i < n; i++) NextU32();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Range(int min, int max)

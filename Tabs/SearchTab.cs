@@ -171,7 +171,7 @@ namespace FinderMod.Tabs
 
         internal void UpdateQueryBox()
         {
-            const float WHITESPACE_AMOUNT = 10f;
+            const float PADDING = 10f;
 
             // Remove old
             foreach (UIelement element in cont_queries.items)
@@ -194,7 +194,7 @@ namespace FinderMod.Tabs
                 cont_queries.AddItems(element);
             }
 
-            cont_queries.SetContentSize(cont_queries.size.y - y + 2 * WHITESPACE_AMOUNT, true);
+            cont_queries.SetContentSize(cont_queries.size.y - y + 2 * PADDING, true);
         }
 
         public override void Update()

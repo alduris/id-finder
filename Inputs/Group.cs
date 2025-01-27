@@ -12,7 +12,7 @@ namespace FinderMod.Inputs
         private const float PADDING = 10f;
 
         private OpRect rect = null;
-        public readonly List<IElement> children = children;
+        public List<IElement> children = children;
 
         public float Height => children.Sum(x => x is ISpecialGroupHeight y ? y.GroupHeight : x.Height) + MARGIN * Math.Max(0, children.Count - 1) + 2 * PADDING;
 

@@ -3,7 +3,7 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    public class Label(string text, bool big) : IElement
+    public class Label(string text, bool big = false) : IElement
     {
         public float Height => LabelTest.LineHeight(big);
 

@@ -3,7 +3,7 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
-    public class Whitespace(float size) : IElement
+    public class Whitespace(float size = 10f) : IElement
     {
         public float Height => size;
 

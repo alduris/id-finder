@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class BoolInput(string name, bool init) : Input<bool>(name, init)
+    public class BoolInput(string name, bool init = false) : Input<bool>(name, init)
     {
+
         public override float Height => 24f;
 
         protected override UIconfig GetElement(Vector2 pos) => new OpLabelCheckbox(Config(), pos);

@@ -12,7 +12,7 @@ namespace FinderMod.Inputs
         private readonly string[] options;
         private readonly float width;
 
-        public MultiChoiceInput(string name, string[] options, int init) : base(name, init)
+        public MultiChoiceInput(string name, string[] options, int init = 0) : base(name, init)
         {
             this.options = options;
             width = options.Max(x => LabelTest.GetWidth(x)) + 30f;
