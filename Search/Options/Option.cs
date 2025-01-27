@@ -21,6 +21,25 @@ namespace FinderMod.Search.Options
         /// </summary>
         protected readonly List<IElement> elements = [];
 
+        protected List<Input> Inputs {
+            get
+            {
+                var list = new List<Input>();
+                foreach (var element in elements)
+                {
+                    if (element is Input)
+                    {
+                        list.Add(element as Input);
+                    }
+                    else if (element is Group)
+                    {
+                        list.AddRange((element as Group).Inputs);
+                    }
+                }
+                return list;
+            }
+        }
+
         public void CreateOptions(ref float y, List<UIelement> output)
         {
             const float MARGIN = 6f;
