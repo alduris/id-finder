@@ -52,7 +52,8 @@ namespace FinderMod.Search
 
         public float Range(float min, float max)
         {
-            // This is still not 100% accurate due to some floating point errors but is what the original code does basically
+            // This is accurate to how the original code does it, though is often off by an insignificant amount (usually 1 or 2 bits on the very low end).
+            // Why? I can't exactly determine but it appears to be out of my control so ¯\_(ツ)_/¯
             float f = (NextU32() & 0x7FFFFFu) * 1.192093E-07f;
             return (((1.0f - f) * max) + (f * min));
         }
