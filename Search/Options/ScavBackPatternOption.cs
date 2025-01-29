@@ -235,14 +235,14 @@ namespace FinderMod.Search.Options
             }
 
             float r = 0f;
-            if (stInp.enabled) r += (useHardBackSpikes ? 0 : 1) ^ stInp.Value;
-            if (ctInp.enabled) r += Distance(colorType, ctInp.Value);
-            if (csInp.enabled) r += Distance(colored, csInp.Value);
-            if (spInp.enabled) r += Distance((int)pattern, spInp.Value);
-            if (rsInp.enabled) r += Distance(top, rsInp.Value);
-            if (reInp.enabled) r += Distance(bottom, rsInp.Value);
-            if (nsInp.enabled) r += Distance(numScales, nsInp.Value);
-            if (gsInp.enabled) r += Distance(generalSize, gsInp.Value);
+            if (stInp.enabled) r += (useHardBackSpikes ? 0 : 1) ^ stInp.value;
+            if (ctInp.enabled) r += Distance(colorType, ctInp.value);
+            if (csInp.enabled) r += Distance(colored, csInp.value);
+            if (spInp.enabled) r += Distance((int)pattern, spInp.value);
+            if (rsInp.enabled) r += Distance(top, rsInp.value);
+            if (reInp.enabled) r += Distance(bottom, rsInp.value);
+            if (nsInp.enabled) r += Distance(numScales, nsInp.value);
+            if (gsInp.enabled) r += Distance(generalSize, gsInp.value);
 
             return r;
         }

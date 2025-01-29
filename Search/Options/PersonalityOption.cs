@@ -30,7 +30,7 @@ namespace FinderMod.Search.Options
             for (int i = 0; i < 6; i++)
             {
                 var inp = elements[i] as Input<float>;
-                if (inp.enabled) r += Mathf.Abs(inp.Value - p[i]);
+                if (inp.enabled) r += Mathf.Abs(inp.value - p[i]);
             }
             return r;
         }

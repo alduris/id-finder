@@ -41,11 +41,11 @@ namespace FinderMod.Search.Options
             }
 
             float r = 0f;
-            if (dgeInp.enabled) r += Mathf.Abs(dge - dgeInp.Value);
-            if (midInp.enabled) r += Mathf.Abs(mid - midInp.Value);
-            if (mleInp.enabled) r += Mathf.Abs(mle - mleInp.Value);
-            if (blkInp.enabled) r += Mathf.Abs(blk - blkInp.Value);
-            if (reaInp.enabled) r += Mathf.Abs(rea - reaInp.Value);
+            if (dgeInp.enabled) r += Mathf.Abs(dge - dgeInp.value);
+            if (midInp.enabled) r += Mathf.Abs(mid - midInp.value);
+            if (mleInp.enabled) r += Mathf.Abs(mle - mleInp.value);
+            if (blkInp.enabled) r += Mathf.Abs(blk - blkInp.value);
+            if (reaInp.enabled) r += Mathf.Abs(rea - reaInp.value);
             return r;
         }
     }

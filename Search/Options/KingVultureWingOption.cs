@@ -43,7 +43,7 @@ namespace FinderMod.Search.Options
             r += DistanceIf(khb, colorB.HueInput);
             r += DistanceIf(ksb, colorB.SatInput);
             r += DistanceIf(klb, colorB.LightInput);
-            if (countInp.enabled) r += Math.Abs(nf - countInp.Value);
+            if (countInp.enabled) r += Math.Abs(nf - countInp.value);
 
             return r;
         }

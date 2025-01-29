@@ -77,10 +77,10 @@ namespace FinderMod.Search.Options
             float r = 0f;
             if (szInp.enabled) r += Distance(siz, szInp);
             if (wdInp.enabled) r += Distance(wde, wdInp);
-            if (colorInp.HueInput.enabled) r += WrapDistance(h, colorInp.HueInput.Value);
+            if (colorInp.HueInput.enabled) r += WrapDistance(h, colorInp.HueInput.value);
             if (colorInp.SatInput.enabled) r += Distance(s, colorInp.SatInput);
             if (colorInp.LightInput.enabled) r += Distance(l, colorInp.LightInput);
-            if (darkInp.enabled) r += (drk ^ darkInp.Value ? 0f : 1f);
+            if (darkInp.enabled) r += (drk ^ darkInp.value ? 0f : 1f);
             if (eyeInp.enabled) r += Distance(eye, eyeInp);
             return r;
         }

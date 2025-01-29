@@ -120,12 +120,12 @@ namespace FinderMod.Search.Options
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static float Distance(float num, Input<float> target)
         {
-            return Mathf.Abs(num - target.Value);
+            return Mathf.Abs(num - target.value);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static float DistanceIf(float num, Input<float> target)
         {
-            if (target.enabled) return Mathf.Abs(num - target.Value);
+            if (target.enabled) return Mathf.Abs(num - target.value);
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +133,7 @@ namespace FinderMod.Search.Options
         {
             if (target.enabled)
             {
-                return Vector4.Distance((Vector4)col, (Vector4)target.Value);
+                return Vector4.Distance((Vector4)col, (Vector4)target.value);
             }
             return 0f;
         }

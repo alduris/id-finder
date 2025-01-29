@@ -37,7 +37,7 @@ namespace FinderMod.Inputs
 
         private void UpdateColor(Input<float> _, float __, float ___)
         {
-            Color color = Custom.HSL2RGB(HueInput.Value, SatInput.Value, LightInput.Value);
+            Color color = Custom.HSL2RGB(HueInput.value, SatInput.value, LightInput.value);
             ColorEdge = color;
             ColorFill = color;
         }

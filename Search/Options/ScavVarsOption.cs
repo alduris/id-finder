@@ -87,22 +87,22 @@ namespace FinderMod.Search.Options
             float tailSegs = (Random.Value < 0.5f) ? 0 : Random.Range(1, 5);
 
             float r = 0f;
-            if (hsInp.enabled) r += Mathf.Abs(headSize - hsInp.Value);
-            if (etInp.enabled) r += Mathf.Abs(eartlerWidth - etInp.Value);
-            if (esInp.enabled) r += Mathf.Abs(eyeSize - esInp.Value);
-            if (enInp.enabled) r += Mathf.Abs(narrowEyes - enInp.Value);
-            if (eaInp.enabled) r += Mathf.Abs(eyesAngle - eaInp.Value);
-            if (fatInp.enabled) r += Mathf.Abs(fatness - fatInp.Value);
-            if (wnInp.enabled) r += Mathf.Abs(narrowWaist - wnInp.Value);
-            if (ntInp.enabled) r += Mathf.Abs(neckThickness - ntInp.Value);
-            if (psInp.enabled) r += Mathf.Abs(pupilSize - psInp.Value);
-            if (dpInp.enabled) r += deepPupils ^ dpInp.Value ? 0 : 1;
-            if (hcbInp.enabled) r += Mathf.Abs(handsHeadColor - hcbInp.Value);
-            if (lsInp.enabled) r += Mathf.Abs(legsSize - lsInp.Value);
-            if (atInp.enabled) r += Mathf.Abs(armThickness - atInp.Value);
-            if (cetInp.enabled) r += coloredEartlerTips ^ cetInp.Value ? 0 : 1;
-            if (twInp.enabled) r += Mathf.Abs(wideTeeth - twInp.Value);
-            if (tsInp.enabled) r += Math.Abs(tailSegs - tsInp.Value);
+            if (hsInp.enabled) r += Mathf.Abs(headSize - hsInp.value);
+            if (etInp.enabled) r += Mathf.Abs(eartlerWidth - etInp.value);
+            if (esInp.enabled) r += Mathf.Abs(eyeSize - esInp.value);
+            if (enInp.enabled) r += Mathf.Abs(narrowEyes - enInp.value);
+            if (eaInp.enabled) r += Mathf.Abs(eyesAngle - eaInp.value);
+            if (fatInp.enabled) r += Mathf.Abs(fatness - fatInp.value);
+            if (wnInp.enabled) r += Mathf.Abs(narrowWaist - wnInp.value);
+            if (ntInp.enabled) r += Mathf.Abs(neckThickness - ntInp.value);
+            if (psInp.enabled) r += Mathf.Abs(pupilSize - psInp.value);
+            if (dpInp.enabled) r += deepPupils ^ dpInp.value ? 0 : 1;
+            if (hcbInp.enabled) r += Mathf.Abs(handsHeadColor - hcbInp.value);
+            if (lsInp.enabled) r += Mathf.Abs(legsSize - lsInp.value);
+            if (atInp.enabled) r += Mathf.Abs(armThickness - atInp.value);
+            if (cetInp.enabled) r += coloredEartlerTips ^ cetInp.value ? 0 : 1;
+            if (twInp.enabled) r += Mathf.Abs(wideTeeth - twInp.value);
+            if (tsInp.enabled) r += Math.Abs(tailSegs - tsInp.value);
             return r;
         }
     }

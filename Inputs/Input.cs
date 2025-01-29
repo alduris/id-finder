@@ -21,7 +21,7 @@ namespace FinderMod.Inputs
         public bool enabled = true;
         protected bool inputOnNewLine = false;
 
-        public T Value { get; protected set; } = init;
+        public T value = init;
 
         /// <summary>
         /// Height of the input. Should be larger than 24f.
@@ -61,9 +61,9 @@ namespace FinderMod.Inputs
 
         private void Element_OnValueChanged(UIconfig config, string value, string oldValue)
         {
-            T oldVal = Value;
-            Value = GetValue(config);
-            OnValueChanged?.Invoke(this, Value, oldVal);
+            T oldVal = this.value;
+            this.value = GetValue(config);
+            OnValueChanged?.Invoke(this, this.value, oldVal);
         }
 
         protected abstract UIconfig GetElement(Vector2 pos);
@@ -71,7 +71,7 @@ namespace FinderMod.Inputs
 
 
         // Helpers
-        protected Configurable<T> Config() => OpUtil.CosmeticBind(Value);
+        protected Configurable<T> Config() => OpUtil.CosmeticBind(value);
 
         private void UpdateQueryBox()
         {
@@ -86,6 +86,6 @@ namespace FinderMod.Inputs
     public abstract class RangedInput<T>(string name, T init) : Input<T>(name, init) where T : IComparable
     {
         // Literally just provides the helper
-        protected Configurable<T> ConfigRange(T min, T max) => OpUtil.CosmeticRange(Value, min, max);
+        protected Configurable<T> ConfigRange(T min, T max) => OpUtil.CosmeticRange(value, min, max);
     }
 }

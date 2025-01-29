@@ -192,19 +192,19 @@ namespace FinderMod.Search.Options
 
             float r = 0f;
 
-            if (body.HueInput.enabled) r += WrapDistance(bodyColor.hue, body.HueInput.Value);
+            if (body.HueInput.enabled) r += WrapDistance(bodyColor.hue, body.HueInput.value);
             if (body.SatInput.enabled) r += Distance(bodyColor.saturation, body.SatInput);
             if (body.LightInput.enabled) r += Distance(bodyColor.lightness, body.LightInput);
 
-            if (head.HueInput.enabled) r += WrapDistance(headColor.hue, head.HueInput.Value);
+            if (head.HueInput.enabled) r += WrapDistance(headColor.hue, head.HueInput.value);
             if (head.SatInput.enabled) r += Distance(headColor.saturation, head.SatInput);
             if (head.LightInput.enabled) r += Distance(headColor.lightness, head.LightInput);
 
-            if (deco.HueInput.enabled) r += WrapDistance(decoColor.hue, deco.HueInput.Value);
+            if (deco.HueInput.enabled) r += WrapDistance(decoColor.hue, deco.HueInput.value);
             if (deco.SatInput.enabled) r += Distance(decoColor.saturation, deco.SatInput);
             if (deco.LightInput.enabled) r += Distance(decoColor.lightness, deco.LightInput);
 
-            if (eye.HueInput.enabled) r += WrapDistance(eyeColor.hue, eye.HueInput.Value);
+            if (eye.HueInput.enabled) r += WrapDistance(eyeColor.hue, eye.HueInput.value);
             if (eye.LightInput.enabled) r += Distance(eyeColor.lightness, eye.LightInput);
 
             return r;
