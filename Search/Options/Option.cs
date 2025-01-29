@@ -129,6 +129,15 @@ namespace FinderMod.Search.Options
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float DistanceIf(Color col, Input<Color> target)
+        {
+            if (target.enabled)
+            {
+                return Vector4.Distance((Vector4)col, (Vector4)target.Value);
+            }
+            return 0f;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static float WrapDistance(float num, float target)
         {
             return Mathf.Min(Mathf.Abs(num - target), Mathf.Abs(num - (target + 1)), Mathf.Abs(num - (target - 1)));

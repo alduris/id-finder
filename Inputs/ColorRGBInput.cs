@@ -12,6 +12,8 @@ namespace FinderMod.Inputs
             inputOnNewLine = true;
         }
 
+        public ColorRGBInput(string name) : this(name, new Color(Random.value, Random.value, Random.value)) { }
+
         protected override UIconfig GetElement(Vector2 pos)
         {
             return new OpColorPicker(Config(), pos);
