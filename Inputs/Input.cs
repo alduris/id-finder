@@ -21,7 +21,7 @@ namespace FinderMod.Inputs
         public bool enabled = true;
         protected bool inputOnNewLine = false;
 
-        public T value = init;
+        protected internal T value = init;
 
         /// <summary>
         /// Height of the input. Should be larger than 24f.
