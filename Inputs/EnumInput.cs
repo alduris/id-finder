@@ -24,7 +24,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            var el = new OpResourceSelector(OpUtil.CosmeticBind(value), pos, 160f);
+            var el = new OpResourceSelector(Config(), pos, 160f);
             if (nameConv != null)
             {
                 el._itemList = el._itemList.Select(x => new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value)).ToArray();

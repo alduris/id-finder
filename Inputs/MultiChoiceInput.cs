@@ -22,14 +22,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            var el = new OpComboBox(OpUtil.CosmeticBind(options[value]), pos, width, options);
-            el.OnListOpen += El_OnListOpen;
-            return el;
-        }
-
-        private void El_OnListOpen(UIfocusable self)
-        {
-            self.MoveToFront();
+            return new OpComboBox(OpUtil.CosmeticBind(options[value]), pos, width, options);
         }
 
         protected override int GetValue(UIconfig element)
