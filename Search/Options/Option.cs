@@ -101,12 +101,12 @@ namespace FinderMod.Search.Options
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        protected internal static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
             return Mathf.Clamp(baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation, 0f, 1f);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        protected internal static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
             float num = baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation + 1f;
             return num - Mathf.Floor(num);

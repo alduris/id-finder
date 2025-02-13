@@ -12,16 +12,20 @@ namespace FinderMod.Inputs
         private const float PADDING = 10f;
 
         private OpRect rect = null;
+        public bool hasRect = true;
         public List<IElement> children = children;
 
         public float Height => children.Sum(x => x is ISpecialGroupHeight y ? y.GroupHeight : x.Height) + MARGIN * Math.Max(0, children.Count - 1) + 2 * PADDING;
 
         public void Create(float x, ref float y, List<UIelement> elements)
         {
-            float width = 600f - (x - 10f) / 10f * 6f - 20f;
-            rect = new OpRect(new Vector2(x, y - Height), new Vector2(width, Height));
-            if (_colorEdge.HasValue) rect.colorEdge = _colorEdge.Value;
-            if (_colorFill.HasValue) rect.colorFill = _colorFill.Value;
+            if (hasRect)
+            {
+                float width = 600f - (x - 10f) / 10f * 6f - 20f;
+                rect = new OpRect(new Vector2(x, y - Height), new Vector2(width, Height));
+                if (_colorEdge.HasValue) rect.colorEdge = _colorEdge.Value;
+                if (_colorFill.HasValue) rect.colorFill = _colorFill.Value;
+            }
 
             y -= PADDING + MARGIN;
             foreach (var child in children)

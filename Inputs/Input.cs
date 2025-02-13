@@ -19,6 +19,7 @@ namespace FinderMod.Inputs
         public string description = null;
         private string LabelText => name + (enabled && !inputOnNewLine ? ":  " : ""); // yes the two spaces are intentional
         public bool enabled = true;
+        public bool forceEnabled = false;
         protected bool inputOnNewLine = false;
 
         protected internal T value = init;
@@ -28,7 +29,7 @@ namespace FinderMod.Inputs
         /// </summary>
         public abstract float Height { get; }
 
-        public float GroupHeight => inputOnNewLine ? (enabled ? 28f + Height : 24f) : Height;
+        public float GroupHeight => inputOnNewLine ? (enabled || forceEnabled ? 28f + Height : 24f) : Height;
 
 
         // Element creation
@@ -36,14 +37,22 @@ namespace FinderMod.Inputs
         {
             y -= inputOnNewLine ? 24f : Height;
 
-            var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : Height / 2f - 12f)));
-            cb.OnValueUpdate += (_, t, f) =>
+            if (!forceEnabled)
             {
-                enabled = cb.GetValueBool();
-                UpdateQueryBox();
-            };
+                var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : Height / 2f - 12f)));
+                cb.OnValueUpdate += (_, t, f) =>
+                {
+                    enabled = cb.GetValueBool();
+                    UpdateQueryBox();
+                };
+            }
+            else
+            {
+                enabled = true;
+            }
 
-            elements.Add(new OpLabel(x + 34f, y + (inputOnNewLine ? 0f : Height / 2f - LabelTest._lineHalfHeight), LabelText));
+            float cbOffset = forceEnabled ? 0f : 34f;
+            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 0f : Height / 2f - LabelTest._lineHalfHeight), LabelText));
 
             if (enabled)
             {
@@ -51,7 +60,7 @@ namespace FinderMod.Inputs
                 {
                     y -= 4f + Height;
                 }
-                var elX = x + 34f + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
+                var elX = x + cbOffset + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
                 var element = GetElement(new Vector2(elX, y));
                 element.OnValueChanged += Element_OnValueChanged;
                 if (description != null) element.description = description;
@@ -73,7 +82,7 @@ namespace FinderMod.Inputs
         // Helpers
         protected Configurable<T> Config() => OpUtil.CosmeticBind(value);
 
-        private void UpdateQueryBox()
+        protected void UpdateQueryBox()
         {
             SearchTab.instance.UpdateQueryBox();
         }
