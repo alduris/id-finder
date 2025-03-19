@@ -146,7 +146,6 @@ namespace FinderMod.Tabs
             // Remove old
             foreach (UIelement element in cont_queries.items)
             {
-                Plugin.logger.LogDebug(element);
                 element.Deactivate();
                 _RemoveItem(element);
             }

@@ -106,7 +106,6 @@ namespace FinderMod.Search
                 ref float prog = ref progress[thread];
 
                 // Search
-                Plugin.logger.LogDebug(thread + ": " + res.GetLength(0) + "," + res.GetLength(1) + " / " + distinctLinks + "," + results);
                 try
                 {
                     uint gap = PositiveDirGap((int)min, (int)max, 1);
