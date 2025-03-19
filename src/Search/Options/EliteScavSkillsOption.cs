@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
@@ -44,6 +45,31 @@ namespace FinderMod.Search.Options
             if (blkInp.enabled) r += Mathf.Abs(blk - blkInp.value);
             if (reaInp.enabled) r += Mathf.Abs(rea - reaInp.value);
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            float dge, mid, mle, blk, rea;
+            Personality p = new(Random);
+
+            dge = Custom.PushFromHalf(Mathf.Lerp((Random.Value < 0.5f) ? p.nrv : p.agg, Random.Value, Random.Value), 1f + Random.Value);
+            mid = Custom.PushFromHalf(Mathf.Lerp((Random.Value < 0.5f) ? p.nrg : p.agg, Random.Value, Random.Value), 1f + Random.Value);
+            mle = Custom.PushFromHalf(Random.Value, 1f + Random.Value);
+            blk = Custom.PushFromHalf(Mathf.InverseLerp(0.35f, 1f, Mathf.Lerp((Random.Value < 0.5f) ? p.brv : p.nrg, Random.Value, Random.Value)), 1f + Random.Value);
+            rea = Custom.PushFromHalf(Mathf.Lerp(p.nrg, Random.Value, Random.Value), 1f + Random.Value);
+
+            float n = Mathf.Lerp(p.dom, 1f, 0.15f);
+            dge = Mathf.Lerp(dge, 1f, n * 0.15f); // Dodge
+            mid = Mathf.Lerp(mid, 1f, n * 0.1f); // Mid-range
+            blk = Mathf.Lerp(blk, 1f, n * 0.1f);  // Blocking
+            rea = Mathf.Lerp(rea, 1f, n * 0.05f);  // Reaction
+
+            yield return $"Dodge: {dge}";
+            yield return $"Mid-range: {mid}";
+            yield return $"Melee: {mle}";
+            yield return $"Blocking: {blk}";
+            yield return $"Reaction: {rea}";
+            yield break;
         }
     }
 }

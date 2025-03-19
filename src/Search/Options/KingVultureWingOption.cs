@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
 
@@ -46,6 +47,29 @@ namespace FinderMod.Search.Options
             if (countInp.enabled) r += Math.Abs(nf - countInp.value);
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            // Color variables
+            float kha, ksa, kla, khb, ksb, klb;
+
+            khb = Mathf.Lerp(0.93f, 1.07f, Random.Value);
+            ksb = Mathf.Lerp(0.8f, 1f, 1f - Random.Value * Random.Value);
+            klb = Mathf.Lerp(0.45f, 1f, Random.Value * Random.Value);
+            kha = khb + Mathf.Lerp(-0.25f, 0.25f, Random.Value);
+            ksa = Mathf.Lerp(0.5f, 0.7f, Random.Value);
+            kla = Mathf.Lerp(0.7f, 0.8f, Random.Value);
+
+            kha %= 1f; khb %= 1f;
+
+            // Wing feather count
+            int nf = Random.Range(15, 25);
+
+            // Relay results
+            yield return $"Color A: hsl({kha}, {ksa}, {kla})";
+            yield return $"Color B: hsl({khb}, {ksb}, {klb})";
+            yield return $"Feather count: {nf}";
         }
     }
 }

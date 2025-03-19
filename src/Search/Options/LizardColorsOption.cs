@@ -66,9 +66,59 @@ namespace FinderMod.Search.Options
                     h = s = l = 0; break;
             }
 
-            h = h < 0 ? 0 : h > 1 ? 1 : h;
-
             return DistanceIf(h, colrInp.HueInput) + DistanceIf(s, colrInp.SatInput) + DistanceIf(l, colrInp.LightInput);
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            LizardType[] types = [LizardType.Pink, LizardType.Green, LizardType.Blue, LizardType.Yellow, LizardType.Salamander, LizardType.Red, LizardType.Cyan];
+
+            foreach (var type in types)
+            {
+                float h, s, l;
+                switch (type)
+                {
+                    case LizardType.Pink:
+                        h = WrappedRandomVariation(0.87f, 0.1f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Green:
+                        h = WrappedRandomVariation(0.32f, 0.1f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Blue:
+                        h = WrappedRandomVariation(0.57f, 0.08f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Yellow:
+                        h = WrappedRandomVariation(0.1f, 0.05f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Salamander:
+                        h = WrappedRandomVariation(0.9f, 0.15f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.4f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Red:
+                        h = WrappedRandomVariation(0.0025f, 0.02f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    case LizardType.Cyan:
+                        h = WrappedRandomVariation(0.49f, 0.04f, 0.6f, Random);
+                        s = 1f;
+                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                        break;
+                    default:
+                        continue;
+                }
+
+                yield return $"{type}: hsl({h}, {s}, {l})";
+            }
         }
 
         /// <summary>

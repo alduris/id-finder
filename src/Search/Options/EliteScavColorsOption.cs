@@ -1,4 +1,5 @@
-﻿using FinderMod.Inputs;
+﻿using System.Collections.Generic;
+using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private (HSLColor, HSLColor, HSLColor) GetColors(XORShift128 Random)
         {
             Personality p = new(Random);
 
@@ -162,6 +163,13 @@ namespace FinderMod.Search.Options
             decoColor = new HSLColor((Random.Value < 0.65f) ? bodyHue : ((Random.Value < 0.5f) ? accentHue1 : accentHue2), Random.Value, 0.5f + 0.5f * Mathf.Pow(Random.Value, 0.5f));
             decoColor.lightness *= Mathf.Lerp(generalMelanin, Random.Value, 0.5f);
 
+            return (headColor, bodyColor, decoColor);
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var (headColor, bodyColor, decoColor) = GetColors(Random);
+
             float r = 0f;
 
             r += WrapDistanceIf(bodyColor.hue, body.HueInput);
@@ -177,6 +185,16 @@ namespace FinderMod.Search.Options
             r += DistanceIf(decoColor.lightness, deco.LightInput);
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var (headColor, bodyColor, decoColor) = GetColors(Random);
+
+            yield return $"Head color: hsl({headColor.hue}, {headColor.saturation}, {headColor.lightness})";
+            yield return $"Body color: hsl({bodyColor.hue}, {bodyColor.saturation}, {bodyColor.lightness})";
+            yield return $"Deco color: hsl({decoColor.hue}, {decoColor.saturation}, {decoColor.lightness})";
+            yield break;
         }
     }
 }

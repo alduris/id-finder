@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
@@ -15,24 +16,49 @@ namespace FinderMod.Search.Options
             elements = [
                 hsInp = new FloatInput("Head size"),
                 etInp = new FloatInput("Eartler thickness"),
+                new Whitespace(),
                 esInp = new FloatInput("Eye size"),
                 enInp = new FloatInput("Eye narrowness"),
                 eaInp = new FloatInput("Eye angle") { description = "Eye angle varies from -5 (value=0) to 60 (value=1) degrees, though there are extra calculations" },
+                new Whitespace(),
                 fatInp = new FloatInput("Fatness"),
                 wnInp = new FloatInput("Waist narrowness"),
                 ntInp = new FloatInput("Neck thickness"),
+                new Whitespace(),
                 psInp = new FloatInput("Pupil size") { description = "Deep pupils always makes this 0.7" },
                 dpInp = new BoolInput("Deep pupils?") { description = "Creates an inset look in the eyes. Makes pupil size constant." },
+                new Whitespace(),
                 hcbInp = new FloatInput("Hands color blend") { description = "Controls how much of the body (value=0) and the head (value=1) colors are used in the hands" },
                 lsInp = new FloatInput("Leg size"),
                 atInp = new FloatInput("Arm thickness"),
+                new Whitespace(),
                 cetInp = new BoolInput("Colored eartler tips?"),
                 twInp = new FloatInput("Teeth wideness"),
                 tsInp = new IntInput("Tail segments", 1, 4)
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private struct Results
+        {
+            public float headSize;
+            public float eartlerThickness;
+            public float eyeSize;
+            public float eyeNarrowness;
+            public float eyeAngle;
+            public float fatness;
+            public float waistNarrowness;
+            public float neckThickness;
+            public float pupilSize;
+            public bool deepPupils;
+            public float handsColorBlend;
+            public float legSize;
+            public float armThickness;
+            public bool coloredEartlerTips;
+            public float teethWideness;
+            public int tailSegments;
+        }
+
+        private Results GetResults(XORShift128 Random)
         {
             Personality p = new(Random);
             float generalMelanin = Custom.PushFromHalf(Random.Value, 2f);
@@ -84,26 +110,80 @@ namespace FinderMod.Search.Options
             float armThickness = Mathf.Lerp(Random.Value, Mathf.Lerp(p.dom, fatness, 0.5f), Random.Value);
             bool coloredEartlerTips = Random.Value < 1f / Mathf.Lerp(1.2f, 10f, generalMelanin);
             float wideTeeth = Random.Value;
-            float tailSegs = (Random.Value < 0.5f) ? 0 : Random.Range(1, 5);
+            int tailSegs = (Random.Value < 0.5f) ? 0 : Random.Range(1, 5);
+
+            return new Results()
+            {
+                headSize = headSize,
+                eartlerThickness = eartlerWidth,
+                eyeSize = eyeSize,
+                eyeNarrowness = narrowEyes,
+                eyeAngle = eyesAngle,
+                fatness = fatness,
+                waistNarrowness = narrowWaist,
+                neckThickness = neckThickness,
+                pupilSize = pupilSize,
+                deepPupils = deepPupils,
+                handsColorBlend = handsHeadColor,
+                legSize = legsSize,
+                armThickness = armThickness,
+                coloredEartlerTips = coloredEartlerTips,
+                teethWideness = wideTeeth,
+                tailSegments = tailSegs
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
 
             float r = 0f;
-            if (hsInp.enabled) r += Mathf.Abs(headSize - hsInp.value);
-            if (etInp.enabled) r += Mathf.Abs(eartlerWidth - etInp.value);
-            if (esInp.enabled) r += Mathf.Abs(eyeSize - esInp.value);
-            if (enInp.enabled) r += Mathf.Abs(narrowEyes - enInp.value);
-            if (eaInp.enabled) r += Mathf.Abs(eyesAngle - eaInp.value);
-            if (fatInp.enabled) r += Mathf.Abs(fatness - fatInp.value);
-            if (wnInp.enabled) r += Mathf.Abs(narrowWaist - wnInp.value);
-            if (ntInp.enabled) r += Mathf.Abs(neckThickness - ntInp.value);
-            if (psInp.enabled) r += Mathf.Abs(pupilSize - psInp.value);
-            if (dpInp.enabled) r += deepPupils ^ dpInp.value ? 0 : 1;
-            if (hcbInp.enabled) r += Mathf.Abs(handsHeadColor - hcbInp.value);
-            if (lsInp.enabled) r += Mathf.Abs(legsSize - lsInp.value);
-            if (atInp.enabled) r += Mathf.Abs(armThickness - atInp.value);
-            if (cetInp.enabled) r += coloredEartlerTips ^ cetInp.value ? 0 : 1;
-            if (twInp.enabled) r += Mathf.Abs(wideTeeth - twInp.value);
-            if (tsInp.enabled) r += Math.Abs(tailSegs - tsInp.value);
+            r += DistanceIf(results.headSize, hsInp);
+            r += DistanceIf(results.eartlerThickness, etInp);
+            r += DistanceIf(results.eyeSize, esInp);
+            r += DistanceIf(results.eyeNarrowness, enInp);
+            r += DistanceIf(results.eyeAngle, eaInp);
+            r += DistanceIf(results.fatness, fatInp);
+            r += DistanceIf(results.waistNarrowness, wnInp);
+            r += DistanceIf(results.neckThickness, ntInp);
+            r += DistanceIf(results.pupilSize, psInp);
+            r += DistanceIf(results.deepPupils, dpInp);
+            r += DistanceIf(results.handsColorBlend, hcbInp);
+            r += DistanceIf(results.legSize, lsInp);
+            r += DistanceIf(results.armThickness, atInp);
+            r += DistanceIf(results.coloredEartlerTips, cetInp);
+            r += DistanceIf(results.teethWideness, twInp);
+            r += DistanceIf(results.tailSegments, tsInp);
+
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
+            yield return $"Head size: {results.headSize}";
+            yield return $"Eartler thickness: {results.eartlerThickness}";
+            yield return null!;
+            yield return $"Eye size: {results.eyeSize}";
+            yield return $"Eye narrowness: {results.eyeNarrowness}";
+            yield return $"Eye angle: {results.eyeAngle}";
+            yield return null!;
+            yield return $"Fatness: {results.fatness}";
+            yield return $"Waist narrowness: {results.waistNarrowness}";
+            yield return $"Neck thickness: {results.neckThickness}";
+            yield return null!;
+            yield return $"Pupil size: {results.pupilSize}";
+            yield return $"Has deep pupils: {(results.deepPupils ? "Yes" : "No")}";
+            yield return null!;
+            yield return $"Hands color blend: {results.handsColorBlend}";
+            yield return $"Leg size: {results.legSize}";
+            yield return $"Arm thickness: {results.armThickness}";
+            yield return null!;
+            yield return $"Has colored eartler tips: {(results.coloredEartlerTips ? "Yes" : "No")}";
+            yield return $"Teeth wideness: {results.teethWideness}";
+            yield return $"Tail segments: {results.tailSegments}";
+            yield break;
         }
     }
 }

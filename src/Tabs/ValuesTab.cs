@@ -1,33 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using static FinderMod.OpUtil;
 
-/*namespace FinderMod.Tabs
+namespace FinderMod.Tabs
 {
-    internal class ValuesTab : BaseTab
+    internal class ValuesTab(OptionInterface option) : BaseTab(option, "Values")
     {
-        public ValuesTab(OptionInterface option) : base(option, "Values")
-        {
-        }
-
-        private OpComboBox searchItems;
-        private OpTextBox inputId;
-        private OpScrollBox outputBox;
+        private OpComboBox searchItems = null!;
+        private OpTextBox inputId = null!;
+        private OpScrollBox outputBox = null!;
 
         public override void Initialize()
         {
             searchItems = new OpComboBox(
-                CosmeticBind(""), new(10f, 510f), 250f,
-                new List<ListItem>(SearchOptions.Groups.Keys.ToArray()
-                    .Where(s => ModManager.MSC || !SearchOptions.Groups[s].MSC)
+                CosmeticBind(""), new(10f, 520f), 250f,
+                new List<ListItem>(
+                    OptionRegistry.ListOptions()
                     .Select(s => new ListItem(s))
                 )
-            );
-            inputId = new OpTextBox(CosmeticBind<int>(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f);
+            )
+            { listHeight = 20 };
+            inputId = new OpTextBox(CosmeticBind(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f) { allowSpace = true };
             outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
 
             AddItems(
@@ -39,8 +35,14 @@ using static FinderMod.OpUtil;
             );
             outputBox.AddItems(new OpLabel(10f, outputBox.size.y - 30f, "Select an item from the dropdown"));
 
-            searchItems.OnValueChanged += (_, _, _) => UpdateOutputBox();
-            inputId.OnValueUpdate += (_, _, _) => UpdateOutputBox();
+            searchItems.OnValueChanged += UpdateValues;
+            inputId.OnValueUpdate += UpdateValues;
+        }
+
+        private void UpdateValues(UIconfig _, string value, string oldValue)
+        {
+            Plugin.logger.LogDebug(oldValue + " --> " + value);
+            if (value != oldValue) UpdateOutputBox();
         }
 
         private void UpdateOutputBox()
@@ -55,87 +57,32 @@ using static FinderMod.OpUtil;
             }
             outputBox.items.Clear();
 
-            if (!SearchOptions.Groups.ContainsKey(searchItems.value) || inputId.value == "")
+            var name = searchItems.value;
+            Plugin.logger.LogDebug("Updated output box! " + OptionRegistry.TryGetOption(name, out var _));
+            if (OptionRegistry.TryGetOption(name, out var option))
             {
-                return;
-            }
-
-            // Get values
-            Setup setup = SearchOptions.Groups[searchItems.value];
-            int seed = inputId.valueInt;
-            float y = outputBox.size.y - 10f - LINE_HEIGHT;
-            float height = 20f;
-
-            // Count how many random values we need to get (guaranteed at least 9 floats, personality requires it)
-            int floatCount = Math.Max(9, setup.MinFloats);
-            int rangeCount = setup.FloatRanges?.GetLength(0) ?? 0;
-            int intRangeCount = setup.IntRanges?.GetLength(0) ?? 0;
-            float[] floats = new float[floatCount + rangeCount + intRangeCount];
-            float[] personality = new float[6];
-            int frStart = floatCount;
-            int irStart = floatCount + rangeCount;
-
-            // Get the random values
-            SearchUtil.GetRandomFloats(seed, floatCount, floats);
-            SearchUtil.FillPersonality(floats, personality);
-            if (rangeCount > 0)
-            {
-                SearchUtil.GetRandomRanges(seed, setup.FloatRanges, floats, floatCount);
-            }
-            if (intRangeCount > 0)
-            {
-                SearchUtil.GetRandomRanges(seed, setup.IntRanges, floats, floatCount + rangeCount);
-            }
-            float[] values = setup.Apply(floats, personality, seed, frStart, irStart);
-
-            // Build the output string
-            int valuePtr = 0;
-            for (int i = 0; i < setup.Inputs.Length; i++)
-            {
-                InputType type = setup.Inputs[i].Type;
-                string s;
-
-                // Deal with whitespace stuff
-                if (type == InputType.Whitespace || setup.Inputs[i].Name is null)
+                int seed = inputId.valueInt;
+                float y = outputBox.size.y - 10f;
+                foreach (var str in option.GetValues(seed))
                 {
-                    y -= WHITESPACE_HEIGHT;
-                    height += WHITESPACE_HEIGHT;
-                    continue;
-                }
-
-                // Deal with labels too I guess
-                if (type == InputType.Label)
-                {
-                    s = setup.Inputs[i].Name;
-                }
-                else
-                {
-                    // Add value(s)
-                    s = setup.Inputs[i].Name + ": " + type switch
+                    if (str != null)
                     {
-                        InputType.MultiChoice => 1 + (int)(values[valuePtr++] - setup.Inputs[i].Range.Item1),
-                        // InputType.Integer => (int)values[valuePtr++],
-                        InputType.Boolean => values[valuePtr++] == 1f ? "Yes" : "No",
-                        InputType.ColorRGB => "rgb(" + values[valuePtr++] + ", " + values[valuePtr++] + ", " + values[valuePtr++] + ")",
-                        _ => values[valuePtr++],
-                    };
+                        y -= LINE_HEIGHT;
+                        var label = new OpLabel(10f, y, str);
+                        outputBox.AddItems(label);
+                        label.lastScreenPos = label.pos;
+                    }
+                    else
+                    {
+                        y -= WHITESPACE_HEIGHT;
+                    }
                 }
-
-                // Append items
-                var label = new OpLabel(10f, y, s);
-                if (setup.Inputs[i].Description is not null) label.description = setup.Inputs[i].Description;
-                outputBox.AddItems(label);
-                y -= LINE_HEIGHT;
-                height += LINE_HEIGHT;
+                outputBox.SetContentSize(outputBox.size.y - y + 10f, true);
             }
-
-            outputBox.SetContentSize(height, true);
         }
 
         public override void Update()
         {
-            // throw new NotImplementedException();
         }
     }
 }
-*/

@@ -1,4 +1,6 @@
-﻿using FinderMod.Inputs;
+﻿using System;
+using System.Collections.Generic;
+using FinderMod.Inputs;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -61,6 +63,52 @@ namespace FinderMod.Search.Options
             r += DistanceIf(tailFatness, tfInp);
             r += DistanceIf(tailColor, tcInp);
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
+            foreach (LizardType type in Enum.GetValues(typeof(LizardType)))
+            {
+                Random.InitState(x, y, z, w);
+
+                float headSize = ClampedRandomVariation(0.5f, 0.07f, 0.5f, Random) * 2f;
+                if (Random.Value < 0.5f)
+                {
+                    headSize = 1f;
+                }
+                float fatness = ClampedRandomVariation(0.5f, 0.12f, 0.5f, Random) * 2f;
+                float tailLength = ClampedRandomVariation(0.5f, 0.2f, 0.3f, Random) * 2f;
+                float tailFatness = ClampedRandomVariation(0.45f, 0.1f, 0.3f, Random) * 2f;
+                float tailColor = 0f;
+                if (type != LizardType.White && Random.Value > 0.5f)
+                {
+                    tailColor = Random.Value;
+                }
+                if (type == LizardType.Red)
+                {
+                    fatness = Mathf.Min(1f, fatness);
+                    tailFatness = Mathf.Min(1f, tailFatness);
+                }
+                else if (type == LizardType.Black)
+                {
+                    fatness = ClampedRandomVariation(0.45f, 0.06f, 0.5f, Random) * 2f;
+                }
+                else if (type == LizardType.Caramel || type == LizardType.Zoop)
+                {
+                    fatness = Mathf.Min(0.8f, fatness);
+                    tailFatness = Mathf.Min(0.9f, tailFatness);
+                }
+
+                yield return type.ToString();
+                yield return $"  Head size: {headSize}";
+                yield return $"  Fatness: {fatness}";
+                yield return $"  Tail length: {tailLength}";
+                yield return $"  Tail fatness: {tailFatness}";
+                yield return $"  Tail color: {tailColor}";
+                yield return null!;
+            }
+            yield break;
         }
     }
 }

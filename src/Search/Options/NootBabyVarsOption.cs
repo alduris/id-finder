@@ -1,4 +1,5 @@
-﻿using FinderMod.Inputs;
+﻿using System.Collections.Generic;
+using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
 
@@ -21,7 +22,17 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private struct Results
+        {
+            public float wingSize;
+            public float legSize;
+            public float fatness;
+            public float snoutLength;
+            public Color bodyColor;
+            public Color eyeColor;
+        }
+
+        private Results GetResults(XORShift128 Random)
         {
             float wingsSize, legsFac, fatness, snoutLength, hue, hueDiv, lightness;
 
@@ -51,16 +62,43 @@ namespace FinderMod.Search.Options
                 eyeColor = Custom.HSL2RGB(hue + 0.5f, 1f, Mathf.Lerp(0.7f, 0.3f, Mathf.Pow(lightness, 1.5f)));
             }
 
+            return new Results()
+            {
+                wingSize = wingsSize,
+                legSize = legsFac,
+                fatness = fatness,
+                snoutLength = snoutLength,
+                bodyColor = bodyColor,
+                eyeColor = eyeColor,
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
             // Return results
             float r = 0f;
-            r += DistanceIf(wingsSize, wsInp);
-            r += DistanceIf(legsFac, lsInp);
-            r += DistanceIf(fatness, fatInp);
-            r += DistanceIf(snoutLength, slInp);
-            r += DistanceIf(bodyColor, bodyInp);
-            r += DistanceIf(eyeColor, eyeInp);
+            r += DistanceIf(results.wingSize, wsInp);
+            r += DistanceIf(results.legSize, lsInp);
+            r += DistanceIf(results.fatness, fatInp);
+            r += DistanceIf(results.snoutLength, slInp);
+            r += DistanceIf(results.bodyColor, bodyInp);
+            r += DistanceIf(results.eyeColor, eyeInp);
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
+            yield return $"Wing size: {results.wingSize}";
+            yield return $"Leg size: {results.legSize}";
+            yield return $"Fatness: {results.fatness}";
+            yield return $"Snout length: {results.snoutLength}";
+            yield return $"Body color: rgb({results.bodyColor.r}, {results.bodyColor.g}, {results.bodyColor.b})";
+            yield return $"Eye color: rgb({results.eyeColor.r}, {results.eyeColor.g}, {results.eyeColor.b})";
         }
     }
 }

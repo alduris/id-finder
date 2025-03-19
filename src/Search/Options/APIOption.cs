@@ -21,5 +21,11 @@ namespace FinderMod.Search.Options
         {
             return run.Invoke(Random, elements);
         }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            yield return "This option does not have a values implementation.";
+            yield break;
+        }
     }
 }

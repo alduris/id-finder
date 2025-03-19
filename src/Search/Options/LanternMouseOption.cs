@@ -1,4 +1,5 @@
-﻿using FinderMod.Inputs;
+﻿using System.Collections.Generic;
+using FinderMod.Inputs;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -30,6 +31,26 @@ namespace FinderMod.Search.Options
             }
             dominance = Random.Value;
             return DistanceIf(hue, elements[0] as Input<float>) + DistanceIf(dominance, elements[1] as Input<float>);
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            if (Random.Value < 0.01f)
+            {
+                yield return $"Hue: {Random.Value}";
+            }
+            else
+            {
+                if (Random.Value < 0.5f)
+                {
+                    yield return $"Hue: {Mathf.Lerp(0f, 0.1f, Random.Value)}";
+                }
+                else
+                {
+                    yield return $"Hue: {Mathf.Lerp(0.5f, 0.65f, Random.Value)}";
+                }
+            }
+            yield return $"Dominance: {Random.Value}";
         }
     }
 }

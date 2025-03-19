@@ -72,11 +72,34 @@ namespace FinderMod.Search.Options
         /// <returns>The calculated distance</returns>
         public abstract float Execute(XORShift128 Random);
 
+        /// <summary>
+        /// Values to display in the the values tab.
+        /// </summary>
+        /// <param name="id">The id of the seed. Feed into</param>
+        /// <returns>Strings to display in labels, or null for whitespace.</returns>
+        public IEnumerable<string> GetValues(int id)
+        {
+            var random = new XORShift128();
+            random.InitState(id);
+            foreach (var str in GetValues(random))
+            {
+                yield return str;
+            }
+        }
+        protected abstract IEnumerable<string> GetValues(XORShift128 Random);
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helper stuff
 
+        /// <summary>
+        /// Personality struct. When used with the <see cref="XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.
+        /// </summary>
         public struct Personality
         {
+            /// <summary>
+            /// Initializes the personality struct and resets the random state when done so it can be used.
+            /// </summary>
+            /// <param name="Random"></param>
             public Personality(XORShift128 Random)
             {
                 var (x,y,z,w) = (Random.x, Random.y, Random.z, Random.w);
@@ -148,6 +171,15 @@ namespace FinderMod.Search.Options
             if (target != null && target.enabled)
             {
                 return Vector4.Distance((Vector4)col, (Vector4)target.value) * target.bias;
+            }
+            return 0f;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static float DistanceIf(bool b, Input<bool>? target)
+        {
+            if (target != null && target.enabled)
+            {
+                if (b != target.value) return target.bias;
             }
             return 0f;
         }

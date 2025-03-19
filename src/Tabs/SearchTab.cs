@@ -211,17 +211,16 @@ namespace FinderMod.Tabs
                     label.PosY -= labelSize;
 
                     // Copy results button
-                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 30f), new(48f, 24f), "COPY") { description = "Copy results" };
+                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "COPY") { description = "Copy results" };
                     button_copy.OnClick += (_) =>
                     {
                         UniClipboard.SetText(label.text);
-                        //string shortText = label.text.Substring(0, Math.Min(label.text.Length, 20));
                         ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "results"));
                     };
 
                     // Set the scroll box size
                     cont_results.AddItems(label, button_copy);
-                    cont_results.SetContentSize(labelSize + 40f, true);
+                    cont_results.SetContentSize(labelSize + 50f, true);
 
                     // Reupdate query box to reenable everything
                     UpdateQueryBox();

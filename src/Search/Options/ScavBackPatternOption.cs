@@ -3,6 +3,7 @@ using FinderMod.Inputs;
 using static FinderMod.Search.Util.ScavUtil;
 using UnityEngine;
 using RWCustom;
+using System.Collections.Generic;
 
 namespace FinderMod.Search.Options
 {
@@ -30,7 +31,19 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private struct Results
+        {
+            public ScavBackType spineType;
+            public ScavBodyScalePattern spinePattern;
+            public int numSpines;
+            public int colorType;
+            public float colorStrength;
+            public float rangeStart;
+            public float rangeEnd;
+            public float generalSpineSize;
+        }
+
+        private Results GetResults(XORShift128 Random)
         {
             var p = new Personality(Random);
 
@@ -158,7 +171,7 @@ namespace FinderMod.Search.Options
 
             // Scav back thing time!
             bool useHardBackSpikes = Random.Value < 0.1f;
-            float colorType = 0;
+            int colorType = 0;
             float colored = 0;
             ScavBodyScalePattern pattern; // 1 = SpineRidge, 2 = DoubleSpineRidge, 3 = RandomBackBlotch
             float top, bottom;
@@ -234,17 +247,51 @@ namespace FinderMod.Search.Options
                 // if (colored > 0 && Random.Value < 0.25f + 0.5f * colored) Random.Shift();
             }
 
+            return new Results()
+            {
+                spineType = useHardBackSpikes ? ScavBackType.HardBackSpikes : ScavBackType.WobblyBackTufts,
+                spinePattern = pattern,
+                numSpines = numScales,
+                colorType = colorType,
+                colorStrength = colored,
+                rangeStart = top,
+                rangeEnd = bottom,
+                generalSpineSize = generalSize,
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
             float r = 0f;
-            if (stInp.enabled) r += (useHardBackSpikes ? 0 : 1) ^ stInp.value;
-            r += DistanceIf(colorType, ctInp);
-            r += DistanceIf(colored, csInp);
-            r += DistanceIf((int)pattern, spInp);
-            r += DistanceIf(top, rsInp);
-            r += DistanceIf(bottom, rsInp);
-            r += DistanceIf(numScales, nsInp);
-            r += DistanceIf(generalSize, gsInp);
+            if (stInp.enabled) r += (int)results.spineType ^ stInp.value;
+            r += DistanceIf(results.colorType, ctInp);
+            r += DistanceIf(results.colorStrength, csInp);
+            r += DistanceIf((int)results.spinePattern, spInp);
+            r += DistanceIf(results.rangeStart, rsInp);
+            r += DistanceIf(results.rangeEnd, reInp);
+            r += DistanceIf(results.numSpines, nsInp);
+            r += DistanceIf(results.generalSpineSize, gsInp);
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
+            yield return $"Spine type: {results.spineType}";
+            yield return $"Spine pattern: {results.spinePattern}";
+            yield return $"Number of spines: {results.numSpines}";
+            yield return null!;
+            yield return $"Color type: {new string[] { "None", "Decoration", "Head" }[results.colorType]}";
+            yield return $"Color strength: {results.colorStrength}";
+            yield return null!;
+            yield return $"Range start: {results.rangeStart}";
+            yield return $"Range end: {results.rangeEnd}";
+            yield return $"General spine size: {results.generalSpineSize}";
+            yield break;
         }
     }
 }
