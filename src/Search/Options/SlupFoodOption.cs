@@ -6,7 +6,7 @@ namespace FinderMod.Search.Options
 {
     public class SlupFoodOption : Option
     {
-        private readonly string[] foodList = [
+        private static readonly string[] foodList = [
             "Dangle fruit", "Water nut", "Jellyfish", "Slime mold", "Eggbug egg", "Fire egg", "Popcorn", "Gooieduck",
             "Lillypuck", "Glow weed", "Dandelion peach", "Neuron", "Centipede", "Small centipede", "Vulture grub",
             "Small noodlefly", "Hazer"
@@ -19,6 +19,7 @@ namespace FinderMod.Search.Options
             {
                 inputs[i] = new FloatInput(foodList[i], -1f, 1f);
             }
+            elements = [.. inputs];
         }
 
         public override float Execute(XORShift128 Random)

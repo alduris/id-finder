@@ -36,6 +36,13 @@ namespace FinderMod.Inputs
                     sprite.RemoveFromContainer();
                 }
                 rect = new DyeableRect(myContainer, Vector2.zero, size, true);
+
+                OnValueChanged += UpdateText;
+            }
+
+            private void UpdateText(UIconfig config, string value, string oldValue)
+            {
+                label.text = this.GetValueBool() ? "Yes" : "No";
             }
 
             public override void GrafUpdate(float timeStacker)

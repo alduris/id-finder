@@ -7,7 +7,7 @@ namespace FinderMod.Search.Options
     {
         public LanternMouseOption() : base()
         {
-            elements = [new HueInput("Hue"), new HueInput("Dominance")];
+            elements = [new HueInput("Hue"), new FloatInput("Dominance")];
         }
 
         public override float Execute(XORShift128 Random)

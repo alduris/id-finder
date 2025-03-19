@@ -44,9 +44,9 @@ namespace FinderMod.Tabs
 
             cont_queries = new OpScrollBox(new(10f, 270f), new(580f, 240f), 0f, false, true, true) { contentSize = 100f };
 
-            var input_min = new OpTextBox(CosmeticBind(0), new(50f, 236f), 100f) { description = "Start of search range" };
-            var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 236f), 100f) { description = "End of search range" };
-            var input_find = new OpDragger(CosmeticRange(5, 1, 100), 60f, 206f) { description = "Number of ids to find per result (1-100)" };
+            var input_min = new OpTextBox(CosmeticBind(0), new(50f, 236f), 100f) { description = "Start of search range", allowSpace = true };
+            var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 236f), 100f) { description = "End of search range", allowSpace = true };
+            var input_find = new OpDragger(CosmeticRange(6, 1, 100), 60f, 206f) { description = "Number of ids to find per result (1-100)" };
             var input_threads = new OpDragger(CosmeticRange(maxThreads / 4, 1, maxThreads), 190f, 206f) { description = "Number of threads to use" };
 
             var button_run = new OpSimpleButton(new(510f, 216f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = color_start };
