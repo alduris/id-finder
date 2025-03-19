@@ -30,6 +30,7 @@ namespace FinderMod.Inputs
                     x = 20f,
                     y = 12f
                 };
+                myContainer.AddChild(label);
 
                 foreach (var sprite in rect.sprites)
                 {
@@ -50,16 +51,7 @@ namespace FinderMod.Inputs
                 base.GrafUpdate(timeStacker);
                 boolValue = this.GetValueBool();
 
-                if (greyedOut)
-                {
-                    label.alpha = 1f;
-                    label.color = bumpBehav.GetColor(colorEdge);
-                }
-                else
-                {
-                    label.alpha = 1f - _symbolHalfVisible * 0.2f;
-                    label.color = symbolSprite.color;
-                }
+                label.color = bumpBehav.GetColor(colorEdge);
             }
         }
     }
