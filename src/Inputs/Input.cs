@@ -62,7 +62,7 @@ namespace FinderMod.Inputs
                 }
                 var elX = x + cbOffset + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
                 var element = GetElement(new Vector2(elX, y));
-                element.OnValueChanged += CallOnValueChangedEvent;
+                element.OnValueChanged += ValueChange;
                 if (description != null) element.description = description;
                 elements.Add(element);
 
@@ -85,11 +85,14 @@ namespace FinderMod.Inputs
             UpdateQueryBox();
         }
 
-        private void CallOnValueChangedEvent(UIconfig config, string value, string oldValue)
+        private void ValueChange(UIconfig config, string value, string oldValue)
         {
-            T oldVal = this.value;
-            this.value = GetValue(config);
-            OnValueChanged?.Invoke(this, this.value, oldVal);
+            if (oldValue != value)
+            {
+                T oldVal = this.value;
+                this.value = GetValue(config);
+                OnValueChanged?.Invoke(this, this.value, oldVal);
+            }
         }
 
         protected abstract UIconfig GetElement(Vector2 pos);

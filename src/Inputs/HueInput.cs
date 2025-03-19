@@ -22,6 +22,7 @@ namespace FinderMod.Inputs
         private void SetColor(OpFloatSlider input)
         {
             var value = GetValue(input);
+            value -= Mathf.Floor(value);
             input.colorEdge = Custom.HSL2RGB(value, 1f, 0.625f);
             input.colorFill = Custom.HSL2RGB(value, 1f, 0.625f);
         }

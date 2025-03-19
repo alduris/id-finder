@@ -29,7 +29,6 @@ namespace FinderMod.Inputs
             {
                 el._itemList = el._itemList.Select(x => new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value)).ToArray();
             }
-            el.Change();
             return el;
         }
 

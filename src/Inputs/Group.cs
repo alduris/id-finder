@@ -17,17 +17,18 @@ namespace FinderMod.Inputs
 
         public float Height => children.Sum(x => x is ISpecialGroupHeight y ? y.GroupHeight : x.Height) + MARGIN * Math.Max(0, children.Count - 1) + 2 * PADDING;
 
-        public void Create(float x, ref float y, List<UIelement> elements)
+        public virtual void Create(float x, ref float y, List<UIelement> elements)
         {
             if (hasRect)
             {
-                float width = 600f - (x - 10f) / 10f * 6f - 20f;
+                float width = 600f - 20f - 30f - Mathf.Floor(x / 10f) * 10f;
                 rect = new OpRect(new Vector2(x, y - Height), new Vector2(width, Height));
                 if (_colorEdge.HasValue) rect.colorEdge = _colorEdge.Value;
                 if (_colorFill.HasValue) rect.colorFill = _colorFill.Value;
+                elements.Add(rect);
             }
 
-            y -= PADDING + MARGIN;
+            y -= PADDING - MARGIN;
             foreach (var child in children)
             {
                 y -= MARGIN;

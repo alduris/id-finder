@@ -79,12 +79,17 @@ namespace FinderMod.Search.Options
             public LizardInput() : base("Lizard type", LizardType.Green)
             {
                 forceEnabled = true;
+                OnValueChanged += LizardInput_OnValueChanged;
+            }
+
+            private void LizardInput_OnValueChanged(Input<LizardType> input, LizardType value, LizardType oldValue)
+            {
+                if (value != oldValue) UpdateQueryBox();
             }
 
             protected override UIconfig GetElement(Vector2 pos)
             {
                 var el = base.GetElement(pos);
-                el.OnValueChanged += (_, _, _) => UpdateQueryBox();
                 return el;
             }
         }
@@ -104,7 +109,7 @@ namespace FinderMod.Search.Options
                 { LizardType.Yellow, new ColorHSLInput("Yellow Lizard Color", true, 0.05f, 0.15f, false, 1f, 1f, true, 0.35f, 0.65f) },
                 { LizardType.White, null! },
                 { LizardType.Black, null! },
-                { LizardType.Salamander, new ColorHSLInput("Salamander Frill Color", true, 0.75f, 1.05f, false, 1f, 1f, true, 0.25f, 0.55f) },
+                { LizardType.Salamander, new ColorHSLInput("Salamander Frill Color", true, 0.75f, 1.05f, false, 1f, 1f, true, 0.25f, 0.55f) { fixColors = true } },
                 { LizardType.Red, new ColorHSLInput("Red Lizard Color", true, -0.0175f, 0.0225f, false, 1f, 1f, true, 0.35f, 0.65f) },
                 { LizardType.Cyan, new ColorHSLInput("Cyan Lizard Color", true, 0.45f, 0.53f, false, 1f, 1f, true, 0.35f, 0.65f) },
                 // { LizardType.Caramel, new ColorHSLInput("Caramel Lizard Color", true, 0.07f, 0.13f, false, 0.55f, 0.55f, true, 0.19f, 0.91f) },
