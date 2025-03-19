@@ -41,7 +41,6 @@ namespace FinderMod.Tabs
 
         private void UpdateValues(UIconfig _, string value, string oldValue)
         {
-            Plugin.logger.LogDebug(oldValue + " --> " + value);
             if (value != oldValue) UpdateOutputBox();
         }
 
@@ -58,7 +57,6 @@ namespace FinderMod.Tabs
             outputBox.items.Clear();
 
             var name = searchItems.value;
-            Plugin.logger.LogDebug("Updated output box! " + OptionRegistry.TryGetOption(name, out var _));
             if (OptionRegistry.TryGetOption(name, out var option))
             {
                 int seed = inputId.valueInt;

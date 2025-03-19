@@ -25,9 +25,6 @@ namespace FinderMod.Search
                 { "Scavenger Colors", () => new ScavColorsOption() },
                 { "Scavenger Back Patterns", () => new ScavBackPatternOption() },
 
-                // Lantern mice
-                { "Lantern Mouse Variations", () => new LanternMouseOption() },
-
                 // Vultures
                 { "Vulture Normal Wing Variations", () => new VultureWingOption() },
                 { "Vulture King Wing Variations", () => new KingVultureWingOption() },
@@ -39,6 +36,10 @@ namespace FinderMod.Search
                 // Lizard
                 { "Lizard Variations", () => new LizardVarsOption() },
                 { "Lizard Colors", () => new LizardColorsOption() },
+
+                // Misc Creatures
+                { "Lantern Mouse Variations", () => new LanternMouseOption() },
+                { "Snail Variations", () => new SnailOption() },
             };
         }
 
