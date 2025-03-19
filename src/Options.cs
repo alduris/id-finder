@@ -18,16 +18,16 @@ namespace FinderMod
             base.Initialize();
 
             // Initialize tabs
-            this.Tabs = new OpTab[]
-            {
+            Tabs =
+            [
                 new SearchTab(this),
-                new ValuesTab(this)
+                // new ValuesTab(this)
                 // new HelpTab(this)
-            };
+            ];
             
-            foreach (var tab in this.Tabs)
+            foreach (var tab in Tabs)
             {
-                (tab as BaseTab).Initialize();
+                (tab as BaseTab)!.Initialize();
             }
 
             logger.LogInfo("Initialized options menu");
@@ -37,17 +37,17 @@ namespace FinderMod
         {
             base.Update();
 
-            foreach (var tab in this.Tabs)
+            foreach (var tab in Tabs)
             {
-                (tab as BaseTab).Update();
+                (tab as BaseTab)!.Update();
             }
         }
 
         public void ClearMemory()
         {
-            foreach (var tab in this.Tabs)
+            foreach (var tab in Tabs)
             {
-                (tab as BaseTab).ClearMemory();
+                (tab as BaseTab)!.ClearMemory();
             }
         }
 

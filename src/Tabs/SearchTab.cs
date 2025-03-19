@@ -15,11 +15,11 @@ namespace FinderMod.Tabs
 {
     internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
-        internal static SearchTab instance = null;
+        internal static SearchTab instance = null!;
         
-        private OpScrollBox cont_queries;
-        private OpScrollBox cont_results;
-        private OpLabel label_progress;
+        private OpScrollBox cont_queries = null!;
+        private OpScrollBox cont_results = null!;
+        private OpLabel label_progress = null!;
         private List<Option> options = [];
         private Threadmaster? threadmaster = null;
         private DateTime startTime;
@@ -33,7 +33,7 @@ namespace FinderMod.Tabs
             options.Clear();
 
             // Get max number of threads we can use
-            ThreadPool.GetMaxThreads(out int maxThreads, out _);
+            var maxThreads = Environment.ProcessorCount * 2;
 
             // Initialize elements we need
             var combo_allOpts = new OpComboBox(
@@ -85,9 +85,9 @@ namespace FinderMod.Tabs
                 waitingForResults = true;
                 foreach (var item in cont_queries.items)
                 {
-                    if (item is UIfocusable)
+                    if (item is UIfocusable foc)
                     {
-                        (item as UIfocusable).greyedOut = true;
+                        foc.greyedOut = true;
                     }
                 }
 
@@ -106,7 +106,7 @@ namespace FinderMod.Tabs
                 { description = "Aborts the search and return the current results", colorEdge = color_del, colorFill = color_del };
                 button_abort.OnClick += _ =>
                 {
-                    SearchUtil.Abort("user");
+                    threadmaster?.Abort("user");
                 };
                 cont_results.AddItems(label_searching, label_progress, button_abort);
                 cont_results.SetContentSize(80f, true);
@@ -199,10 +199,9 @@ namespace FinderMod.Tabs
 
         public override void Update()
         {
-
-            if (waitingForResults)
+            if (threadmaster != null)
             {
-                if (SearchUtil.done)
+                if (!threadmaster.Running)
                 {
                     waitingForResults = false;
 
@@ -215,46 +214,28 @@ namespace FinderMod.Tabs
                     cont_results.items.Clear();
                     cont_results.SetContentSize(0f, true);
 
-                    // Get some info
-                    bool aborted = SearchUtil.abort;
-                    int resultsPer = SearchUtil.finalResults.GetLength(1);
+                    // Init label
+                    OpLabelLong label = new(new(10f, cont_results.size.y - 10f), new(cont_results.size.x - 20f, 0f), "", true, FLabelAlignment.Left) { verticalAlignment = OpLabel.LabelVAlignment.Top };
 
-                    // Add label
-                    OpLabelLong label = new(new(10f, 10f), new(cont_results.size.x - 20f, 0), "", true, FLabelAlignment.Left);
-                    float labelSize;
-                    if (resultsPer > 1)
+                    // Did we abort?
+                    if (threadmaster.AbortReason != null)
                     {
-                        // Label size accounts for:     every single id plus extra lines for "request #"s          extra line if aborted
-                        labelSize = label.LineHeight * (SearchUtil.finalResults.GetLength(0) * (resultsPer + 1) + (aborted ? 1f : 0f) + 1);
+                        label.text += $"OPERATION ABORTED EARLY ({threadmaster.AbortReason})\n";
                     }
-                    else
+
+                    var results = threadmaster.GetResults();
+                    for (int i = 0; i < results.Length; i++)
                     {
-                        // Label size accounts for:     number of queries                       extra line if aborted
-                        labelSize = label.LineHeight * (SearchUtil.finalResults.GetLength(0) + (aborted ? 1f : 0f) + 1);
-                    }
-                    if (aborted) label.text += "OPERATION ABORTED EARLY" + (SearchUtil.abortReason is not null ? $" ({SearchUtil.abortReason})" : "") + "\n";
-                    for (int i = 0; i < SearchUtil.finalResults.GetLength(0); i++)
-                    {
-                        if (resultsPer > 1)
+                        label.text += $"Request {i + 1}:\n";
+                        for (int j = 0; j < results[i].Length; j++)
                         {
-                            label.text += $"Request {i + 1}:\n";
-                            // Get every result and put it in a line
-                            for (int j = 0; j < resultsPer; j++)
-                            {
-                                var res = SearchUtil.finalResults[i, j];
-                                label.text += $"        {res.Item1} (distance: {res.Item2})\n";
-                            }
-                        }
-                        else
-                        {
-                            // Just get the single result and put it in the same line
-                            var res = SearchUtil.finalResults[i, 0];
-                            label.text += $"Request {i + 1}: {res.Item1} (distance: {res.Item2})\n";
+                            var res = results[i][j];
+                            label.text += $"        {res.id} (distance: {res.dist})\n";
                         }
                     }
+
                     label.text = label.text.Substring(0, label.text.Length - 1); // get rid of last \n
-                    label.size = new(cont_results.size.x - 20f, labelSize);
-                    label.pos = new(10f, cont_results.size.y - 10f - labelSize);
+                    var labelSize = label.GetLineCount() * label.LineHeight;
 
                     // Copy results button
                     var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 30f), new(48f, 24f), "COPY") { description = "Copy results" };
@@ -275,7 +256,7 @@ namespace FinderMod.Tabs
                 else
                 {
                     // Update progress thingy
-                    double min = SearchUtil.progress.Length > 0 ? SearchUtil.progress.Min() : 0;
+                    double min = threadmaster.Progress;
                     long difference = DateTime.Now.Ticks - startTime.Ticks;
                     TimeSpan startTicks = min == 0 ? TimeSpan.MaxValue : new(difference);
                     TimeSpan endTicks = min == 0 ? TimeSpan.MaxValue : new((long)(difference / min));
@@ -290,8 +271,8 @@ namespace FinderMod.Tabs
         {
             options.Clear();
             waitingForResults = false;
-            instance = null;
-            SearchUtil.Abort("clearing memory");
+            instance = null!;
+            threadmaster?.Abort("clearing memory");
         }
     }
 }

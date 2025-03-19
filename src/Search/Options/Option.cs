@@ -23,7 +23,7 @@ namespace FinderMod.Search.Options
         /// <summary>
         /// The elements to show in the space. Must be added to in the constructor.
         /// </summary>
-        protected List<IElement> elements;
+        protected List<IElement> elements = null!;
 
         public void CreateOptions(ref float y, List<UIelement> output)
         {
@@ -123,15 +123,15 @@ namespace FinderMod.Search.Options
             return Mathf.Abs(num - target.value);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(float num, Input<float> target)
+        protected static float DistanceIf(float num, Input<float>? target)
         {
-            if (target.enabled) return Mathf.Abs(num - target.value);
+            if (target != null && target.enabled) return Mathf.Abs(num - target.value);
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(Color col, Input<Color> target)
+        protected static float DistanceIf(Color col, Input<Color>? target)
         {
-            if (target.enabled)
+            if (target != null && target.enabled)
             {
                 return Vector4.Distance((Vector4)col, (Vector4)target.value);
             }
@@ -146,7 +146,7 @@ namespace FinderMod.Search.Options
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Internal events
 
-        internal event Action OnDelete;
-        internal event Action OnLink;
+        internal event Action? OnDelete;
+        internal event Action? OnLink;
     }
 }

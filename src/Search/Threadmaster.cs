@@ -19,7 +19,7 @@ namespace FinderMod.Search
         private readonly int distinctLinks;
 
         private readonly float[] progress;
-        private readonly Result[,] output;
+        private readonly Result[,,] output;
         private bool abort = false;
         private int finished = 0;
 
@@ -36,7 +36,7 @@ namespace FinderMod.Search
             this.gpu = gpu;
             progress = new float[threads];
             distinctLinks = options.Count - options.Count(x => x.linked);
-            output = new Result[threads, distinctLinks];
+            output = new Result[threads, distinctLinks, results];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,14 +77,17 @@ namespace FinderMod.Search
                 // Create local storage mediums
                 XORShift128 rng = new();
 
-                var res = new Result[distinctLinks];
-                for (int i = 0; i < res.Length; i++)
+                var res = new Result[distinctLinks, results];
+                for (int i = 0; i < res.GetLength(0); i++)
                 {
-                    res[i] = new Result
+                    for (int j = 0; j < res.GetLength(1); j++)
                     {
-                        id = 0,
-                        dist = float.MaxValue
-                    };
+                        res[i,j] = new Result
+                        {
+                            id = 0,
+                            dist = float.MaxValue
+                        };
+                    }
                 }
 
                 var calls = new Func<XORShift128, float>[options.Count];
@@ -111,13 +114,13 @@ namespace FinderMod.Search
                             if (j > 0 && !options[j].linked)
                             {
                                 // sort in and regenerate
-                                int k = res.Length - 1;
-                                if (res[k].dist > r.dist)
+                                int k = results - 1;
+                                if (res[link, k].dist > r.dist)
                                 {
-                                    res[k] = r;
-                                    while (--k >= 0 && res[k].dist > r.dist)
+                                    res[link, k] = r;
+                                    while (--k >= 0 && res[link, k].dist > r.dist)
                                     {
-                                        (res[k], res[k + 1]) = (res[k + 1], res[k]);
+                                        (res[link, k], res[link, k + 1]) = (res[link, k + 1], res[link, k]);
                                     }
                                 }
                                 link++;
@@ -128,13 +131,13 @@ namespace FinderMod.Search
                         }
 
                         // sort in but don't regenerate
-                        int k2 = res.Length - 1;
-                        if (res[k2].dist > r.dist)
+                        int k2 = results - 1;
+                        if (res[link, k2].dist > r.dist)
                         {
-                            res[k2] = r;
-                            while (--k2 >= 0 && res[k2].dist > r.dist)
+                            res[link, k2] = r;
+                            while (--k2 >= 0 && res[link, k2].dist > r.dist)
                             {
-                                (res[k2], res[k2 + 1]) = (res[k2 + 1], res[k2]);
+                                (res[link, k2], res[link, k2 + 1]) = (res[link, k2 + 1], res[link, k2]);
                             }
                         }
 
@@ -154,25 +157,42 @@ namespace FinderMod.Search
                 // Sort and return
                 for (int i = 0; i < distinctLinks; i++)
                 {
-                    output[thread, i] = res[i];
+                    for (int j = 0; j < results; j++)
+                    {
+                        output[thread, i, j] = res[i, j];
+                    }
                 }
 
                 finished++;
             }
         }
 
-        public Result[] GetResults()
+        /// <summary>
+        /// Returns search results such that the first dimension is each query and the second dimension is the results from each query.
+        /// </summary>
+        /// <returns>Results in a format</returns>
+        /// <exception cref="InvalidOperationException">Called before thread operation is completed or aborted</exception>
+        public Result[][] GetResults()
         {
             if (Running) throw new InvalidOperationException("Please wait until the operation is complete, or abort first.");
-            List<Result> combinedResults = [];
+            List<List<Result>> combinedResults = [];
             for (int i = 0; i < output.GetLength(0); i++)
             {
+                combinedResults.Add([]);
                 for (int j = 0; j < output.GetLength(1); j++)
                 {
-                    combinedResults.Add(output[i, j]);
+                    for (int k = 0; k < output.GetLength(2); k++)
+                    {
+                        combinedResults[i].Add(output[i, j, k]);
+                    }
                 }
+                combinedResults[i] = combinedResults[i]
+                    .OrderByDescending(x => x.dist) // sort so the biggest distances are at the front
+                    .Skip((threads - 1) * results)  // remove the extras created by having multiple threads, which only does the biggest ones which we don't want anyway
+                    .Reverse()                      // reverse so the smaller distances are at the front
+                    .ToList();
             }
-            return combinedResults.OrderByDescending(x => x.dist).Skip((threads - 1) * results).Reverse().ToArray(); // wheeee!!!
+            return combinedResults.Select(x => x.ToArray()).ToArray(); //wheeee!!!
         }
 
         public void Abort(string reason)

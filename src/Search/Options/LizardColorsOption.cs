@@ -4,12 +4,12 @@ using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options
 {
-    public class LizardVarsOption : Option
+    public class LizardColorsOption : Option
     {
         private readonly EnumInput<LizardType> typeInp;
         private readonly FloatInput hsInp, fatInp, tlInp, tfInp, tcInp;
 
-        public LizardVarsOption() : base("Lizard Variations")
+        public LizardColorsOption() : base("Lizard Variations")
         {
             elements = [
                 typeInp = new EnumInput<LizardType>("Lizard type", LizardType.Green) { forceEnabled = true },

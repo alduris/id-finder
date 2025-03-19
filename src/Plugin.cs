@@ -32,6 +32,7 @@ namespace FinderMod
                 throw;
             }
         }
+
         private void OnEnable()
         {
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
