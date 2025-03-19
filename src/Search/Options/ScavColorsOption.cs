@@ -8,7 +8,7 @@ namespace FinderMod.Search.Options
     {
         private readonly ColorHSLInput body, head, deco, eye;
 
-        public ScavColorsOption() : base("Scavenger Colors")
+        public ScavColorsOption() : base()
         {
             elements = [
                 body = new ColorHSLInput("Body color"),

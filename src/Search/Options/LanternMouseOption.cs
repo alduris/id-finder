@@ -5,7 +5,7 @@ namespace FinderMod.Search.Options
 {
     public class LanternMouseOption : Option
     {
-        public LanternMouseOption() : base("Lantern Mouse Variations")
+        public LanternMouseOption() : base()
         {
             elements = [new HueInput("Hue"), new HueInput("Dominance")];
         }

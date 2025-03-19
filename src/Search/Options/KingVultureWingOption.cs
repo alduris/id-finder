@@ -9,7 +9,7 @@ namespace FinderMod.Search.Options
         private readonly ColorHSLInput colorA, colorB;
         private readonly IntInput countInp;
 
-        public KingVultureWingOption() : base("King Vulture Wing Variations")
+        public KingVultureWingOption() : base()
         {
             elements = [
                 colorA = new ColorHSLInput("Color A"),

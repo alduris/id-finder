@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using FinderMod.Search.Options;
+
+namespace FinderMod.Search
+{
+    internal static class OptionRegistry
+    {
+        private readonly static Dictionary<string, Func<Option>> Options;
+        private static bool InitDLC = false;
+
+        static OptionRegistry()
+        {
+            Plugin.logger.LogInfo("Initializing registry");
+
+            Options = new Dictionary<string, Func<Option>>()
+            {
+                // Personality
+                { "Personality", () => new PersonalityOption() },
+
+                // Scavengers
+                { "Scavenger Skills", () => new ScavSkillsOption() },
+                { "Scavenger Variations", () => new ScavVarsOption() },
+                { "Scavenger Colors", () => new ScavColorsOption() },
+                { "Scavenger Back Patterns", () => new ScavBackPatternOption() },
+
+                // Lantern mice
+                { "Lantern Mouse Variations", () => new LanternMouseOption() },
+
+                // Vultures
+                { "Vulture Normal Wing Variations", () => new VultureWingOption() },
+                { "Vulture King Wing Variations", () => new KingVultureWingOption() },
+
+                // Noodleflies
+                { "Noodlefly Adult Variations", () => new NootAdultVarsOption() },
+                { "Noodlefly Infant Variations", () => new NootBabyVarsOption() },
+
+                // Lizard
+                { "Lizard Variations", () => new LizardVarsOption() },
+                { "Lizard Colors", () => new LizardColorsOption() },
+            };
+        }
+
+        public static void InitializeDLC()
+        {
+            if (InitDLC) return;
+            InitDLC = true;
+
+            if (ModManager.MSC)
+            {
+                Plugin.logger.LogInfo("Initializing registry with MSC options");
+
+                // Elite Scavengers
+                Options["Elite Scavenger Skills"] = () => new EliteScavSkillsOption();
+                Options["Elite Scavenger Colors"] = () => new EliteScavColorsOption();
+                Options["Elite Scavenger Back Patterns"] = () => new EliteScavBackPatternOption();
+
+                // Slugpups
+                Options["Slugpup Variations"] = () => new SlupVarsOption();
+                Options["Slugpup Stats"] = () => new SlupStatsOption();
+                Options["Slugpup Food"] = () => new SlupFoodOption();
+            }
+        }
+
+        public static void RegisterOption(string name, Func<Option> register)
+        {
+            Options[name] = register;
+        }
+
+        public static Option GetOption(string name)
+        {
+            var opt = Options[name].Invoke();
+            opt.name = name;
+            return opt;
+        }
+    }
+}

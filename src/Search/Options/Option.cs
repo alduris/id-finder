@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using RWCustom;
-using Unity.Burst;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -13,9 +12,9 @@ namespace FinderMod.Search.Options
     /// A search option. Fill out <see cref="elements"/> in the constructor, and keep references so you can use the values in <see cref="Execute"/>.
     /// </summary>
     /// <param name="key">Serves as both the internal key the option will be identified as</param>
-    public abstract class Option(string key)
+    public abstract class Option()
     {
-        private readonly string name = key;
+        internal string name = "Search Option";
 
         internal bool firstOption = false;
         internal bool linked = false;
@@ -72,7 +71,7 @@ namespace FinderMod.Search.Options
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helper stuff
 
-        protected struct Personality
+        public struct Personality
         {
             public Personality(XORShift128 Random)
             {

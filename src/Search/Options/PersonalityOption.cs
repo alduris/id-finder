@@ -1,5 +1,4 @@
 ﻿using FinderMod.Inputs;
-using RWCustom;
 using Unity.Burst;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ namespace FinderMod.Search.Options
 {
     public class PersonalityOption : Option
     {
-        public PersonalityOption() : base("Personality")
+        public PersonalityOption() : base()
         {
             elements = [
                 new FloatInput("Aggression"),

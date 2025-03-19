@@ -10,7 +10,7 @@ namespace FinderMod.Search.Options
         private readonly FloatInput hsInp, etInp, esInp, enInp, eaInp, fatInp, wnInp, ntInp, psInp, hcbInp, lsInp, atInp, twInp;
         private readonly BoolInput dpInp, cetInp;
         private readonly IntInput tsInp;
-        public ScavVarsOption() : base("Scavenger Variations")
+        public ScavVarsOption() : base()
         {
             elements = [
                 hsInp = new FloatInput("Head size"),

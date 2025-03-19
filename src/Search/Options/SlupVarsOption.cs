@@ -9,7 +9,7 @@ namespace FinderMod.Search.Options
         private readonly ColorHSLInput colorInp;
         private readonly BoolInput darkInp;
 
-        public SlupVarsOption() : base("Slugpup Variations")
+        public SlupVarsOption() : base()
         {
             elements = [
                 szInp = new FloatInput("Size"),

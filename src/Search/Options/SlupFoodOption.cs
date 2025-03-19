@@ -12,7 +12,7 @@ namespace FinderMod.Search.Options
             "Small noodlefly", "Hazer"
         ];
         private readonly FloatInput[] inputs;
-        public SlupFoodOption() : base("Slugpup Food")
+        public SlupFoodOption() : base()
         {
             inputs = new FloatInput[foodList.Length];
             for (int i = 0; i < foodList.Length; i++)

@@ -3,6 +3,7 @@ using System.Security;
 using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Logging;
+using FinderMod.Search;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -35,14 +36,20 @@ namespace FinderMod
 
         private void OnEnable()
         {
+            On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+        }
+
+        private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
+        {
+            orig(self);
+            OptionRegistry.InitializeDLC();
         }
 
         private bool IsInit;
         private void RainWorldOnOnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
         {
             orig(self); // do not remove me
-            Logger.LogInfo("Initializing mod");
             try
             {
                 if (IsInit) return;

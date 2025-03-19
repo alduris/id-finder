@@ -12,7 +12,7 @@ namespace FinderMod.Search.Options
         private readonly IntInput nsInp;
         private readonly FloatInput csInp, rsInp, reInp, gsInp;
 
-        public ScavBackPatternOption() : base("Scavenger Back Patterns")
+        public ScavBackPatternOption() : base()
         {
             elements = [
                 new Label("See hover descriptions at bottom for some inputs"),

@@ -9,7 +9,7 @@ namespace FinderMod.Search.Options
         private readonly FloatInput wsInp, lsInp, fatInp, slInp;
         private readonly ColorRGBInput bodyInp, eyeInp;
 
-        public NootAdultVarsOption() : base("Noodlefly Adult Variations")
+        public NootAdultVarsOption() : base()
         {
             elements = [
                 wsInp = new FloatInput("Wing size", 0.8f, 1.2f),

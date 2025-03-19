@@ -7,7 +7,7 @@ namespace FinderMod.Search.Options
     public class SlupStatsOption : Option
     {
         private readonly FloatInput wgtInp, vz0Inp, vz1Inp, louInp, lngInp, polInp, tunInp, spdInp;
-        public SlupStatsOption() : base("Slugpup Stats")
+        public SlupStatsOption() : base()
         {
             elements = [
                 wgtInp = new FloatInput("Body weight", 0.5525f, 0.715f),

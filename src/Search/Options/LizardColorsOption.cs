@@ -1,4 +1,7 @@
-﻿using FinderMod.Inputs;
+﻿using System;
+using System.Collections.Generic;
+using FinderMod.Inputs;
+using Menu.Remix.MixedUI;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -6,61 +9,128 @@ namespace FinderMod.Search.Options
 {
     public class LizardColorsOption : Option
     {
-        private readonly EnumInput<LizardType> typeInp;
-        private readonly FloatInput hsInp, fatInp, tlInp, tfInp, tcInp;
+        private readonly LizardInput typeInp;
+        private readonly LizardColor colrInp;
 
-        public LizardColorsOption() : base("Lizard Variations")
+        public LizardColorsOption() : base()
         {
             elements = [
-                typeInp = new EnumInput<LizardType>("Lizard type", LizardType.Green) { forceEnabled = true },
-                new Whitespace(),
-                hsInp = new FloatInput("Head size", 0.86f, 1.14f),
-                fatInp = new FloatInput("Fatness", 0.76f, 1.24f),
-                tlInp = new FloatInput("Tail length", 0.6f, 1.4f),
-                tfInp = new FloatInput("Tail fatness", 0.7f, 1.1f),
-                tcInp = new FloatInput("Tail color") { description = "Strength of tail gradient. This will be 0 (none) roughly 50% of the time, and will always be 0 for white lizards." }
+                typeInp = new LizardInput(),
+                colrInp = new LizardColor(typeInp)
             ];
         }
 
         public override float Execute(XORShift128 Random)
         {
             LizardType type = typeInp.value;
+            float h, s, l;
 
-            float headSize = ClampedRandomVariation(0.5f, 0.07f, 0.5f, Random) * 2f;
-            if (Random.Value < 0.5f)
+            switch (type)
             {
-                headSize = 1f;
-            }
-            float fatness = ClampedRandomVariation(0.5f, 0.12f, 0.5f, Random) * 2f;
-            float tailLength = ClampedRandomVariation(0.5f, 0.2f, 0.3f, Random) * 2f;
-            float tailFatness = ClampedRandomVariation(0.45f, 0.1f, 0.3f, Random) * 2f;
-            float tailColor = 0f;
-            if (type != LizardType.White && Random.Value > 0.5f)
-            {
-                tailColor = Random.Value;
-            }
-            if (type == LizardType.Red)
-            {
-                fatness = Mathf.Min(1f, fatness);
-                tailFatness = Mathf.Min(1f, tailFatness);
-            }
-            else if (type == LizardType.Black)
-            {
-                fatness = ClampedRandomVariation(0.45f, 0.06f, 0.5f, Random) * 2f;
-            }
-            else if (type == LizardType.Caramel || type == LizardType.Zoop)
-            {
-                fatness = Mathf.Min(0.8f, fatness);
-                tailFatness = Mathf.Min(0.9f, tailFatness);
+                case LizardType.Pink:
+                    h = WrappedRandomVariation(0.87f, 0.1f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Green:
+                    h = WrappedRandomVariation(0.32f, 0.1f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Blue:
+                    h = WrappedRandomVariation(0.57f, 0.08f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Yellow:
+                    h = WrappedRandomVariation(0.1f, 0.05f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Salamander:
+                    h = WrappedRandomVariation(0.9f, 0.15f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.4f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Red:
+                    h = WrappedRandomVariation(0.0025f, 0.02f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                case LizardType.Cyan:
+                    h = WrappedRandomVariation(0.49f, 0.04f, 0.6f, Random);
+                    s = 1f;
+                    l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
+                    break;
+                default:
+                    h = s = l = 0; break;
             }
 
-            float r = 0f;
-            r += DistanceIf(headSize, hsInp);
-            r += DistanceIf(fatness, fatInp);
-            r += DistanceIf(tailLength, tlInp);
-            r += DistanceIf(tailFatness, tfInp);
-            r += DistanceIf(tailColor, tcInp);
-            return r;
+            h = h < 0 ? 0 : h > 1 ? 1 : h;
+
+            return DistanceIf(h, colrInp.HueInput) + DistanceIf(s, colrInp.SatInput) + DistanceIf(l, colrInp.LightInput);
+        }
+
+        /// <summary>
+        /// Version of <see cref="EnumInput{T}"/> for <see cref="LizardType"/> that forces a menu update
+        /// </summary>
+        private class LizardInput : EnumInput<LizardType>
+        {
+            public LizardInput() : base("Lizard type", LizardType.Green)
+            {
+                forceEnabled = true;
+            }
+
+            protected override UIconfig GetElement(Vector2 pos)
+            {
+                var el = base.GetElement(pos);
+                el.OnValueChanged += (_, _, _) => UpdateQueryBox();
+                return el;
+            }
+        }
+
+        /// <summary>
+        /// A very poor implementation of a switch statement
+        /// </summary>
+        /// <param name="lizInput"></param>
+        private class LizardColor(LizardInput lizInput) : IElement
+        {
+            private readonly LizardInput lizInput = lizInput;
+            private readonly Dictionary<LizardType, ColorHSLInput> groups = new()
+            {
+                { LizardType.Pink, new ColorHSLInput("Pink Lizard Color", true, 0.77f, 0.97f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                { LizardType.Green, new ColorHSLInput("Green Lizard Color", true, 0.22f, 0.42f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                { LizardType.Blue, new ColorHSLInput("Blue Lizard Color", true, 0.49f, 0.65f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                { LizardType.Yellow, new ColorHSLInput("Yellow Lizard Color", true, 0.05f, 0.15f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                { LizardType.White, null! },
+                { LizardType.Black, null! },
+                { LizardType.Salamander, new ColorHSLInput("Salamander Frill Color", true, 0.75f, 1.05f, false, 1f, 1f, true, 0.25f, 0.55f) },
+                { LizardType.Red, new ColorHSLInput("Red Lizard Color", true, -0.0175f, 0.0225f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                { LizardType.Cyan, new ColorHSLInput("Cyan Lizard Color", true, 0.45f, 0.53f, false, 1f, 1f, true, 0.35f, 0.65f) },
+                // { LizardType.Caramel, new ColorHSLInput("Caramel Lizard Color", true, 0.07f, 0.13f, false, 0.55f, 0.55f, true, 0.19f, 0.91f) },
+                { LizardType.Caramel, null! }, // we have to skip this one because it's fucked up and evil and does its own color thing
+                { LizardType.Zoop, null! },
+                { LizardType.Train, null! },
+                { LizardType.Eel, null! }
+            };
+
+            public float Height => groups[lizInput.value]?.Height ?? LabelTest.LineHeight(false);
+            public FloatInput? HueInput => groups[lizInput.value]?.HueInput;
+            public FloatInput? SatInput => groups[lizInput.value]?.SatInput;
+            public FloatInput? LightInput => groups[lizInput.value]?.LightInput;
+
+            public void Create(float x, ref float y, List<UIelement> elements)
+            {
+                if (groups[lizInput.value] != null)
+                {
+                    groups[lizInput.value].Create(x, ref y, elements);
+                }
+                else
+                {
+                    y -= LabelTest.LineHeight(false);
+                    elements.Add(new OpLabel(x, y, "Color input not available for this lizard type!", false));
+                }
+            }
         }
     }
 }

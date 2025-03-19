@@ -9,7 +9,7 @@ namespace FinderMod.Search.Options
     {
         private readonly FloatInput dgeInp, midInp, mleInp, blkInp, reaInp;
 
-        public ScavSkillsOption() : base("Scavenger Skills")
+        public ScavSkillsOption() : base()
         {
             elements = [
                 dgeInp = new FloatInput("Dodge"),
