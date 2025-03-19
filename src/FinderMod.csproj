@@ -4,7 +4,7 @@
 		<TargetFramework>net48</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>./output/plugins</OutputPath>
+		<OutputPath>../mod/plugins</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,14 +16,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="../REFERENCES/*.dll">
+		<Reference Include="../../REFERENCES/*.dll">
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
 
 	<Target Name="GenerateMod" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<ItemGroup>
-			<RemovePlugins Include="./output/plugins/*.pdb" />
+			<RemovePlugins Include="../mod/plugins/*.pdb" />
 		</ItemGroup>
 
 		<Delete Files="@(RemovePlugins)" />
