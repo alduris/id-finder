@@ -11,7 +11,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos) => new OpLabelCheckbox(Config(), pos);
 
-        protected override bool GetValue(UIconfig element) => (element as OpLabelCheckbox).boolValue;
+        protected override bool GetValue(UIconfig element) => (element as OpLabelCheckbox)!.boolValue;
 
         private class OpLabelCheckbox : OpCheckBox
         {

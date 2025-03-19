@@ -8,7 +8,7 @@ namespace FinderMod.Inputs
     public class EnumInput<T> : Input<T> where T : Enum
     {
         private readonly T init;
-        protected readonly Func<T, string> nameConv = null;
+        protected readonly Func<T, string> nameConv = null!;
 
         public EnumInput(string name, T init) : base(name, init)
         {

@@ -11,7 +11,7 @@ namespace FinderMod.Inputs
         private const float MARGIN = 6f;
         private const float PADDING = 10f;
 
-        private OpRect rect = null;
+        private OpRect rect = null!;
         public bool hasRect = true;
         public List<IElement> children = children;
 

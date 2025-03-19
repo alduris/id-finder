@@ -21,7 +21,7 @@ namespace FinderMod.Inputs
 
         protected override Color GetValue(UIconfig element)
         {
-            return (element as OpColorPicker).valueColor;
+            return (element as OpColorPicker)!.valueColor;
         }
     }
 

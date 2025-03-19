@@ -15,9 +15,9 @@ namespace FinderMod
     [BepInPlugin("alduris.finder", "ID Finder", "2.0")]
     internal partial class Plugin : BaseUnityPlugin
     {
-        private Options Options;
-        public static Plugin instance;
-        public static ManualLogSource logger;
+        private readonly Options Options;
+        public static Plugin instance = null!;
+        public static ManualLogSource logger = null!;
 
         public Plugin()
         {
@@ -34,7 +34,7 @@ namespace FinderMod
             }
         }
 
-        private void OnEnable()
+        public void OnEnable()
         {
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
@@ -56,9 +56,6 @@ namespace FinderMod
 
                 On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
                 On.GameSession.ctor += GameSessionOnctor;
-
-                // Enable if debug needed
-                // ApplyDebugHooks(); // see Test/DebugHooks
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;

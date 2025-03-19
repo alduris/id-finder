@@ -20,7 +20,7 @@ namespace FinderMod.Search.Options
 
         public override float Execute(XORShift128 Random)
         {
-            Personality p = new Personality(Random);
+            var p = new Personality(Random);
 
             // Pre-generate some attributes we will need later
             float generalMelanin = Custom.PushFromHalf(Random.Value, 2f);
@@ -60,8 +60,8 @@ namespace FinderMod.Search.Options
             if (Random.Value < 0.25f) Random.Shift(); // unused scruffy calculation that's still done for some reason
 
             // OK NOW WE GET TO THE COLOR CRAP
-            HSLColor bodyColor, headColor, decoColor, eyeColor, bellyColor;
-            float bodyColorBlack, headColorBlack, bellyColorBlack;
+            HSLColor bodyColor, headColor, decoColor, eyeColor; //, bellyColor;
+            float bodyColorBlack, headColorBlack; //, bellyColorBlack;
 
             float bodyHue = Random.Value * 0.1f;
             if (Random.Value < 0.025f)

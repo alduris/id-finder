@@ -6,7 +6,7 @@ using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using static FinderMod.OpUtil;
 
-namespace FinderMod.Tabs
+/*namespace FinderMod.Tabs
 {
     internal class ValuesTab : BaseTab
     {
@@ -138,3 +138,4 @@ namespace FinderMod.Tabs
         }
     }
 }
+*/

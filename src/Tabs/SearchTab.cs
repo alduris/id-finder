@@ -20,7 +20,7 @@ namespace FinderMod.Tabs
         private OpScrollBox cont_queries = null!;
         private OpScrollBox cont_results = null!;
         private OpLabel label_progress = null!;
-        private List<Option> options = [];
+        private readonly List<Option> options = [];
         private Threadmaster? threadmaster = null;
         private DateTime startTime;
 
@@ -38,8 +38,8 @@ namespace FinderMod.Tabs
             // Initialize elements we need
             var combo_allOpts = new OpComboBox(
                 CosmeticBind(""), new(10f, 520f), 250f,
-                new List<ListItem>(SearchOptions.Groups.Keys.ToArray()
-                    .Where(s => ModManager.MSC || !SearchOptions.Groups[s].MSC)
+                new List<ListItem>(
+                    OptionRegistry.ListOptions()
                     .Select(s => new ListItem(s))
                 )
             );
@@ -63,11 +63,15 @@ namespace FinderMod.Tabs
                 combo_allOpts.value = null;
 
                 if (waitingForResults) return;
-
-                if (SearchOptions.Groups.TryGetValue(value, out var setup))
+                if (OptionRegistry.TryGetOption(value, out var option))
                 {
-#warning implement
-                    throw new NotImplementedException();
+                    options.Add(option);
+                    option.OnLink += UpdateQueryBox;
+                    option.OnDelete += () =>
+                    {
+                        options.Remove(option);
+                        UpdateQueryBox();
+                    };
                     UpdateQueryBox();
                 }
             };
@@ -113,7 +117,7 @@ namespace FinderMod.Tabs
 
                 startTime = DateTime.Now;
                 threadmaster = new Threadmaster(options, threads, resultsPer, range, false);
-                //SearchUtil.Search(arrQueries.ToArray(), range, threads, resultsPer);
+                threadmaster.Run();
             };
 
             input_threads.OnValueChanged += (_, _, old) =>

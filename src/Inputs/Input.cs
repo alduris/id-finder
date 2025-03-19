@@ -16,7 +16,7 @@ namespace FinderMod.Inputs
     public abstract class Input<T>(string name, T init) : IElement, ISpecialGroupHeight
     {
         public string name = name;
-        public string description = null;
+        public string description = null!;
         private string LabelText => name + (enabled && !inputOnNewLine ? ":  " : ""); // yes the two spaces are intentional
         public bool enabled = true;
         public bool forceEnabled = false;
@@ -89,7 +89,7 @@ namespace FinderMod.Inputs
 
         // Event thingy
         public delegate void ValueChanged(Input<T> input, T value, T oldValue);
-        public event ValueChanged OnValueChanged;
+        public event ValueChanged? OnValueChanged;
     }
 
     public abstract class RangedInput<T>(string name, T init) : Input<T>(name, init) where T : IComparable

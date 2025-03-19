@@ -10,7 +10,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            var el = base.GetElement(pos) as OpFloatSlider;
+            var el = (base.GetElement(pos) as OpFloatSlider)!;
             SetColor(el);
             el.OnValueUpdate += (_, _, _) =>
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FinderMod.Search.Options;
 
 namespace FinderMod.Search
@@ -41,6 +42,8 @@ namespace FinderMod.Search
             };
         }
 
+        public static List<string> ListOptions() => [.. Options.Keys];
+
         public static void InitializeDLC()
         {
             if (InitDLC) return;
@@ -67,11 +70,16 @@ namespace FinderMod.Search
             Options[name] = register;
         }
 
-        public static Option GetOption(string name)
+        public static bool TryGetOption(string name, out Option option)
         {
-            var opt = Options[name].Invoke();
-            opt.name = name;
-            return opt;
+            option = null!;
+            if (Options.TryGetValue(name, out var factory))
+            {
+                option = factory.Invoke();
+                option.name = name;
+                return true;
+            }
+            return false;
         }
     }
 }

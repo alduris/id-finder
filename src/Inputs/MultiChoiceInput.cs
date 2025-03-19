@@ -7,16 +7,10 @@ namespace FinderMod.Inputs
     /// <summary>
     /// Represents an OpComboBox. However, the value is an int. What does it mean? The index of the selected option as found in the options list passed in.
     /// </summary>
-    public class MultiChoiceInput : Input<int>
+    public class MultiChoiceInput(string name, string[] options, int init = 0) : Input<int>(name, init)
     {
-        private readonly string[] options;
-        private readonly float width;
-
-        public MultiChoiceInput(string name, string[] options, int init = 0) : base(name, init)
-        {
-            this.options = options;
-            width = options.Max(x => LabelTest.GetWidth(x)) + 30f;
-        }
+        private readonly string[] options = options;
+        private readonly float width = options.Max(x => LabelTest.GetWidth(x)) + 30f;
 
         public override float Height => 24f;
 
@@ -27,7 +21,7 @@ namespace FinderMod.Inputs
 
         protected override int GetValue(UIconfig element)
         {
-            var index = options.IndexOf((element as OpComboBox).value);
+            var index = options.IndexOf((element as OpComboBox)!.value);
             return index < 0 ? 0 : index;
         }
     }

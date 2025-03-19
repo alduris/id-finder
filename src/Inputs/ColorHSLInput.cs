@@ -5,9 +5,9 @@ namespace FinderMod.Inputs
 {
     public class ColorHSLInput : Group
     {
-        public FloatInput HueInput { get; private set; }
-        public FloatInput SatInput { get; private set; }
-        public FloatInput LightInput { get; private set; }
+        public FloatInput HueInput { get; private set; } = null!;
+        public FloatInput SatInput { get; private set; } = null!;
+        public FloatInput LightInput { get; private set; } = null!;
 
         public string descripion
         {
@@ -23,7 +23,7 @@ namespace FinderMod.Inputs
 
         public ColorHSLInput(string name, bool h, bool s, bool l) : this(name, h, 0f, 1f, s, 0f, 1f, l, 0f, 1f) { }
 
-        public ColorHSLInput(string name, bool h, float hMin, float hMax, bool s, float sMin, float sMax, bool l, float lMin, float lMax) : base(null)
+        public ColorHSLInput(string name, bool h, float hMin, float hMax, bool s, float sMin, float sMax, bool l, float lMin, float lMax) : base(null!)
         {
             children = [new Label(name, false)];
             if (h) children.Add(HueInput = new FloatInput("H", hMin, hMax));
