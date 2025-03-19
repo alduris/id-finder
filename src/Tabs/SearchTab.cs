@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using FinderMod.Search;
 using FinderMod.Search.Options;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
-using RWCustom;
-using UnityEngine;
 using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
@@ -24,7 +21,6 @@ namespace FinderMod.Tabs
         private Threadmaster? threadmaster = null;
         private DateTime startTime;
 
-        // private Query[] currRequest;
         private bool waitingForResults = false;
 
         public override void Initialize()
@@ -49,8 +45,8 @@ namespace FinderMod.Tabs
 
             var input_min = new OpTextBox(CosmeticBind(0), new(50f, 236f), 100f) { description = "Start of search range" };
             var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 236f), 100f) { description = "End of search range" };
-            var input_find = new OpTextBox(CosmeticBind(1), new(60f, 206f), 60f) { description = "Number of ids to find per result (1-20)" };
-            var input_threads = new OpTextBox(CosmeticBind(2), new(190f, 206f), 60f) { description = "Number of threads to use" };
+            var input_find = new OpDragger(CosmeticRange(1, 1, 100), 60f, 206f) { description = "Number of ids to find per result (1-100)" };
+            var input_threads = new OpDragger(CosmeticRange(maxThreads / 4, 1, maxThreads), 190f, 206f) { description = "Number of threads to use" };
 
             var button_run = new OpSimpleButton(new(510f, 216f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = color_start };
 
@@ -82,8 +78,8 @@ namespace FinderMod.Tabs
 
                 // Set up and validate search request
                 (int, int) range = (input_min.valueInt, input_max.valueInt);
-                int threads = input_threads.valueInt;
-                int resultsPer = input_find.valueInt;
+                int threads = input_threads.GetValueInt();
+                int resultsPer = input_find.GetValueInt();
 
                 // Deactivate all the items and stuff
                 waitingForResults = true;
@@ -118,37 +114,6 @@ namespace FinderMod.Tabs
                 startTime = DateTime.Now;
                 threadmaster = new Threadmaster(options, threads, resultsPer, range, false);
                 threadmaster.Run();
-            };
-
-            input_threads.OnValueChanged += (_, _, old) =>
-            {
-                try
-                {
-                    // Correct value if invalid (less than 1)
-                    int val = input_threads.valueInt;
-                    if (val < 1) input_threads.valueInt = 1;
-                    else if (val > maxThreads) input_threads.valueInt = maxThreads;
-                }
-                catch
-                {
-                    // Called if input is left blank
-                    input_threads.value = old;
-                }
-            };
-            input_find.OnValueChanged += (_, _, old) =>
-            {
-                try
-                {
-                    // Correct value if invalid (less than 1, more than 20)
-                    int val = input_find.valueInt;
-                    if (val < 1) input_find.valueInt = 1;
-                    else if (val > 20) input_find.valueInt = 20;
-                }
-                catch
-                {
-                    // Called if input is left blank
-                    input_find.value = old;
-                }
             };
 
             // Add stuff to tab
@@ -186,24 +151,28 @@ namespace FinderMod.Tabs
             cont_queries.SetContentSize(0);
 
             // Add new
-            float y = cont_queries.size.y; // start from top of scroll box
+            float y = cont_queries.size.y - PADDING; // start from top of scroll box
             List<UIelement> items = [];
+            bool first = true;
 
             foreach (Option option in options)
             {
+                option.firstOption = true;
+                if (first)
+                {
+                    first = false;
+                }
                 option.CreateOptions(ref y, items);
+                y -= PADDING;
             }
-            foreach (UIelement element in items)
-            {
-                cont_queries.AddItems(element);
-            }
+            cont_queries.AddItems([.. items]);
 
-            cont_queries.SetContentSize(cont_queries.size.y - y + 2 * PADDING, true);
+            cont_queries.SetContentSize(cont_queries.size.y - y + PADDING, true);
         }
 
         public override void Update()
         {
-            if (threadmaster != null)
+            if (threadmaster != null && waitingForResults)
             {
                 if (!threadmaster.Running)
                 {

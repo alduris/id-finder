@@ -40,11 +40,8 @@ namespace FinderMod.Inputs
             if (!forceEnabled)
             {
                 var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : Height / 2f - 12f)));
-                cb.OnValueUpdate += (_, t, f) =>
-                {
-                    enabled = cb.GetValueBool();
-                    UpdateQueryBox();
-                };
+                cb.OnValueUpdate += ToggleEnable;
+                elements.Add(cb);
             }
             else
             {
@@ -62,13 +59,19 @@ namespace FinderMod.Inputs
                 }
                 var elX = x + cbOffset + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
                 var element = GetElement(new Vector2(elX, y));
-                element.OnValueChanged += Element_OnValueChanged;
+                element.OnValueChanged += CallOnValueChangedEvent;
                 if (description != null) element.description = description;
                 elements.Add(element);
             }
         }
 
-        private void Element_OnValueChanged(UIconfig config, string value, string oldValue)
+        private void ToggleEnable(UIconfig config, string value, string oldValue)
+        {
+            enabled = (config as OpCheckBox)!.GetValueBool();
+            UpdateQueryBox();
+        }
+
+        private void CallOnValueChangedEvent(UIconfig config, string value, string oldValue)
         {
             T oldVal = this.value;
             this.value = GetValue(config);
