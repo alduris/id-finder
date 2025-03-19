@@ -28,8 +28,9 @@ namespace FinderMod.Search
         public float Progress => progress.Sum() / threads;
         public string? AbortReason { get; private set; } = null;
 
-        public Threadmaster(List<Option> options, int threads, int results, (int, int) range, bool gpu)
+        public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)
         {
+            var span = PositiveDirGap(range.min, range.max, 1);
             this.options = options;
             this.threads = threads;
             this.results = results;

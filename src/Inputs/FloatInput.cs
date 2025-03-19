@@ -1,4 +1,5 @@
-﻿using Menu.Remix.MixedUI;
+﻿using System;
+using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
 
@@ -18,7 +19,8 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            return new OpFloatSlider(ConfigRange(min, max), pos - new Vector2(0, 3f), 160);
+            int dNum = Math.Max(1, -Mathf.CeilToInt(Mathf.Log10(max - min)) + 3);
+            return new OpFloatSlider(ConfigRange(min, max), pos - new Vector2(0, 3f), 160) { _dNum = (byte)dNum };
         }
 
         protected override float GetValue(UIconfig element) => (element as OpFloatSlider).GetValueFloat();

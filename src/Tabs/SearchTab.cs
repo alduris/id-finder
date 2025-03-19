@@ -96,7 +96,7 @@ namespace FinderMod.Tabs
                 foreach (UIelement element in cont_results.items)
                 {
                     element.Deactivate();
-                    element.tab._RemoveItem(element);
+                    _RemoveItem(element);
                 }
                 cont_results.items.Clear();
                 cont_results.SetContentSize(0f, true);
@@ -146,8 +146,9 @@ namespace FinderMod.Tabs
             // Remove old
             foreach (UIelement element in cont_queries.items)
             {
+                Plugin.logger.LogDebug(element);
                 element.Deactivate();
-                element.tab._RemoveItem(element);
+                _RemoveItem(element);
             }
             cont_queries.items.Clear();
             cont_queries.SetContentSize(0);
@@ -159,11 +160,8 @@ namespace FinderMod.Tabs
 
             foreach (Option option in options)
             {
-                option.firstOption = true;
-                if (first)
-                {
-                    first = false;
-                }
+                option.firstOption = first;
+                first = false;
                 option.CreateOptions(ref y, items);
                 y -= PADDING;
             }
@@ -184,7 +182,7 @@ namespace FinderMod.Tabs
                     foreach (UIelement element in cont_results.items)
                     {
                         element.Deactivate();
-                        element.tab._RemoveItem(element);
+                        _RemoveItem(element);
                     }
                     cont_results.items.Clear();
                     cont_results.SetContentSize(0f, true);

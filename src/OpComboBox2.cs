@@ -1,11 +1,11 @@
-﻿global using OpComboBox = MapExporter.Tabs.UI.OpComboBox2;
-global using OpResourceSelector = MapExporter.Tabs.UI.OpResourceSelector2;
+﻿global using OpComboBox = FinderMod.OpComboBox2;
+global using OpResourceSelector = FinderMod.OpResourceSelector2;
 
 using System.Collections.Generic;
 using Menu.Remix.MixedUI;
 using UnityEngine;
 
-namespace MapExporter.Tabs.UI
+namespace FinderMod
 {
 
     /**
