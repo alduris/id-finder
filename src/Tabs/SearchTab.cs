@@ -46,7 +46,7 @@ namespace FinderMod.Tabs
 
             var input_min = new OpTextBox(CosmeticBind(0), new(50f, 236f), 100f) { description = "Start of search range" };
             var input_max = new OpTextBox(CosmeticBind(100000), new(185f, 236f), 100f) { description = "End of search range" };
-            var input_find = new OpDragger(CosmeticRange(1, 1, 100), 60f, 206f) { description = "Number of ids to find per result (1-100)" };
+            var input_find = new OpDragger(CosmeticRange(5, 1, 100), 60f, 206f) { description = "Number of ids to find per result (1-100)" };
             var input_threads = new OpDragger(CosmeticRange(maxThreads / 4, 1, maxThreads), 190f, 206f) { description = "Number of threads to use" };
 
             var button_run = new OpSimpleButton(new(510f, 216f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = color_start };
@@ -190,7 +190,7 @@ namespace FinderMod.Tabs
                     cont_results.SetContentSize(0f, true);
 
                     // Init label
-                    OpLabelLong label = new(new(10f, cont_results.size.y - 10f), new(cont_results.size.x - 20f, 0f), "", true, FLabelAlignment.Left) { verticalAlignment = OpLabel.LabelVAlignment.Top };
+                    var label = new OpLabelLong(new(10f, cont_results.size.y - 10f), new(cont_results.size.x - 20f, 0f), "", true, FLabelAlignment.Left) { verticalAlignment = OpLabel.LabelVAlignment.Bottom };
 
                     // Did we abort?
                     if (threadmaster.AbortReason != null)
@@ -209,8 +209,9 @@ namespace FinderMod.Tabs
                         }
                     }
 
+                    var labelSize = (label.GetLineCount() - 1) * label.LineHeight;
                     label.text = label.text.Substring(0, label.text.Length - 1); // get rid of last \n
-                    var labelSize = label.GetLineCount() * label.LineHeight;
+                    label.PosY -= labelSize;
 
                     // Copy results button
                     var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 30f), new(48f, 24f), "COPY") { description = "Copy results" };

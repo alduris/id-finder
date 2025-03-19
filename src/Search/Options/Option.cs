@@ -39,13 +39,17 @@ namespace FinderMod.Search.Options
             var deleteButton = new OpSimpleButton(new Vector2(10f, y), new Vector2(24f, 24f), "\xd7") { colorEdge = OpUtil.color_del, colorFill = OpUtil.color_del };
             deleteButton.OnClick += (_) => OnDelete?.Invoke();
             var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), "+") { colorEdge = OpUtil.color_link, colorFill = OpUtil.color_link };
-            if (firstOption)
+            if (!firstOption)
             {
-                linked = !linked;
-                linkButton.OnClick += (_) => OnLink?.Invoke();
+                linkButton.OnClick += (_) =>
+                {
+                    linked = !linked;
+                    OnLink?.Invoke();
+                };
             }
             else
             {
+                linked = false;
                 linkButton.greyedOut = true;
             }
             output.Add(deleteButton);

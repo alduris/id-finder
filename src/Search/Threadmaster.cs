@@ -20,10 +20,11 @@ namespace FinderMod.Search
 
         private readonly float[] progress;
         private readonly Result[,,] output;
+        private bool started = false;
         private bool abort = false;
         private int finished = 0;
 
-        public bool Running => finished != threads;
+        public bool Running => finished != threads && started && !abort;
         public float Progress => progress.Sum() / threads;
         public string? AbortReason { get; private set; } = null;
 
@@ -42,17 +43,23 @@ namespace FinderMod.Search
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint PositiveDirGap(int i, int j, int div)
         {
-            if (i - 1 == j) return 0xffffffffu / (uint)div; // edge case fix thingy
+            unchecked
+            {
+                if (i - 1 == j) return 0xffffffffu / (uint)div; // edge case fix thingy
 
-            // Unchecked type cast because we want the negative bit to count as a 2**31 bit without throwing errors (it does otherwise for some reason)
-            uint a = unchecked((uint)i), b = unchecked((uint)j + 1);
-            uint dist = b > a ? (b - a) : 0xffffffffu - (a - b);
-            return (uint)(dist / div);
+                // Unchecked type cast because we want the negative bit to count as a 2**31 bit without throwing errors (it does otherwise for some reason)
+                uint a = (uint)i;
+                uint b = (uint)j + 1;
+                uint dist = b > a ? (b - a) : 0xffffffffu - (a - b);
+                return (uint)(dist / div);
+            }
         }
 
         public void Run()
         {
+            abort = false;
             if (Running) return;
+            started = true;
             if (gpu) throw new NotImplementedException();
 
             uint gap = PositiveDirGap(range.min, range.max, threads);
@@ -61,11 +68,11 @@ namespace FinderMod.Search
                 unchecked
                 {
                     uint min = (uint)range.min + gap * (uint)i;
-                    uint max = (uint)range.max + gap * (uint)(i + 1) - 1;
+                    uint max = (uint)range.min + gap * (uint)(i + 1) - 1;
                     if (i == threads - 1) max = (uint)range.max;
                     int j = i;
                     Plugin.logger.LogInfo("THREAD " + (i + 1) + ": " + min + ", " + max);
-                    tasks.Add(Task.Run(() => RunThread(min, max, i)));
+                    tasks.Add(Task.Run(() => RunThread(min, max, j)));
                 }
             }
         }
@@ -98,6 +105,7 @@ namespace FinderMod.Search
                 ref float prog = ref progress[thread];
 
                 // Search
+                Plugin.logger.LogDebug(thread + ": " + res.GetLength(0) + "," + res.GetLength(1) + " / " + distinctLinks + "," + results);
                 try
                 {
                     uint gap = PositiveDirGap((int)min, (int)max, 1);
@@ -150,8 +158,7 @@ namespace FinderMod.Search
                 {
                     Abort("encountered exception");
 
-                    Plugin.logger.LogError("Thread " + thread + " encountered exception: " + e.Message);
-                    Plugin.logger.LogError(e);
+                    Plugin.logger.LogError("Thread " + thread + " encountered exception: " + e.Message + "\n" + e.ToString());
                 }
 
                 // Sort and return
@@ -170,23 +177,22 @@ namespace FinderMod.Search
         /// <summary>
         /// Returns search results such that the first dimension is each query and the second dimension is the results from each query.
         /// </summary>
-        /// <returns>Results in a format</returns>
-        /// <exception cref="InvalidOperationException">Called before thread operation is completed or aborted</exception>
+        /// <returns>Results in a two-dimensional array with queries on the outer and individual results on the inner</returns>
         public Result[][] GetResults()
         {
-            if (Running) throw new InvalidOperationException("Please wait until the operation is complete, or abort first.");
+            if (Running || !started) throw new InvalidOperationException("Please wait until the operation is complete, or abort first.");
             List<List<Result>> combinedResults = [];
-            for (int i = 0; i < output.GetLength(0); i++)
+            for (int j = 0; j < output.GetLength(1); j++)
             {
                 combinedResults.Add([]);
-                for (int j = 0; j < output.GetLength(1); j++)
+                for (int i = 0; i < output.GetLength(0); i++)
                 {
                     for (int k = 0; k < output.GetLength(2); k++)
                     {
-                        combinedResults[i].Add(output[i, j, k]);
+                        combinedResults[j].Add(output[i, j, k]);
                     }
                 }
-                combinedResults[i] = combinedResults[i]
+                combinedResults[j] = combinedResults[j]
                     .OrderByDescending(x => x.dist) // sort so the biggest distances are at the front
                     .Skip((threads - 1) * results)  // remove the extras created by having multiple threads, which only does the biggest ones which we don't want anyway
                     .Reverse()                      // reverse so the smaller distances are at the front
