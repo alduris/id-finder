@@ -28,7 +28,7 @@ namespace FinderMod.Search.Options
         {
             const float MARGIN = 6f;
 
-            if (!firstOption)
+            if (!firstOption && !linked)
             {
                 y -= 2f;
                 output.Add(new OpImage(new Vector2(10f, y), "pixel") { scale = new Vector2(580f, 2f) });
@@ -38,7 +38,7 @@ namespace FinderMod.Search.Options
             y -= 27f;
             var deleteButton = new OpSimpleButton(new Vector2(10f, y), new Vector2(24f, 24f), "\xd7") { colorEdge = OpUtil.color_del, colorFill = OpUtil.color_del };
             deleteButton.OnClick += (_) => OnDelete?.Invoke();
-            var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), "+") { colorEdge = OpUtil.color_link, colorFill = OpUtil.color_link };
+            var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), linked ? "-" : "+") { colorEdge = OpUtil.color_link, colorFill = OpUtil.color_link };
             if (!firstOption)
             {
                 linkButton.OnClick += (_) =>

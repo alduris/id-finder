@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Menu.Remix.MixedUI;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace FinderMod.Inputs
     {
         private readonly T init;
         protected readonly Func<T, string> nameConv = null!;
+        public List<T> excludeOptions = [];
 
         public EnumInput(string name, T init) : base(name, init)
         {
@@ -25,10 +27,10 @@ namespace FinderMod.Inputs
         protected override UIconfig GetElement(Vector2 pos)
         {
             var el = new OpResourceSelector(Config(), pos, 160f);
-            if (nameConv != null)
-            {
-                el._itemList = el._itemList.Select(x => new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value)).ToArray();
-            }
+            el._itemList = el._itemList
+                .Where(x => !excludeOptions.Contains((T)Enum.Parse(typeof(T), x.name)))
+                .Select(x => nameConv != null ? new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value) : x)
+                .ToArray();
             return el;
         }
 

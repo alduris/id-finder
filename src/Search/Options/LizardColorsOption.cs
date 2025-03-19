@@ -80,6 +80,14 @@ namespace FinderMod.Search.Options
             {
                 forceEnabled = true;
                 OnValueChanged += LizardInput_OnValueChanged;
+                excludeOptions = [
+                    LizardType.White,
+                    LizardType.Black,
+                    LizardType.Caramel,
+                    LizardType.Zoop,
+                    LizardType.Train,
+                    LizardType.Eel
+                ];
             }
 
             private void LizardInput_OnValueChanged(Input<LizardType> input, LizardType value, LizardType oldValue)
@@ -90,6 +98,7 @@ namespace FinderMod.Search.Options
             protected override UIconfig GetElement(Vector2 pos)
             {
                 var el = base.GetElement(pos);
+                (el as OpResourceSelector)!.listHeight = (ushort)Enum.GetNames(typeof(LizardType)).Length;
                 return el;
             }
         }

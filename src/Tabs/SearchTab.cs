@@ -39,7 +39,7 @@ namespace FinderMod.Tabs
                     .Select(s => new ListItem(s))
                 )
             )
-            { listHeight = unchecked((ushort)Math.Min(20, OptionRegistry.ListOptions().Count)) };
+            { listHeight = 20 };
             var button_add = new OpSimpleButton(new(280f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
 
             cont_queries = new OpScrollBox(new(10f, 270f), new(580f, 240f), 0f, false, true, true) { contentSize = 100f };
