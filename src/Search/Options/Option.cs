@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
+using Newtonsoft.Json.Linq;
 using RWCustom;
 using UnityEngine;
 
@@ -87,6 +89,43 @@ namespace FinderMod.Search.Options
             }
         }
         protected abstract IEnumerable<string> GetValues(XORShift128 Random);
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Save stuff
+        public JObject ToJson()
+        {
+            var children = new JObject();
+            foreach (var child in elements)
+            {
+                if (child is ISaveInHistory saveable)
+                {
+                    children[saveable.SaveKey] = saveable.ToSaveData();
+                }
+            }
+            return new JObject()
+            {
+                ["name"] = name,
+                ["linked"] = linked,
+                ["children"] = children
+            };
+        }
+
+        public void FromJson(JObject json)
+        {
+            linked = (bool)json["linked"]!;
+            HashSet<ISaveInHistory> saveable = elements.Where(x => x is ISaveInHistory).Cast<ISaveInHistory>().ToHashSet();
+            foreach (var kvp in (JObject)json["children"]!)
+            {
+                var child = saveable.FirstOrDefault(x => x.SaveKey == kvp.Key);
+                if (child != null)
+                {
+                    child.FromSaveData((kvp.Value as JObject)!);
+                    saveable.Remove(child);
+                }
+            }
+        }
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helper stuff

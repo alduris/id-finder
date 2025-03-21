@@ -1,11 +1,12 @@
 ﻿using Menu.Remix.MixedUI;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace FinderMod.Inputs
 {
     public class ColorRGBInput : Input<Color>
     {
-        public override float Height => 150f;
+        public override float InputHeight => 150f;
 
         public ColorRGBInput(string name, Color color) : base(name, color)
         {
@@ -22,6 +23,25 @@ namespace FinderMod.Inputs
         protected override Color GetValue(UIconfig element)
         {
             return (element as OpColorPicker)!.valueColor;
+        }
+
+        public override JObject ToSaveData()
+        {
+            return new JObject
+            {
+                ["enabled"] = enabled,
+                ["r"] = value.r,
+                ["g"] = value.g,
+                ["b"] = value.b,
+                ["bias"] = bias
+            };
+        }
+
+        public override void FromSaveData(JObject data)
+        {
+            enabled = (bool)data["enabled"]!;
+            value = new Color((float)data["r"]!, (float)data["g"]!, (float)data["b"]!);
+            bias = (int)data["bias"]!;
         }
     }
 

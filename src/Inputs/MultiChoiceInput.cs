@@ -12,7 +12,7 @@ namespace FinderMod.Inputs
         private readonly string[] options = options;
         private readonly float width = options.Max(x => LabelTest.GetWidth(x)) + 30f;
 
-        public override float Height => 24f;
+        public override float InputHeight => 24f;
 
         protected override UIconfig GetElement(Vector2 pos)
         {

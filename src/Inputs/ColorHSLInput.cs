@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Menu.Remix.MixedUI;
+using Newtonsoft.Json.Linq;
 using RWCustom;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace FinderMod.Inputs
 
         public ColorHSLInput(string name, bool h, bool s, bool l) : this(name, h, 0f, 1f, s, 0f, 1f, l, 0f, 1f) { }
 
-        public ColorHSLInput(string name, bool h, float hMin, float hMax, bool s, float sMin, float sMax, bool l, float lMin, float lMax) : base(null!)
+        public ColorHSLInput(string name, bool h, float hMin, float hMax, bool s, float sMin, float sMax, bool l, float lMin, float lMax) : base(null!, name)
         {
             children = [new Label(name, false)];
             if (h) children.Add(HueInput = new HueInput("H", hMin, hMax));
@@ -58,6 +59,12 @@ namespace FinderMod.Inputs
             Color color = Custom.HSL2RGB(fixColors ? h - Mathf.Floor(h) : h, s, l);
             ColorEdge = color;
             ColorFill = color;
+        }
+
+        public override void FromSaveData(JObject data)
+        {
+            base.FromSaveData(data);
+            UpdateColor(null!, 0, 0);
         }
     }
 }

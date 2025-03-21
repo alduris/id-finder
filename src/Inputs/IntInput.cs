@@ -8,7 +8,7 @@ namespace FinderMod.Inputs
     {
         private readonly int min = min, max = max;
 
-        public override float Height => 24f;
+        public override float InputHeight => 24f;
 
         protected override UIconfig GetElement(Vector2 pos)
         {

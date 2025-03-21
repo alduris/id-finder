@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace FinderMod.Inputs
@@ -13,7 +14,7 @@ namespace FinderMod.Inputs
     /// <typeparam name="T">The value type</typeparam>
     /// <param name="name">The name of the input</param>
     /// <param name="init">The initial value</param>
-    public abstract class Input<T>(string name, T init) : IElement, ISpecialGroupHeight
+    public abstract class Input<T>(string name, T init) : IElement, ISaveInHistory
     {
         public string name = name;
         public string description = null!;
@@ -29,20 +30,20 @@ namespace FinderMod.Inputs
         /// <summary>
         /// Height of the input. Should be larger than 24f.
         /// </summary>
-        public abstract float Height { get; }
+        public abstract float InputHeight { get; }
 
-        public float GroupHeight => inputOnNewLine ? (enabled || forceEnabled ? 28f + Height : 24f) : Height;
+        public float Height => inputOnNewLine ? (enabled || forceEnabled ? 28f + InputHeight : 24f) : InputHeight;
 
 
         // Element creation
         public void Create(float x, ref float y, List<UIelement> elements)
         {
-            y -= inputOnNewLine ? 24f : Height;
+            y -= inputOnNewLine ? 24f : InputHeight;
             float topY = y;
 
             if (!forceEnabled)
             {
-                var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : Height / 2f - 12f)));
+                var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : InputHeight / 2f - 12f)));
                 cb.OnValueUpdate += ToggleEnable;
                 elements.Add(cb);
             }
@@ -52,13 +53,13 @@ namespace FinderMod.Inputs
             }
 
             float cbOffset = forceEnabled ? 0f : 34f;
-            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 0f : Height / 2f - LabelTest._lineHalfHeight), LabelText));
+            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 0f : InputHeight / 2f - LabelTest._lineHalfHeight), LabelText));
 
             if (enabled)
             {
                 if (inputOnNewLine)
                 {
-                    y -= 4f + Height;
+                    y -= 4f + InputHeight;
                 }
                 var elX = x + cbOffset + (inputOnNewLine ? 0f : LabelTest.GetWidth(LabelText));
                 var element = GetElement(new Vector2(elX, y));
@@ -106,6 +107,29 @@ namespace FinderMod.Inputs
         {
             SearchTab.instance.UpdateQueryBox();
         }
+
+
+        // Save data
+        public string SaveKey => name;
+
+
+        public virtual JObject ToSaveData()
+        {
+            return new JObject
+            {
+                ["enabled"] = enabled,
+                ["value"] = JToken.FromObject(value!),
+                ["bias"] = bias
+            };
+        }
+
+        public virtual void FromSaveData(JObject data)
+        {
+            enabled = (bool)data["enabled"]!;
+            value = data["value"]!.ToObject<T>()!;
+            bias = (int)data["bias"]!;
+        }
+
 
         // Event thingy
         public delegate void ValueChanged(Input<T> input, T value, T oldValue);

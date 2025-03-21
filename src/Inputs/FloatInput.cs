@@ -15,7 +15,7 @@ namespace FinderMod.Inputs
         /// <param name="name">The name of the input</param>
         public FloatInput(string name) : this(name, 0f, 1f) { }
 
-        public override float Height => 24f;
+        public override float InputHeight => 24f;
 
         protected override UIconfig GetElement(Vector2 pos)
         {

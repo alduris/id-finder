@@ -3,6 +3,11 @@ using Menu.Remix.MixedUI;
 
 namespace FinderMod.Inputs
 {
+    /// <summary>
+    /// Represents an item in the query box made up of <see cref="UIelement"/>s.
+    /// If you are making an input wrapper, make sure to implement <see cref="ISaveInHistory"/> also.
+    /// If your input wrapper just encapsulates a group, consider using a <see cref="Group"/> instead.
+    /// </summary>
     public interface IElement
     {
         /// <summary>

@@ -7,7 +7,7 @@ namespace FinderMod.Inputs
     public class BoolInput(string name, bool init = false) : Input<bool>(name, init)
     {
 
-        public override float Height => 24f;
+        public override float InputHeight => 24f;
 
         protected override UIconfig GetElement(Vector2 pos) => new OpLabelCheckbox(Config(), pos);
 

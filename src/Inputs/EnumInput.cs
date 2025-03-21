@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Menu.Remix.MixedUI;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace FinderMod.Inputs
@@ -22,7 +23,7 @@ namespace FinderMod.Inputs
             this.nameConv = nameConv;
         }
 
-        public override float Height => 24f;
+        public override float InputHeight => 24f;
 
         protected override UIconfig GetElement(Vector2 pos)
         {
@@ -41,6 +42,24 @@ namespace FinderMod.Inputs
                 return (T)Enum.Parse(typeof(T), element.value);
             }
             return init;
+        }
+
+
+        public override JObject ToSaveData()
+        {
+            return new JObject
+            {
+                ["enabled"] = enabled,
+                ["value"] = value.ToString(),
+                ["bias"] = bias
+            };
+        }
+
+        public override void FromSaveData(JObject data)
+        {
+            enabled = (bool)data["enabled"]!;
+            value = (T)Enum.Parse(typeof(T), (string)data["value"]!);
+            bias = (int)data["bias"]!;
         }
     }
 }

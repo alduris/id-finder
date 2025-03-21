@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -157,7 +158,7 @@ namespace FinderMod.Search.Options
         /// A very poor implementation of a switch statement
         /// </summary>
         /// <param name="lizInput"></param>
-        private class LizardColor(LizardInput lizInput) : IElement
+        private class LizardColor(LizardInput lizInput) : IElement, ISaveInHistory
         {
             private readonly LizardInput lizInput = lizInput;
             private readonly Dictionary<LizardType, ColorHSLInput> groups = new()
@@ -193,6 +194,34 @@ namespace FinderMod.Search.Options
                 {
                     y -= LabelTest.LineHeight(false);
                     elements.Add(new OpLabel(x, y, "Color input not available for this lizard type!", false));
+                }
+            }
+
+            // Save data
+            public string SaveKey => "Lizard color";
+
+            public JObject ToSaveData()
+            {
+                var data = new JObject();
+                foreach (var kvp in groups)
+                {
+                    if (kvp.Value != null)
+                    {
+                        data[kvp.Key.ToString()] = kvp.Value.ToSaveData();
+                    }
+                }
+                return data;
+            }
+
+            public void FromSaveData(JObject data)
+            {
+                foreach (var kvp in data)
+                {
+                    var liz = (LizardType)Enum.Parse(typeof(LizardType), kvp.Key);
+                    if (groups.TryGetValue(liz, out var group))
+                    {
+                        group.FromSaveData((kvp.Value as JObject)!);
+                    }
                 }
             }
         }

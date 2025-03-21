@@ -17,8 +17,8 @@ namespace FinderMod.Tabs
         private OpScrollBox cont_queries = null!;
         private OpScrollBox cont_results = null!;
         private OpLabel label_progress = null!;
-        private readonly List<Option> options = [];
-        private Threadmaster? threadmaster = null;
+        internal readonly List<Option> options = [];
+        internal Threadmaster? threadmaster = null;
         private DateTime startTime;
 
         private bool waitingForResults = false;
@@ -221,6 +221,12 @@ namespace FinderMod.Tabs
                     // Set the scroll box size
                     cont_results.AddItems(label, button_copy);
                     cont_results.SetContentSize(labelSize + 50f, true);
+
+                    // Save history
+                    if (threadmaster.AbortReason == null)
+                    {
+                        HistoryManager.SaveHistory(options, results);
+                    }
 
                     // Reupdate query box to reenable everything
                     UpdateQueryBox();

@@ -40,7 +40,12 @@ namespace FinderMod.Search
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
                 { "Snail Variations", () => new SnailOption() },
+
             };
+#if !RELEASE
+            // Testing only!!
+            Options.Add("!TEST", () => new TestOption());
+#endif
         }
 
         public static List<string> ListOptions() => [.. Options.Keys];
