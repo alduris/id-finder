@@ -1,4 +1,5 @@
 ﻿using Menu.Remix.MixedUI;
+using RWCustom;
 
 namespace FinderMod.Tabs
 {
@@ -9,5 +10,7 @@ namespace FinderMod.Tabs
         public abstract void Initialize();
         public abstract void Update();
         public virtual void ClearMemory() { }
+
+        public static string Translate(string text) => Custom.rainWorld.inGameTranslator.TryTranslate(text, out var translated) ? translated : text;
     }
 }

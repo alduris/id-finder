@@ -1,6 +1,5 @@
 ﻿using BepInEx.Logging;
 using FinderMod.Tabs;
-using Menu.Remix.MixedUI;
 
 namespace FinderMod
 {
@@ -21,7 +20,8 @@ namespace FinderMod
             Tabs =
             [
                 new SearchTab(this),
-                new ValuesTab(this)
+                new ValuesTab(this),
+                new HistoryTab(this)
                 // new HelpTab(this)
             ];
             

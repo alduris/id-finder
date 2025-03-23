@@ -130,6 +130,15 @@ namespace FinderMod.Inputs
             bias = (int)data["bias"]!;
         }
 
+        public IEnumerable<string> GetHistoryLines()
+        {
+            if (enabled)
+            {
+                yield return $"{name}: {value}" + (bias != 1 ? $" (bias: {bias})" : "");
+            }
+            yield break;
+        }
+
 
         // Event thingy
         public delegate void ValueChanged(Input<T> input, T value, T oldValue);

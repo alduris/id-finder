@@ -12,9 +12,9 @@ namespace FinderMod
         public static Configurable<T> CosmeticBind<T>(T init) => new(Instance, null, init, null);
         public static Configurable<T> CosmeticRange<T>(T val, T min, T max) where T : IComparable => new(val, new ConfigAcceptableRange<T>(min, max));
 
-        public static readonly Color color_del = new(0.85f, 0.5f, 0.55f);
-        public static readonly Color color_warn = new(0.95f, 0.9f, 0.65f);
-        public static readonly Color color_link = new(0.65f, 0.95f, 0.8f);
-        public static readonly Color color_start = new(0.5f, 0.65f, 0.95f);
+        public static readonly Color RedColor = new(0.85f, 0.5f, 0.55f);
+        public static readonly Color YellowColor = new(0.95f, 0.9f, 0.65f);
+        public static readonly Color GreenColor = new(0.65f, 0.95f, 0.8f);
+        public static readonly Color BlueColor = new(0.5f, 0.65f, 0.95f);
     }
 }

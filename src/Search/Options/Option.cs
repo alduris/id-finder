@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
@@ -38,9 +39,9 @@ namespace FinderMod.Search.Options
             }
 
             y -= 27f;
-            var deleteButton = new OpSimpleButton(new Vector2(10f, y), new Vector2(24f, 24f), "\xd7") { colorEdge = OpUtil.color_del, colorFill = OpUtil.color_del };
+            var deleteButton = new OpSimpleButton(new Vector2(10f, y), new Vector2(24f, 24f), "\xd7") { colorEdge = OpUtil.RedColor, colorFill = OpUtil.RedColor };
             deleteButton.OnClick += (_) => OnDelete?.Invoke();
-            var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), linked ? "-" : "+") { colorEdge = OpUtil.color_link, colorFill = OpUtil.color_link };
+            var linkButton = new OpSimpleButton(new Vector2(40f, y), new Vector2(24f, 24f), linked ? "-" : "+") { colorEdge = OpUtil.GreenColor, colorFill = OpUtil.GreenColor };
             if (!firstOption)
             {
                 linkButton.OnClick += (_) =>
@@ -126,6 +127,22 @@ namespace FinderMod.Search.Options
             }
         }
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var child in elements)
+            {
+                if (child is ISaveInHistory saveable)
+                {
+                    foreach (var line in saveable.GetHistoryLines())
+                    {
+                        sb.AppendLine(line.ToString());
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helper stuff
@@ -166,46 +183,41 @@ namespace FinderMod.Search.Options
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected internal static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        public static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
             return Mathf.Clamp(baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation, 0f, 1f);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected internal static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
+        public static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
             float num = baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation + 1f;
             return num - Mathf.Floor(num);
         }
 
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float Distance(float num, float target)
-        {
-            return Mathf.Abs(num - target);
-        }*/
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float Distance(float num, Input<float> target)
+        public static float Distance(float num, Input<float> target)
         {
             return Mathf.Abs(num - target.value) * target.bias;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float Distance(float num, Input<int> target)
+        public static float Distance(float num, Input<int> target)
         {
             return Math.Abs(num - target.value) * target.bias;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(float num, Input<float>? target)
+        public static float DistanceIf(float num, Input<float>? target)
         {
             if (target != null && target.enabled) return Mathf.Abs(num - target.value) * target.bias;
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(float num, Input<int>? target)
+        public static float DistanceIf(float num, Input<int>? target)
         {
             if (target != null && target.enabled) return Math.Abs(num - target.value) * target.bias;
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(Color col, Input<Color>? target)
+        public static float DistanceIf(Color col, Input<Color>? target)
         {
             if (target != null && target.enabled)
             {
@@ -214,7 +226,7 @@ namespace FinderMod.Search.Options
             return 0f;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float DistanceIf(bool b, Input<bool>? target)
+        public static float DistanceIf(bool b, Input<bool>? target)
         {
             if (target != null && target.enabled)
             {
@@ -222,13 +234,8 @@ namespace FinderMod.Search.Options
             }
             return 0f;
         }
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float WrapDistance(float num, float target)
-        {
-            return Mathf.Min(Mathf.Abs(num - target), Mathf.Abs(num - (target + 1)), Mathf.Abs(num - (target - 1)));
-        }*/
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static float WrapDistanceIf(float num, Input<float> target)
+        public static float WrapDistanceIf(float num, Input<float> target)
         {
             if (target != null && target.enabled)
                 return Mathf.Min(Mathf.Abs(num - target.value), Mathf.Abs(num - (target.value + 1)), Mathf.Abs(num - (target.value - 1))) * target.bias;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using FinderMod.Search.Options;
 using FinderMod.Tabs;
+using Menu.Remix.MixedUI.ValueTypes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -16,9 +17,12 @@ namespace FinderMod.Search
         public struct HistoryItem
         {
             public string name;
+            public int min;
+            public int max;
             public JArray options;
             public Result[][] results;
             public DateTime date;
+            public string version;
 
             public readonly IEnumerable<Option> GetOptions()
             {
@@ -40,16 +44,41 @@ namespace FinderMod.Search
                     tab.options.Clear();
                     foreach (var option in GetOptions())
                     {
-                        tab.options.Add(option);
+                        tab.AddOption(option, false);
                     }
                     tab.UpdateQueryBox();
+                    tab.input_min.valueInt = min;
+                    tab.input_max.valueInt = max;
+                    if (results.Length > 0 && results[0] != null) tab.input_find.SetValueInt(results[0].Length);
                 }
             }
+
+            public readonly override bool Equals(object obj)
+            {
+                if (obj is HistoryItem other) return options.SequenceEqual(other.options);
+                return false;
+            }
+
+            public readonly override int GetHashCode()
+            {
+                // this only exists to remove the warning
+                return base.GetHashCode();
+            }
+
+            public readonly override string ToString()
+            {
+                return JsonConvert.SerializeObject(this);
+            }
+
+            public static bool operator ==(HistoryItem x, HistoryItem y) => x.Equals(y);
+            public static bool operator !=(HistoryItem x, HistoryItem y) => !(x == y);
         }
 
         private static string SaveFile => Path.Combine(Application.persistentDataPath, "idfinder.txt");
         private static readonly List<HistoryItem> historyItems = [];
         private static bool loadedHistory = false;
+
+        public static event Action? UpdateHistory;
 
         private static void LoadHistory()
         {
@@ -71,6 +100,8 @@ namespace FinderMod.Search
                     }
                 }
             }
+
+            UpdateHistory?.Invoke();
         }
 
         private static void WriteToFile()
@@ -78,7 +109,31 @@ namespace FinderMod.Search
             File.WriteAllLines(SaveFile, historyItems.Select(x => JsonConvert.SerializeObject(x)));
         }
 
-        public static void SaveHistory(List<Option> options, Result[][] results)
+        public static string CreateStringNoResults(List<Option> options, (int min, int max) range)
+        {
+            var array = new JArray();
+            foreach (var item in options)
+            {
+                array.Add(item.ToJson());
+            }
+
+            var name = string.Join(", ", options.Select(x => x.name));
+            if (name.Trim().Length == 0) name = "Search";
+            var history = new HistoryItem()
+            {
+                name = name,
+                min = range.min,
+                max = range.max,
+                options = array,
+                results = [],
+                date = DateTime.UtcNow,
+                version = Plugin.VERSION
+            };
+
+            return JsonConvert.SerializeObject(history);
+        }
+
+        public static void SaveHistory(List<Option> options, Result[][] results, (int min, int max) range)
         {
             LoadHistory();
 
@@ -89,15 +144,55 @@ namespace FinderMod.Search
                 array.Add(item.ToJson());
             }
 
+            var name = string.Join(", ", options.Select(x => x.name));
+            if (name.Trim().Length == 0) name = "Search";
             var history = new HistoryItem()
             {
-                name = "Test",
+                name = name,
+                min = range.min,
+                max = range.max,
                 options = array,
                 results = results,
-                date = DateTime.Now,
+                date = DateTime.UtcNow,
+                version = Plugin.VERSION
             };
             historyItems.Add(history);
             WriteToFile();
+            UpdateHistory?.Invoke();
+        }
+
+        public static void RemoveHistoryItem(HistoryItem item)
+        {
+            if (historyItems.Remove(item))
+            {
+                WriteToFile();
+                UpdateHistory?.Invoke();
+            }
+            else
+            {
+                Plugin.logger.LogDebug("Could not find item!");
+            }
+        }
+
+        public static void RenameHistoryItem(HistoryItem item, string name)
+        {
+            for (int i = 0; i < historyItems.Count; i++)
+            {
+                if (item == historyItems[i])
+                {
+                    var hi = historyItems[i];
+                    hi.name = name;
+                    historyItems[i] = hi;
+                    WriteToFile();
+                    break;
+                }
+            }
+        }
+
+        public static List<HistoryItem> GetHistory()
+        {
+            LoadHistory();
+            return [.. historyItems];
         }
     }
 }

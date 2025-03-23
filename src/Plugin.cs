@@ -12,12 +12,13 @@ using FinderMod.Search;
 
 namespace FinderMod
 {
-    [BepInPlugin("alduris.finder", "ID Finder", "2.0")]
+    [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
     internal partial class Plugin : BaseUnityPlugin
     {
         private readonly Options Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
+        public const string VERSION = "2.0";
 
         public Plugin()
         {

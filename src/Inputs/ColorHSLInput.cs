@@ -66,5 +66,12 @@ namespace FinderMod.Inputs
             base.FromSaveData(data);
             UpdateColor(null!, 0, 0);
         }
+
+        public override IEnumerable<string> GetHistoryLines()
+        {
+            if (HueInput is not null) yield return internalName + " H: " + HueInput.value;
+            if (SatInput is not null) yield return internalName + " S: " + SatInput.value;
+            if (LightInput is not null) yield return internalName + " L: " + LightInput.value;
+        }
     }
 }

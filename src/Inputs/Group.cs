@@ -14,11 +14,11 @@ namespace FinderMod.Inputs
     /// <param name="internalName">Internal name for group. Ideally should be unique. Used for saving in history.</param>
     public class Group(List<IElement> children, string internalName) : IElement, ISaveInHistory
     {
-        private const float MARGIN = 6f;
-        private const float PADDING = 10f;
+        protected const float MARGIN = 6f;
+        protected const float PADDING = 10f;
 
-        private readonly string internalName = internalName;
-        private OpRect rect = null!;
+        protected readonly string internalName = internalName;
+        protected OpRect rect = null!;
         public bool hasRect = true;
         public List<IElement> children = children;
 
@@ -112,6 +112,21 @@ namespace FinderMod.Inputs
                     saveable.Remove(child);
                 }
             }
+        }
+
+        public virtual IEnumerable<string> GetHistoryLines()
+        {
+            foreach (var child in children)
+            {
+                if (child is ISaveInHistory saveable)
+                {
+                    foreach (var line in saveable.GetHistoryLines())
+                    {
+                        yield return line;
+                    }
+                }
+            }
+            yield break;
         }
     }
 }

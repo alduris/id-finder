@@ -224,6 +224,15 @@ namespace FinderMod.Search.Options
                     }
                 }
             }
+
+            public IEnumerable<string> GetHistoryLines()
+            {
+                var activeInp = groups[lizInput.value];
+                foreach (var line in activeInp.GetHistoryLines())
+                {
+                    yield return line;
+                }
+            }
         }
     }
 }

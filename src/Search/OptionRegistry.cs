@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FinderMod.Search.Options;
+using FinderMod.Tabs;
 
 namespace FinderMod.Search
 {
@@ -82,7 +82,7 @@ namespace FinderMod.Search
             if (Options.TryGetValue(name, out var factory))
             {
                 option = factory.Invoke();
-                option.name = name;
+                option.name = BaseTab.Translate(name);
                 return true;
             }
             return false;
