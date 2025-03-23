@@ -9,13 +9,13 @@ namespace FinderMod.Tabs
 {
     internal class ValuesTab(OptionInterface option) : BaseTab(option, "Values")
     {
-        private OpComboBox searchItems = null!;
+        private OpComboBox2 searchItems = null!;
         private OpTextBox inputId = null!;
         private OpScrollBox outputBox = null!;
 
         public override void Initialize()
         {
-            searchItems = new OpComboBox(
+            searchItems = new OpComboBox2(
                 CosmeticBind(""), new(10f, 520f), 250f,
                 new List<ListItem>(
                     OptionRegistry.ListOptions()

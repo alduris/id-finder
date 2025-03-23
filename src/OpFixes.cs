@@ -1,5 +1,6 @@
 ﻿global using OpComboBox = FinderMod.OpComboBox2;
 global using OpResourceSelector = FinderMod.OpResourceSelector2;
+global using OpTextBox = FinderMod.OpTextBox2;
 
 using System.Collections.Generic;
 using Menu.Remix.MixedUI;
@@ -50,6 +51,36 @@ namespace FinderMod
                     _rectList.sprites[j].alpha = 1;
                 }
             }
+        }
+    }
+
+    public class OpTextBox2 : Menu.Remix.MixedUI.OpTextBox
+    {
+        public OpTextBox2(ConfigurableBase config, Vector2 pos, float sizeX) : base(config, pos, sizeX)
+        {
+            lastLastValue = value;
+            if (accept == Accept.StringEng)
+            {
+                accept = Accept.StringASCII;
+            }
+            if (accept == Accept.StringASCII)
+            {
+                allowSpace = true;
+            }
+        }
+
+        public bool test = false;
+        private string lastLastValue;
+        public event OnValueChangeHandler OnValueChangedFix = null!;
+
+        public override void Update()
+        {
+            base.Update();
+            if (lastLastValue != lastValue)
+            {
+                OnValueChangedFix?.Invoke(this, value, lastLastValue);
+            }
+            lastLastValue = lastValue;
         }
     }
 }

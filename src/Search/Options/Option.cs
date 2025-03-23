@@ -8,6 +8,7 @@ using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using RWCustom;
 using UnityEngine;
+using static Menu.Menu;
 
 namespace FinderMod.Search.Options
 {
@@ -34,7 +35,7 @@ namespace FinderMod.Search.Options
             if (!firstOption && !linked)
             {
                 y -= 2f;
-                output.Add(new OpImage(new Vector2(10f, y), "pixel") { scale = new Vector2(580f, 2f) });
+                output.Add(new OpImage(new Vector2(10f, y), "pixel") { scale = new Vector2(580f, 2f), color = MenuRGB(MenuColors.MediumGrey) });
                 y -= MARGIN;
             }
 

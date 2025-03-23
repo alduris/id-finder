@@ -4,9 +4,10 @@ using FinderMod.Search;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
+using static Menu.Menu;
 using HistoryItem = FinderMod.Search.HistoryManager.HistoryItem;
-using Result = FinderMod.Search.Threadmaster.Result;
 
 namespace FinderMod.Tabs
 {
@@ -53,7 +54,7 @@ namespace FinderMod.Tabs
                 box.AddItems(
                     new OpLabel(10f, 560f, Translate("HISTORY"), true),
                     new OpLabel(10f, 530f, Translate("Manage past searches here. Hover over a button to see its description at the bottom."), false),
-                    new OpImage(new Vector2(10f, 522f), "pixel") { scale = new Vector2(580f, 2f) } // 6px margin surrounding
+                    new OpImage(new Vector2(10f, 522f), "pixel") { scale = new Vector2(580f, 2f), color = MenuRGB(MenuColors.MediumGrey) } // 6px margin surrounding
                 );
 
                 // Items
@@ -77,7 +78,7 @@ namespace FinderMod.Tabs
                         box.AddItems(detailsButton, nameInput, copyButton, restoreButton, deleteButtom);
 
                         detailsButton.OnClick += (_) => DetailsButton_OnClick(item);
-                        nameInput.OnValueChanged += (_, _, old) => NameInput_OnValueChanged(nameInput, old, item);
+                        nameInput.OnValueChangedFix += (_, _, old) => NameInput_OnValueChanged(nameInput, old, item);
                         copyButton.OnClick += (_) => CopyButton_OnClick(item);
                         restoreButton.OnClick += (_) => RestoreButton_OnClick(item);
                         deleteButtom.OnClick += (_) => DeleteButtom_OnClick(item);
@@ -102,13 +103,19 @@ namespace FinderMod.Tabs
 
                                     // Option values
                                     float y1 = y;
+                                    bool first = true;
                                     for (int j = 0, k = 0; j < options.Count; j++)
                                     {
                                         if (j > 0 && !options[j].linked) k++;
                                         if (k == i)
                                         {
+                                            if (!first) y1 -= 15f;
+                                            else first = false;
+                                            y1 -= 15f;
+                                            box.AddItems(new OpLabel(40f, y1, options[j].name, false));
                                             foreach (var str in options[j].ToString().Split('\n'))
                                             {
+                                                if (str == "") continue;
                                                 y1 -= 15f;
                                                 box.AddItems(new OpLabel(40f, y1, str, false));
                                             }
@@ -129,7 +136,7 @@ namespace FinderMod.Tabs
                                 }
 
                                 // Vertical sidebar to show range
-                                box.AddItems(new OpImage(new Vector2(22f, y), "pixel") { scale = new Vector2(2f, detailsButton.PosY - y) });
+                                box.AddItems(new OpImage(new Vector2(22f, y), "pixel") { scale = new Vector2(2f, detailsButton.PosY - y), color = MenuRGB(MenuColors.MediumGrey) });
                             }
                             catch (Exception e)
                             {
@@ -179,11 +186,11 @@ namespace FinderMod.Tabs
 
         private void NameInput_OnValueChanged(OpTextBox self, string oldValue, HistoryItem item)
         {
-            if (self.value == "")
+            if (self.value.Trim() == "")
             {
                 self.value = oldValue;
             }
-            else if (item.name != self.value)
+            else if (self.value != oldValue && item.name != self.value)
             {
                 HistoryManager.RenameHistoryItem(item, self.value);
             }

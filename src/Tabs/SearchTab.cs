@@ -37,7 +37,7 @@ namespace FinderMod.Tabs
             var maxThreads = Environment.ProcessorCount * 2;
 
             // Initialize elements we need
-            var combo_allOpts = new OpComboBox(
+            var combo_allOpts = new OpComboBox2(
                 CosmeticBind(""), new(10f, 520f), 250f,
                 new List<ListItem>(
                     OptionRegistry.ListOptions()
@@ -47,7 +47,7 @@ namespace FinderMod.Tabs
             { listHeight = 20 };
             var button_add = new OpSimpleButton(new(266f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
             var button_copy = new OpSimpleButton(new(464f, 520f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
-            var button_paste = new OpSimpleButton(new(510f, 520f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
+            var button_paste = new OpSimpleButton(new(530f, 520f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
             
             cont_queries = new OpScrollBox(new(10f, 240f), new(580f, 270f), 0f, false, true, true);
 
