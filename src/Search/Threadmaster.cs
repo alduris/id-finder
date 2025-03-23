@@ -170,7 +170,11 @@ namespace FinderMod.Search
                     }
                 }
 
-                finished++;
+                // Mark as finished, but lock in case race condition
+                lock (this)
+                {
+                    finished++;
+                }
             }
         }
 
