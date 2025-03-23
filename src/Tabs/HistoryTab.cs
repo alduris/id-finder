@@ -86,7 +86,8 @@ namespace FinderMod.Tabs
                         if (active)
                         {
                             y -= 30f;
-                            box.AddItems(new OpLabel(40f, y, $"Searched at {item.date.ToLocalTime():G}"));
+                            box.AddItems(new OpLabel(40f, y, $"Searched at {item.date.ToLocalTime():G}, from {item.min} to {item.max}"));
+                            y -= 10f;
                             try
                             {
                                 var options = item.GetOptions().ToList();

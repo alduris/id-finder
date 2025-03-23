@@ -126,7 +126,6 @@ namespace FinderMod.Search
                 max = range.max,
                 options = array,
                 results = [],
-                date = DateTime.UtcNow,
                 version = Plugin.VERSION
             };
 

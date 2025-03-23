@@ -5,6 +5,7 @@
 		<LangVersion>latest</LangVersion>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>../mod/plugins</OutputPath>
+		<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
