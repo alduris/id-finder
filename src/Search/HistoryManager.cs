@@ -188,6 +188,15 @@ namespace FinderMod.Search
             }
         }
 
+        public static void ClearHistory()
+        {
+            if (historyItems.Count > 0)
+            {
+                historyItems.Clear();
+                WriteToFile();
+            }
+        }
+
         public static List<HistoryItem> GetHistory()
         {
             LoadHistory();

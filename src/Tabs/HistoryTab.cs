@@ -51,11 +51,14 @@ namespace FinderMod.Tabs
                 box.SetContentSize(0f, true);
 
                 // Header
+                OpHoldButton deleteAllButton;
                 box.AddItems(
                     new OpLabel(10f, 560f, Translate("HISTORY"), true),
                     new OpLabel(10f, 530f, Translate("Manage past searches here. Hover over a button to see its description at the bottom."), false),
+                    deleteAllButton = new OpHoldButton(new Vector2(510f, 560f), new Vector2(80f, 30f), "DELETE ALL", 80) { colorEdge = OpUtil.RedColor },
                     new OpImage(new Vector2(10f, 522f), "pixel") { scale = new Vector2(580f, 2f), color = MenuRGB(MenuColors.MediumGrey) } // 6px margin surrounding
                 );
+                deleteAllButton.OnPressDone += DeleteAllButton_OnPressDone;
 
                 // Items
                 float y = 518f;
@@ -115,7 +118,7 @@ namespace FinderMod.Tabs
                                             box.AddItems(new OpLabel(40f, y1, options[j].name, false));
                                             foreach (var str in options[j].ToString().Split('\n'))
                                             {
-                                                if (str == "") continue;
+                                                if (str.Trim() == "") continue;
                                                 y1 -= 15f;
                                                 box.AddItems(new OpLabel(40f, y1, str, false));
                                             }
@@ -211,6 +214,13 @@ namespace FinderMod.Tabs
         private void DeleteButtom_OnClick(HistoryItem item)
         {
             HistoryManager.RemoveHistoryItem(item);
+            MarkDirty();
+        }
+
+        private void DeleteAllButton_OnPressDone(UIfocusable trigger)
+        {
+            HistoryManager.ClearHistory();
+            (trigger as OpHoldButton)!.held = false;
             MarkDirty();
         }
     }
