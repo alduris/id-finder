@@ -176,6 +176,9 @@ namespace FinderMod.Tabs
         internal void UpdateQueryBox()
         {
             const float PADDING = 10f;
+            float oldHeight = cont_queries.contentSize;
+            float oldScroll = cont_queries.scrollOffset;
+            Plugin.logger.LogDebug(oldHeight + "," + oldScroll);
 
             // Remove old
             foreach (UIelement element in cont_queries.items)
@@ -201,6 +204,7 @@ namespace FinderMod.Tabs
             cont_queries.AddItems([.. items]);
 
             cont_queries.SetContentSize(cont_queries.size.y - y + PADDING, true);
+            cont_queries.ScrollOffset = oldScroll + (oldScroll - cont_queries.scrollOffset);
         }
 
         public override void Update()

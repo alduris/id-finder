@@ -53,7 +53,7 @@ namespace FinderMod.Inputs
             }
 
             float cbOffset = forceEnabled ? 0f : 34f;
-            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 0f : InputHeight / 2f - LabelTest._lineHalfHeight), LabelText));
+            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 12f : InputHeight / 2f) - LabelTest._lineHalfHeight, LabelText) { verticalAlignment = OpLabel.LabelVAlignment.Bottom});
 
             if (enabled)
             {

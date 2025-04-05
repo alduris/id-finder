@@ -13,7 +13,7 @@ namespace FinderMod.Inputs
 
         protected override bool GetValue(UIconfig element) => (element as OpLabelCheckbox)!.boolValue;
 
-        private class OpLabelCheckbox : OpCheckBox
+        public class OpLabelCheckbox : OpCheckBox
         {
             public bool boolValue;
             private readonly FLabel label;
@@ -39,17 +39,18 @@ namespace FinderMod.Inputs
                 rect = new DyeableRect(myContainer, Vector2.zero, size, true);
 
                 OnValueChanged += UpdateText;
+                boolValue = config.Value;
             }
 
             private void UpdateText(UIconfig config, string value, string oldValue)
             {
+                boolValue = this.GetValueBool();
                 label.text = this.GetValueBool() ? "Yes" : "No";
             }
 
             public override void GrafUpdate(float timeStacker)
             {
                 base.GrafUpdate(timeStacker);
-                boolValue = this.GetValueBool();
 
                 label.color = bumpBehav.GetColor(colorEdge);
             }

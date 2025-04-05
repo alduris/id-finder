@@ -1,6 +1,6 @@
 ﻿global using OpComboBox = FinderMod.OpComboBox2;
 global using OpResourceSelector = FinderMod.OpResourceSelector2;
-global using OpTextBox = FinderMod.OpTextBox2;
+// global using OpTextBox = FinderMod.OpTextBox2;
 
 using System.Collections.Generic;
 using Menu.Remix.MixedUI;

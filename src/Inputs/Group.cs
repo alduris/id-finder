@@ -34,7 +34,7 @@ namespace FinderMod.Inputs
         {
             if (hasRect)
             {
-                float width = 600f - 20f - 30f - Mathf.Floor(x / 10f) * 10f;
+                float width = 600f - 20f - 20f - Mathf.Floor(x / 10f) * 20f;
                 rect = new OpRect(new Vector2(x, y - Height), new Vector2(width, Height));
                 if (_colorEdge.HasValue) rect.colorEdge = _colorEdge.Value;
                 if (_colorFill.HasValue) rect.colorFill = _colorFill.Value;
@@ -44,6 +44,7 @@ namespace FinderMod.Inputs
             y -= PADDING - MARGIN;
             foreach (var child in children)
             {
+                if (child == this) continue;
                 y -= MARGIN;
                 child.Create(x + PADDING, ref y, elements);
             }

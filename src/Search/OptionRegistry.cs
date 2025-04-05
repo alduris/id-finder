@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Search.Options;
+using FinderMod.Search.Options.LizardCosmetics;
 using FinderMod.Tabs;
 
 namespace FinderMod.Search
@@ -45,6 +46,7 @@ namespace FinderMod.Search
 #if !RELEASE
             // Testing only!!
             Options.Add("!TEST", () => new TestOption());
+            Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
 #endif
         }
 
@@ -68,6 +70,8 @@ namespace FinderMod.Search
                 Options["Slugpup Variations"] = () => new SlupVarsOption();
                 Options["Slugpup Stats"] = () => new SlupStatsOption();
                 Options["Slugpup Food"] = () => new SlupFoodOption();
+
+                // Lizards
             }
         }
 

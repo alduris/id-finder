@@ -72,8 +72,8 @@ namespace FinderMod.Tabs
 
                         // Normal UI stuff
                         y -= 30f;
-                        var detailsButton = new OpSimpleImageButton(new Vector2(10f, y), new Vector2(24, 24f), "Menu_InfoI") { description = Translate(!active ? "Expand results" : "Retract results") };
-                        var nameInput = new OpTextBox(OpUtil.CosmeticBind(item.name), new Vector2(40f, y), 450f) { description = Translate("Rename search") };
+                        var detailsButton = new OpSimpleImageButton(new Vector2(10f, y), new Vector2(24, 24f), "Menu_Symbol_Show_List") { description = Translate(!active ? "Expand results" : "Retract results") };
+                        var nameInput = new OpTextBox2(OpUtil.CosmeticBind(item.name), new Vector2(40f, y), 450f) { description = Translate("Rename search") };
                         var copyButton = new OpSimpleImageButton(new Vector2(496f, y), new Vector2(24f, 24f), "keyShiftB") { description = Translate("Copy") };
                         var restoreButton = new OpSimpleImageButton(new Vector2(526f, y), new Vector2(24f, 24f), "Menu_Symbol_Repeats") { description = Translate("Restore") };
                         var deleteButtom = new OpSimpleImageButton(new Vector2(556f, y), new Vector2(24f, 24f), "Menu_Symbol_Clear_All") { description = Translate("Delete"), colorEdge = OpUtil.RedColor };
