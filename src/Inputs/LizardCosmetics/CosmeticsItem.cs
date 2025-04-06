@@ -12,6 +12,16 @@ namespace FinderMod.Inputs.LizardCosmetics
         public bool Active => Enabled && Toggled;
         public readonly CosmeticType cosmeticType = cosmeticType;
 
+        public override IEnumerable<string> GetHistoryLines()
+        {
+            yield return cosmeticType.ToString();
+            foreach (var line in base.GetHistoryLines())
+            {
+                yield return line;
+            }
+            yield break;
+        }
+
         public static implicit operator CosmeticsItem(CosmeticType type)
         {
             return type switch
@@ -42,8 +52,8 @@ namespace FinderMod.Inputs.LizardCosmetics
         public FloatInput AlphaInput;
         public AntennaeCosmetic() : base(CosmeticType.Antennae)
         {
-            children.Add(LengthInput = new("Length"));
-            children.Add(AlphaInput = new("Alpha"));
+            children.Add(LengthInput = new("Length") { enabled = false });
+            children.Add(AlphaInput = new("Alpha") { enabled = false });
         }
     }
 
@@ -54,9 +64,9 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput GraphicInput;
         public AxolotlGillsCosmetic() : base(CosmeticType.AxolotlGills)
         {
-            children.Add(RigorInput = new("Rigor"));
-            children.Add(NumGillsInput = new("Number of gills", 2, 7));
-            children.Add(GraphicInput = new("Graphic", 0, 5));
+            children.Add(RigorInput = new("Rigor") { enabled = false });
+            children.Add(NumGillsInput = new("Number of gills", 2, 7) { enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
         }
     }
 
@@ -65,7 +75,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput NumScalesInput;
         public BodyStripesCosmetic() : base(CosmeticType.BodyStripes)
         {
-            children.Add(NumScalesInput = new("Number of scales", 3, 44)); // the max took like 30 minutes to calculate
+            children.Add(NumScalesInput = new("Number of scales", 3, 44) { enabled = false }); // the max took like 30 minutes to calculate
         }
     }
 
@@ -77,9 +87,9 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public BumpHawkCosmetic() : base(CosmeticType.BumpHawk)
         {
-            children.Add(SpineLenInput = new("Spine length", 21.24f, 410.238f));
-            children.Add(NumBumpsInput = new("Number of bumps", 1, 106));
-            children.Add(ColoredInput = new("Is colored"));
+            children.Add(SpineLenInput = new("Spine length", 21.24f, 410.238f) { enabled = false });
+            children.Add(NumBumpsInput = new("Number of bumps", 1, 106) { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false });
         }
     }
 
@@ -100,10 +110,10 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public LongHeadScalesCosmetic() : base(CosmeticType.LongHeadScales)
         {
-            children.Add(LengthInput = new("Length", 5f, 35f));
-            children.Add(WidthInput = new("Width", 0.65f, 1.2f));
-            children.Add(RigorInput = new("Rigor"));
-            children.Add(ColoredInput = new("Is colored"));
+            children.Add(LengthInput = new("Length", 5f, 35f) { enabled = false });
+            children.Add(WidthInput = new("Width", 0.65f, 1.2f) { enabled = false });
+            children.Add(RigorInput = new("Rigor") { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false });
         }
     }
 
@@ -118,12 +128,12 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public LongShoulderScalesCosmetic() : base(CosmeticType.LongShoulderScales)
         {
-            children.Add(MinSizeInput = new("Min size", 5f, 15f));
-            children.Add(MaxSizeInput = new("Max size", 5f, 35f));
-            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3 });
-            children.Add(GraphicInput = new("Graphic", 0, 6));
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch));
-            children.Add(ColoredInput = new("Is colored"));
+            children.Add(MinSizeInput = new("Min size", 5f, 15f) { enabled = false });
+            children.Add(MaxSizeInput = new("Max size", 5f, 35f) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3, enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false });
         }
     }
 
@@ -134,8 +144,8 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public ShortBodyScalesCosmetic() : base(CosmeticType.ShortBodyScales)
         {
-            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3 });
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch));
+            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3, enabled = false });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
         }
     }
 
@@ -155,9 +165,9 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public SpineSpikesCosmetic() : base(CosmeticType.SpineSpikes)
         {
-            children.Add(LengthInput = new("Length", 14.16f, 433.029f));
-            children.Add(NumScalesInput = new("Number of scales", 1, 86));
-            children.Add(GraphicInput = new("Graphic", 0, 6));
+            children.Add(LengthInput = new("Length", 14.16f, 433.029f) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", 1, 86) { enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
         }
     }
 
@@ -172,12 +182,12 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public TailFinCosmetic() : base(CosmeticType.TailFin)
         {
-            children.Add(LengthInput = new("Scale length", 20.26f, 309.4f));
-            children.Add(UndersideSizeInput = new("Underside size", 0.3f, 0.9f));
-            children.Add(ScaleXInput = new("Scale size x", 1f, 2f));
-            children.Add(NumScalesInput = new("Number of scales", 2, 76));
-            children.Add(GraphicInput = new("Graphic", 0, 5));
-            children.Add(ColoredInput = new("Colored input"));
+            children.Add(LengthInput = new("Scale length", 20.26f, 309.4f) { enabled = false });
+            children.Add(UndersideSizeInput = new("Underside size", 0.3f, 0.9f) { enabled = false });
+            children.Add(ScaleXInput = new("Scale size x", 1f, 2f) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", 2, 76) { enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
+            children.Add(ColoredInput = new("Colored input") { enabled = false });
         }
     }
 
@@ -188,8 +198,8 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public TailGeckoScalesCosmetic() : base(CosmeticType.TailGeckoScales)
         {
-            children.Add(RowsInput = new("Rows", 7, 19));
-            children.Add(LinesInput = new("Lines", 3, 4));
+            children.Add(RowsInput = new("Rows", 7, 18) { enabled = false });
+            children.Add(LinesInput = new("Lines", 3, 4) { enabled = false });
         }
     }
 
@@ -206,7 +216,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput NumWhiskersInput;
         public WhiskersCosmetic() : base(CosmeticType.Whiskers)
         {
-            children.Add(NumWhiskersInput = new("Number of whiskers", 3, 4));
+            children.Add(NumWhiskersInput = new("Number of whiskers", 3, 4) { enabled = false });
         }
     }
 
@@ -217,8 +227,8 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public WingScalesCosmetic() : base(CosmeticType.WingScales)
         {
-            children.Add(LengthInput = new("Length", 5f, 40f));
-            children.Add(NumScalesInput = new("Scales per side", 2, 3));
+            children.Add(LengthInput = new("Length", 31.25f, 40f) { enabled = false });
+            children.Add(NumScalesInput = new("Scales per side", 2, 3) { enabled = false });
         }
     }
 }

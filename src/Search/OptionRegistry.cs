@@ -38,6 +38,8 @@ namespace FinderMod.Search
                 { "Lizard Variations", () => new LizardVarsOption() },
                 { "Lizard Colors", () => new LizardColorsOption() },
 
+                { "Lizard Cosmetics (Cyan)", () => new CyanLizardCosmetics() },
+
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
                 { "Snail Variations", () => new SnailOption() },
@@ -46,7 +48,6 @@ namespace FinderMod.Search
 #if !RELEASE
             // Testing only!!
             Options.Add("!TEST", () => new TestOption());
-            Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
 #endif
         }
 
@@ -72,6 +73,8 @@ namespace FinderMod.Search
                 Options["Slugpup Food"] = () => new SlupFoodOption();
 
                 // Lizards
+                Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
             }
         }
 

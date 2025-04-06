@@ -108,7 +108,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     {
                         if (longSScales.Enabled && !longSScales.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         else
                         {
@@ -150,7 +150,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (shortBScales.Enabled && !shortBScales.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
 
                         results.MoveNext();
@@ -169,11 +169,11 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 }
                                 else if (tailFin.Enabled && !tailFin.Toggled)
                                 {
-                                    r += 1f;
+                                    r += 100f;
                                 }
                                 break;
                             case TailTuftVars: // cool
-                                if (tailTuft.Enabled && !tailTuft.Toggled) r += 1f;
+                                if (tailTuft.Enabled && !tailTuft.Toggled) r += 100f;
                                 break;
                             default: throw new NotImplementedException("Result was not TailFin or TailTuft!");
                         }
@@ -198,7 +198,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (spineSpikes.Enabled && !spineSpikes.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         break;
                     case BumpHawkVars bumpHawkVars:
@@ -210,7 +210,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (bumpHawk.Enabled &&  !bumpHawk.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
@@ -225,7 +225,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (extraLongSScales1.Enabled && !extraLongSScales1.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
@@ -236,12 +236,12 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (extraShortBScales.Enabled && !extraShortBScales.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         break;
                     case TailTuftVars:
                         cont = false;
-                        if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 1f;
+                        if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 100f;
                         break;
                     case LongHeadScalesVars longHeadScalesVars:
                         cont = false;
@@ -255,7 +255,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                         break;
                     default: throw new InvalidOperationException("Extra cosmetic 1 was not a valid type");
@@ -266,7 +266,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     switch (results.Current)
                     {
                         case TailTuftVars:
-                            if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 1f;
+                            if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 100f;
                             break;
                         case LongShoulderScalesVars longShoulderScalesVars:
                             if (extraLongSScales2.Active)
@@ -280,7 +280,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             }
                             else if (extraLongSScales2.Enabled && !extraLongSScales2.Toggled)
                             {
-                                r += 1f;
+                                r += 100f;
                             }
                             break;
                         case LongHeadScalesVars longHeadScalesVars:
@@ -294,7 +294,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             }
                             else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                             {
-                                r += 1f;
+                                r += 100f;
                             }
                             break;
                         default: throw new InvalidOperationException("Extra cosmetic 2 was not a valid type");
@@ -314,7 +314,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                         {
-                            r += 1f;
+                            r += 100f;
                         }
                     }
                     else

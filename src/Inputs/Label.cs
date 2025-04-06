@@ -11,7 +11,7 @@ namespace FinderMod.Inputs
         public void Create(float x, ref float y, List<UIelement> elements)
         {
             y -= Height;
-            elements.Add(new OpLabel(x, y, Custom.rainWorld.inGameTranslator.Translate(text), big));
+            elements.Add(new OpLabel(x, y, Custom.rainWorld.inGameTranslator.Translate(text), big) { verticalAlignment = OpLabel.LabelVAlignment.Bottom });
         }
     }
 }
