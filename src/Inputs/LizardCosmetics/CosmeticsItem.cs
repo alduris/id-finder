@@ -14,10 +14,13 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public override IEnumerable<string> GetHistoryLines()
         {
-            yield return cosmeticType.ToString();
-            foreach (var line in base.GetHistoryLines())
+            if (Active)
             {
-                yield return line;
+                yield return cosmeticType.ToString();
+                foreach (var line in base.GetHistoryLines())
+                {
+                    yield return line;
+                }
             }
             yield break;
         }

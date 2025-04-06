@@ -262,7 +262,19 @@ namespace FinderMod.Tabs
                     // Save history
                     if (threadmaster.AbortReason == null)
                     {
-                        HistoryManager.SaveHistory(options, results, (input_min.valueInt, input_max.valueInt));
+                        bool saved = false;
+                        var optionsLocalClone = options.Select(x => x).ToList();
+                        var range = (input_min.valueInt, input_max.valueInt);
+                        var button_save = new OpSimpleButton(new(64f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "SAVE") { description = "Save results to history" };
+                        button_save.OnClick += (_) =>
+                        {
+                            if (saved) return;
+                            saved = true;
+                            HistoryManager.SaveHistory(optionsLocalClone, results, range);
+                            button_save.Deactivate();
+                            RemoveItems(button_save);
+                        };
+                        cont_results.AddItems(button_save);
                     }
 
                     // Reupdate query box to reenable everything
