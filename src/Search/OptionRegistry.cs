@@ -38,7 +38,15 @@ namespace FinderMod.Search
                 { "Lizard Variations", () => new LizardVarsOption() },
                 { "Lizard Colors", () => new LizardColorsOption() },
 
+                { "Lizard Cosmetics (Black)", () => new BlackLizardCosmetics() },
+                { "Lizard Cosmetics (Blue)", () => new BlueLizardCosmetics() },
                 { "Lizard Cosmetics (Cyan)", () => new CyanLizardCosmetics() },
+                { "Lizard Cosmetics (Green)", () => new GreenLizardCosmetics() },
+                { "Lizard Cosmetics (Pink)", () => new PinkLizardCosmetics() },
+                { "Lizard Cosmetics (Red)", () => new RedLizardCosmetics() },
+                { "Lizard Cosmetics (Salamander)", () => new SalamanderCosmetics() },
+                { "Lizard Cosmetics (White)", () => new WhiteLizardCosmetics() },
+                { "Lizard Cosmetics (Yellow)", () => new YellowLizardCosmetics() },
 
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
@@ -73,7 +81,9 @@ namespace FinderMod.Search
                 Options["Slugpup Food"] = () => new SlupFoodOption();
 
                 // Lizards
+                Options.Add("Lizard Cosmetics (Caramel)", () => new CaramelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
             }
         }

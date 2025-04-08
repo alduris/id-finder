@@ -1,7 +1,7 @@
 ﻿using System;
-using static FinderMod.Search.Util.LizardUtil;
-using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using FinderMod.Inputs.LizardCosmetics;
+using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
@@ -16,7 +16,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             cosmetics.Add(Toggleable("Has WingScales", wingScalesInput = new WingScalesCosmetic()));
             cosmetics.Add(OneOf(
                 "Tail cosmetic",
-                tailTuftInput = new TailTuftCosmetic(),
+                tailTuftInput = new TailTuftCosmetic(type),
                 tailGeckoScalesInput = new TailGeckoScalesCosmetic()
                 ));
             // cosmetics.Add(new JumpRingsCosmetic());
@@ -40,11 +40,19 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (wingScalesInput.Enabled && !wingScalesInput.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     case TailTuftVars tailTuftVars:
-                        if (tailTuftInput.Enabled && !tailTuftInput.Toggled) r += 100f;
+                        if (tailTuftInput.Active)
+                        {
+                            r += DistanceIf(tailTuftVars.numScales, tailTuftInput.NumScalesInput);
+                            r += DistanceIf(tailTuftVars.scaleType, tailTuftInput.ScaleTypeInput);
+                        }
+                        else if (tailTuftInput.Enabled && !tailTuftInput.Toggled)
+                        {
+                            r += MISSING_PENALTY;
+                        }
                         break;
                     case TailGeckoScalesVars tailGeckoScalesVars:
                         if (tailGeckoScalesInput.Active)
@@ -54,7 +62,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (tailGeckoScalesInput.Enabled && !tailGeckoScalesInput.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     case JumpRingsVars:
@@ -64,7 +72,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 }
             }
 
-            if (!wingScales && wingScalesInput.Enabled && wingScalesInput.Toggled) r += 100f;
+            if (!wingScales && wingScalesInput.Enabled && wingScalesInput.Toggled) r += MISSING_PENALTY;
 
             return r;
         }

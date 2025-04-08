@@ -197,9 +197,10 @@ namespace FinderMod.Search
                     }
                 }
                 combinedResults[j] = combinedResults[j]
-                    .OrderByDescending(x => x.dist) // sort so the biggest distances are at the front
-                    .Skip((threads - 1) * results)  // remove the extras created by having multiple threads, which only does the biggest ones which we don't want anyway
-                    .Reverse()                      // reverse so the smaller distances are at the front
+                    .OrderByDescending(x => x.dist)   // sort so the biggest distances are at the front
+                    .ThenBy(x => x, new IdComparer()) // also subsort so ids closer to 0 are favored, easier sharing/typing if lots of distance = 0
+                    .Skip((threads - 1) * results)    // remove the extras created by having multiple threads, which only does the biggest ones which we don't want anyway
+                    .Reverse()                        // reverse so the smaller distances are at the front
                     .ToList();
             }
             return combinedResults.Select(x => x.ToArray()).ToArray(); //wheeee!!!
@@ -215,6 +216,14 @@ namespace FinderMod.Search
         {
             public int id;
             public float dist;
+        }
+
+        private class IdComparer : IComparer<Result>
+        {
+            public int Compare(Result x, Result y)
+            {
+                return Math.Abs(y.id) - Math.Abs(x.id);
+            }
         }
     }
 }

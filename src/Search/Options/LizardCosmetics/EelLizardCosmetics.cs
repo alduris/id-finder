@@ -17,11 +17,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
         private readonly SpineSpikesCosmetic spineSpikes;
         private readonly BumpHawkCosmetic bumpHawk;
-        private readonly LongShoulderScalesCosmetic extraLongSScales1;
+        private readonly LongShoulderScalesCosmetic extraLongSScales;
         private readonly ShortBodyScalesCosmetic extraShortBScales;
 
         private readonly TailTuftCosmetic extraTailTuft;
-        private readonly LongShoulderScalesCosmetic extraLongSScales2;
 
         private readonly LongHeadScalesCosmetic longHeadScales;
 
@@ -39,18 +38,18 @@ namespace FinderMod.Search.Options.LizardCosmetics
             cosmetics.Add(geckoScales = new TailGeckoScalesCosmetic());
             cosmetics.Add(
                 OneOf(
-                    "Major cosmetic group",
+                    "Eel-specific cosmetics",
                     Group(
                         "LongShoulderScales group",
-                        longSScales = new LongShoulderScalesCosmetic(),
-                        tailFin1 = new TailFinCosmetic()),
+                        longSScales = new LongShoulderScalesCosmetic(type),
+                        tailFin1 = new TailFinCosmetic(type)),
                     Group(
                         "ShortBodyScales group",
-                        shortBScales = new ShortBodyScalesCosmetic(),
+                        shortBScales = new ShortBodyScalesCosmetic(type),
                         OneOf(
                             "Tail decoration",
-                            tailFin2 = new TailFinCosmetic(),
-                            tailTuft = new TailTuftCosmetic()
+                            tailFin2 = new TailFinCosmetic(type),
+                            tailTuft = new TailTuftCosmetic(type)
                             )
                         )
                     )
@@ -58,25 +57,21 @@ namespace FinderMod.Search.Options.LizardCosmetics
             // normal lizard cases
             cosmetics.Add(
                 OneOf(
-                    "Extra cosmetic 1",
-                    spineSpikes = new SpineSpikesCosmetic(),
-                    bumpHawk = new BumpHawkCosmetic(),
-                    extraLongSScales1 = new LongShoulderScalesCosmetic(),
-                    extraShortBScales = new ShortBodyScalesCosmetic()
+                    "Body cosmetic",
+                    spineSpikes = new SpineSpikesCosmetic(type),
+                    bumpHawk = new BumpHawkCosmetic(type),
+                    extraLongSScales = new LongShoulderScalesCosmetic(type),
+                    extraShortBScales = new ShortBodyScalesCosmetic(type),
+                    None()
                     )
                 );
-            cosmetics.Add(
-                OneOf(
-                    "Extra cosmetic 2",
-                    extraTailTuft = new TailTuftCosmetic(),
-                    extraLongSScales2 = new LongShoulderScalesCosmetic()
-                    )
-                );
+            cosmetics.Add(Toggleable("Has TailTuft", extraTailTuft = new TailTuftCosmetic(type)));
             cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScales = new LongHeadScalesCosmetic()));
         }
 
         public override float Execute(XORShift128 Random)
         {
+            // TODO: need to redo this probably
             float r = 0f;
             var results = GetResults(Random).GetEnumerator();
 
@@ -108,7 +103,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     {
                         if (longSScales.Enabled && !longSScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         else
                         {
@@ -118,7 +113,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 r += DistanceIf(longShoulderScalesVars.maxSize, longSScales.MaxSizeInput);
                                 r += DistanceIf(longShoulderScalesVars.numScales, longSScales.NumScalesInput);
                                 r += DistanceIf(longShoulderScalesVars.graphic, longSScales.GraphicInput);
-                                if (longSScales.ScaleTypeInput.enabled && longSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += 1f;
+                                if (longSScales.ScaleTypeInput.enabled && longSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += longSScales.ScaleTypeInput.bias;
                                 r += DistanceIf(longShoulderScalesVars.colored, longSScales.ColoredInput);
                             }
                         }
@@ -146,11 +141,11 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         if (shortBScales.Active)
                         {
                             r += DistanceIf(shortBodyScalesVars.numScales, shortBScales.NumScalesInput);
-                            if (shortBScales.ScaleTypeInput.enabled && shortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += 1f;
+                            if (shortBScales.ScaleTypeInput.enabled && shortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += shortBScales.ScaleTypeInput.bias;
                         }
                         else if (shortBScales.Enabled && !shortBScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
 
                         results.MoveNext();
@@ -169,11 +164,19 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 }
                                 else if (tailFin.Enabled && !tailFin.Toggled)
                                 {
-                                    r += 100f;
+                                    r += MISSING_PENALTY;
                                 }
                                 break;
-                            case TailTuftVars: // cool
-                                if (tailTuft.Enabled && !tailTuft.Toggled) r += 100f;
+                            case TailTuftVars tailTuftVars: // cool
+                                if (tailTuft.Active)
+                                {
+                                    r += DistanceIf(tailTuftVars.numScales, tailTuft.NumScalesInput);
+                                    r += DistanceIf(tailTuftVars.scaleType, tailTuft.ScaleTypeInput);
+                                }
+                                else if (tailTuft.Enabled && !tailTuft.Toggled)
+                                {
+                                    r += MISSING_PENALTY;
+                                }
                                 break;
                             default: throw new NotImplementedException("Result was not TailFin or TailTuft!");
                         }
@@ -198,7 +201,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (spineSpikes.Enabled && !spineSpikes.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     case BumpHawkVars bumpHawkVars:
@@ -210,38 +213,46 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (bumpHawk.Enabled &&  !bumpHawk.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
-                        if (extraLongSScales1.Active)
+                        if (extraLongSScales.Active)
                         {
-                            r += DistanceIf(longShoulderScalesVars.minSize, extraLongSScales1.MinSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.maxSize, extraLongSScales1.MaxSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.numScales, extraLongSScales1.NumScalesInput);
-                            r += DistanceIf(longShoulderScalesVars.graphic, extraLongSScales1.GraphicInput);
-                            if (extraLongSScales1.ScaleTypeInput.enabled && extraLongSScales1.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += 1f;
-                            r += DistanceIf(longShoulderScalesVars.colored, extraLongSScales1.ColoredInput);
+                            r += DistanceIf(longShoulderScalesVars.minSize, extraLongSScales.MinSizeInput);
+                            r += DistanceIf(longShoulderScalesVars.maxSize, extraLongSScales.MaxSizeInput);
+                            r += DistanceIf(longShoulderScalesVars.numScales, extraLongSScales.NumScalesInput);
+                            r += DistanceIf(longShoulderScalesVars.graphic, extraLongSScales.GraphicInput);
+                            if (extraLongSScales.ScaleTypeInput.enabled && extraLongSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += extraLongSScales.ScaleTypeInput.bias;
+                            r += DistanceIf(longShoulderScalesVars.colored, extraLongSScales.ColoredInput);
                         }
-                        else if (extraLongSScales1.Enabled && !extraLongSScales1.Toggled)
+                        else if (extraLongSScales.Enabled && !extraLongSScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         if (extraShortBScales.Active)
                         {
                             r += DistanceIf(shortBodyScalesVars.numScales, extraShortBScales.NumScalesInput);
-                            if (extraShortBScales.ScaleTypeInput.enabled && extraShortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += 1f;
+                            if (extraShortBScales.ScaleTypeInput.enabled && extraShortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += extraShortBScales.ScaleTypeInput.bias;
                         }
                         else if (extraShortBScales.Enabled && !extraShortBScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
-                    case TailTuftVars:
+                    case TailTuftVars tailTuftVars:
                         cont = false;
-                        if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 100f;
+                        if (extraTailTuft.Active)
+                        {
+                            r += DistanceIf(tailTuftVars.numScales, extraTailTuft.NumScalesInput);
+                            r += DistanceIf(tailTuftVars.scaleType, extraTailTuft.ScaleTypeInput);
+                        }
+                        else if (extraTailTuft.Enabled && !extraTailTuft.Toggled)
+                        {
+                            r += MISSING_PENALTY;
+                        }
                         break;
                     case LongHeadScalesVars longHeadScalesVars:
                         cont = false;
@@ -255,7 +266,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                         break;
                     default: throw new InvalidOperationException("Extra cosmetic 1 was not a valid type");
@@ -265,22 +276,15 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 {
                     switch (results.Current)
                     {
-                        case TailTuftVars:
-                            if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += 100f;
-                            break;
-                        case LongShoulderScalesVars longShoulderScalesVars:
-                            if (extraLongSScales2.Active)
+                        case TailTuftVars tailTuftVars:
+                            if (extraTailTuft.Active)
                             {
-                                r += DistanceIf(longShoulderScalesVars.minSize, extraLongSScales2.MinSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.maxSize, extraLongSScales2.MaxSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.numScales, extraLongSScales2.NumScalesInput);
-                                r += DistanceIf(longShoulderScalesVars.graphic, extraLongSScales2.GraphicInput);
-                                if (extraLongSScales2.ScaleTypeInput.enabled && extraLongSScales2.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += 1f;
-                                r += DistanceIf(longShoulderScalesVars.colored, extraLongSScales1.ColoredInput);
+                                r += DistanceIf(tailTuftVars.numScales, extraTailTuft.NumScalesInput);
+                                r += DistanceIf(tailTuftVars.scaleType, extraTailTuft.ScaleTypeInput);
                             }
-                            else if (extraLongSScales2.Enabled && !extraLongSScales2.Toggled)
+                            else if (extraTailTuft.Enabled && !extraTailTuft.Toggled)
                             {
-                                r += 100f;
+                                r += MISSING_PENALTY;
                             }
                             break;
                         case LongHeadScalesVars longHeadScalesVars:
@@ -294,7 +298,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             }
                             else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                             {
-                                r += 100f;
+                                r += MISSING_PENALTY;
                             }
                             break;
                         default: throw new InvalidOperationException("Extra cosmetic 2 was not a valid type");
@@ -314,7 +318,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         else if (longHeadScales.Enabled && !longHeadScales.Toggled)
                         {
-                            r += 100f;
+                            r += MISSING_PENALTY;
                         }
                     }
                     else

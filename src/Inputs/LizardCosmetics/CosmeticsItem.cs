@@ -25,7 +25,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             yield break;
         }
 
-        public static implicit operator CosmeticsItem(CosmeticType type)
+        /*public static implicit operator CosmeticsItem(CosmeticType type)
         {
             return type switch
             {
@@ -46,7 +46,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                 CosmeticType.WingScales => new WingScalesCosmetic(),
                 _ => null!,
             };
-        }
+        }*/
     }
 
     public class AntennaeCosmetic : CosmeticsItem
@@ -76,10 +76,12 @@ namespace FinderMod.Inputs.LizardCosmetics
     public class BodyStripesCosmetic : CosmeticsItem
     {
         public IntInput NumScalesInput;
-        public BodyStripesCosmetic() : base(CosmeticType.BodyStripes)
+        // internal BodyStripesCosmetic() : this(44) { }
+        private BodyStripesCosmetic(int max) : base(CosmeticType.BodyStripes)
         {
-            children.Add(NumScalesInput = new("Number of scales", 3, 44) { enabled = false }); // the max took like 30 minutes to calculate
+            children.Add(NumScalesInput = new("Number of scales", 3, max) { enabled = false });
         }
+        public BodyStripesCosmetic(LizardType type) : this(BodyStripesVars.MaxNumScales(type)) { }
     }
 
     public class BumpHawkCosmetic : CosmeticsItem
@@ -88,12 +90,15 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput NumBumpsInput;
         public BoolInput ColoredInput;
 
-        public BumpHawkCosmetic() : base(CosmeticType.BumpHawk)
+        // internal BumpHawkCosmetic() : this(21.24f, 410.238f, 1, 106) { }
+        private BumpHawkCosmetic(float minLen, float maxLen, int minBump, int maxBump) : base(CosmeticType.BumpHawk)
         {
-            children.Add(SpineLenInput = new("Spine length", 21.24f, 410.238f) { enabled = false });
-            children.Add(NumBumpsInput = new("Number of bumps", 1, 106) { enabled = false });
-            children.Add(ColoredInput = new("Is colored") { enabled = false });
+            children.Add(SpineLenInput = new("Spine length", minLen, maxLen) { enabled = false });
+            children.Add(NumBumpsInput = new("Number of bumps", minBump, maxBump) { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
+        public BumpHawkCosmetic(LizardType type)
+            : this(BumpHawkVars.MinSpineLength(type), BumpHawkVars.MaxSpineLength(type), BumpHawkVars.MinNumBumps(type), BumpHawkVars.MaxNumBumps(type)) { }
     }
 
     public class JumpRingsCosmetic : CosmeticsItem
@@ -116,7 +121,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(LengthInput = new("Length", 5f, 35f) { enabled = false });
             children.Add(WidthInput = new("Width", 0.65f, 1.2f) { enabled = false });
             children.Add(RigorInput = new("Rigor") { enabled = false });
-            children.Add(ColoredInput = new("Is colored") { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
     }
 
@@ -124,32 +129,34 @@ namespace FinderMod.Inputs.LizardCosmetics
     {
         public FloatInput MinSizeInput;
         public FloatInput MaxSizeInput;
-        public IntManualInput NumScalesInput;
+        public IntInput NumScalesInput;
         public IntInput GraphicInput;
         public EnumInput<LizardBodyScaleType> ScaleTypeInput;
         public BoolInput ColoredInput;
 
-        public LongShoulderScalesCosmetic() : base(CosmeticType.LongShoulderScales)
+        private LongShoulderScalesCosmetic(int minScales, int maxScales) : base(CosmeticType.LongShoulderScales)
         {
-            children.Add(MinSizeInput = new("Min size", 5f, 15f) { enabled = false });
-            children.Add(MaxSizeInput = new("Max size", 5f, 35f) { enabled = false });
-            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3, enabled = false });
+            children.Add(MinSizeInput = new("Min size", 2.5f, 15f) { enabled = false });
+            children.Add(MaxSizeInput = new("Max size", 2.5f, 35f) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
             children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
-            children.Add(ColoredInput = new("Is colored") { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
+        public LongShoulderScalesCosmetic(LizardType type) : this(LongShoulderScalesVars.MinNumScales(type), LongShoulderScalesVars.MaxNumScales(type)) { }
     }
 
     public class ShortBodyScalesCosmetic : CosmeticsItem
     {
-        public IntManualInput NumScalesInput;
+        public IntInput NumScalesInput;
         public EnumInput<LizardBodyScaleType> ScaleTypeInput;
 
-        public ShortBodyScalesCosmetic() : base(CosmeticType.ShortBodyScales)
+        private ShortBodyScalesCosmetic(int minScales, int maxScales) : base(CosmeticType.ShortBodyScales)
         {
-            children.Add(NumScalesInput = new("Number of scales", 10) { minValue = 3, enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
         }
+        public ShortBodyScalesCosmetic(LizardType type) : this(ShortBodyScalesVars.MinNumScales(type), ShortBodyScalesVars.MaxNumScales(type)) { }
     }
 
     public class SnowAccumulationCosmetic : CosmeticsItem
@@ -166,12 +173,16 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput NumScalesInput;
         public IntInput GraphicInput;
 
-        public SpineSpikesCosmetic() : base(CosmeticType.SpineSpikes)
+        // private SpineSpikesCosmetic() : this(14.16f, 433.029f, 1, 86) { }
+        private SpineSpikesCosmetic(float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.SpineSpikes)
         {
-            children.Add(LengthInput = new("Length", 14.16f, 433.029f) { enabled = false });
-            children.Add(NumScalesInput = new("Number of scales", 1, 86) { enabled = false });
+            children.Add(LengthInput = new("Length", minLen, maxLen) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
         }
+
+        public SpineSpikesCosmetic(LizardType type)
+            : this(SpineSpikesVars.MinSpineLength(type), SpineSpikesVars.MaxSpineLength(type), SpineSpikesVars.MinNumScales(type), SpineSpikesVars.MaxNumScales(type)) { }
     }
 
     public class TailFinCosmetic : CosmeticsItem
@@ -183,15 +194,19 @@ namespace FinderMod.Inputs.LizardCosmetics
         public IntInput GraphicInput;
         public BoolInput ColoredInput;
 
-        public TailFinCosmetic() : base(CosmeticType.TailFin)
+        // private TailFinCosmetic() : this(20.26f, 309.4f, 2, 76) { }
+        private TailFinCosmetic(float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.TailFin)
         {
-            children.Add(LengthInput = new("Scale length", 20.26f, 309.4f) { enabled = false });
+            children.Add(LengthInput = new("Scale length", minLen, maxLen) { enabled = false });
             children.Add(UndersideSizeInput = new("Underside size", 0.3f, 0.9f) { enabled = false });
             children.Add(ScaleXInput = new("Scale size x", 1f, 2f) { enabled = false });
-            children.Add(NumScalesInput = new("Number of scales", 2, 76) { enabled = false });
+            children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
-            children.Add(ColoredInput = new("Colored input") { enabled = false });
+            children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
+
+        public TailFinCosmetic(LizardType type)
+            : this(TailFinVars.MinSpineLength(type), TailFinVars.MaxSpineLength(type), TailFinVars.MinNumScales(type), TailFinVars.MaxNumScales(type)) { }
     }
 
     public class TailGeckoScalesCosmetic : CosmeticsItem
@@ -208,10 +223,16 @@ namespace FinderMod.Inputs.LizardCosmetics
 
     public class TailTuftCosmetic : CosmeticsItem
     {
-        public TailTuftCosmetic() : base(CosmeticType.TailTuft)
+        public IntInput NumScalesInput;
+        public EnumInput<LizardBodyScaleType> ScaleTypeInput;
+
+        private TailTuftCosmetic(int minScales, int maxScales) : base(CosmeticType.TailTuft)
         {
-            children.Add(new Label("This cosmetic has no variations."));
+            children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.TwoLines) { enabled = false, excludeOptions = [LizardBodyScaleType.Patch] });
         }
+
+        public TailTuftCosmetic(LizardType type) : this(TailTuftVars.MinNumScales(type), TailTuftVars.MaxNumScales(type)) { }
     }
 
     public class WhiskersCosmetic : CosmeticsItem

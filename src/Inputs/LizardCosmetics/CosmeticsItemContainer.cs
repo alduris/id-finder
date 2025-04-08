@@ -74,6 +74,8 @@ namespace FinderMod.Inputs.LizardCosmetics
         public static Subholder OneOf(string name, params List<Subholder> subholders) => new OneOfSubholder(name, subholders);
         public static Subholder Toggleable(string name, Subholder child) => new ToggleableSubholder(name, child);
         public static Subholder Group(string name, params List<Subholder> subholders) => new MultiItemSubholder(name, subholders);
+        public static Subholder None() => new NoneSubholder();
+        public static Subholder Label(string text) => new LabelSubholder(text);
 
         public abstract class Subholder(string name) : IElement, ISaveInHistory
         {
@@ -319,6 +321,63 @@ namespace FinderMod.Inputs.LizardCosmetics
                 {
                     yield return str;
                 }
+            }
+        }
+
+        public class NoneSubholder : Subholder
+        {
+            private readonly Group group;
+
+            public NoneSubholder() : base("NONE")
+            {
+                group = new Group([new Label("No cosmetic")], "None");
+            }
+
+            public override float Height => group.Height;
+
+            public override void Create(float x, ref float y, List<UIelement> elements)
+            {
+                group.Create(x, ref y, elements);
+            }
+
+            public override void FromSaveData(JObject data)
+            {
+            }
+
+            public override JObject ToSaveData()
+            {
+                return [];
+            }
+
+            public override IEnumerable<string> GetHistoryLines()
+            {
+                yield return "No cosmetic";
+            }
+        }
+
+        public class LabelSubholder(string text) : Subholder(text)
+        {
+            private readonly Label label = new(text);
+
+            public override float Height => label.Height;
+
+            public override void Create(float x, ref float y, List<UIelement> elements)
+            {
+                label.Create(x, ref y, elements);
+            }
+
+            public override void FromSaveData(JObject data)
+            {
+            }
+
+            public override JObject ToSaveData()
+            {
+                return [];
+            }
+
+            public override IEnumerable<string> GetHistoryLines()
+            {
+                yield break;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -7,8 +8,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
 {
     public abstract class BaseLizardCosmetics : Option
     {
+        protected const float MISSING_PENALTY = 10000f; // some really high number that feasibly should get us good results
         protected LizardType type;
         protected CosmeticsItemContainer cosmetics;
+
         public BaseLizardCosmetics(LizardType type)
         {
             this.type = type;
@@ -226,29 +229,6 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 yield return new SnowAccumulationVars(Random);
             }
-
-            // Caramel colors
-            /*if (type == LizardType.Caramel)
-            {
-                // Offsetting nonsense
-                Random.Shift(4); // techinically there is also a shift for saint but boo hoo I don't care
-
-
-                float val = Random.Range(0.7f, 1f);
-                if (val >= 0.8f)
-                {
-                    // body color
-                    yield return new HSLColor(Random.Range(0.075f, 0.125f), Random.Range(0.4f, 0.9f), val).rgb;
-
-                    // head color
-                    yield return Custom.HSL2RGB(WrappedRandomVariation(0.1f, 0.03f, 0.2f, Random), 0.55f, ClampedRandomVariation(0.55f, 0.05f, 0.2f, Random));
-                }
-                else
-                {
-                    // body color
-                    yield return new HSLColor(Random.Range(0.075f, 0.125f), Random.Range(0.3f, 0.5f), val).rgb;
-                }
-            }*/
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
@@ -343,5 +323,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 }
             }
         }
+
+        protected static float DistanceIf(LizardBodyScaleType type, Input<LizardBodyScaleType> input) => input.enabled && input.value != type ? input.bias : 0f;
     }
 }

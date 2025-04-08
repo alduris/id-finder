@@ -86,6 +86,37 @@ namespace FinderMod.Search.Util
             return numOfSegments * scalesPerSegment;
         }
 
+        private static int MinGenTwoLines(LizardType type, float startPoint, float spacingScale)
+        {
+            float totLength = (startPoint + 0.1f) * GetBodyAndTailLength(type, 0.6f);
+            float spacing = (type == LizardType.Blue ? 2f : 9f) * spacingScale;
+            int numOfScales = (int)(totLength / spacing);
+            if (numOfScales < 3) numOfScales = 3;
+            return numOfScales;
+        }
+        private static int MaxGenTwoLines(LizardType type, float startPoint, float maxLength, float spacingScale)
+        {
+            float totLength = Mathf.Max(startPoint + 0.2f, maxLength) * GetBodyAndTailLength(type, 1.4f);
+            float spacing = 2f * spacingScale;
+            int numOfScales = (int)(totLength / spacing);
+            if (numOfScales < 3) numOfScales = 3;
+            return numOfScales;
+        }
+        private static int MinGenSegments(LizardType type, float startPoint)
+        {
+            float totLength = (startPoint + 0.1f) * GetBodyAndTailLength(type, 0.6f);
+            float spacing = (type == LizardType.Red ? 11f * 0.75f : 14f);
+            int numOfSegments = Math.Max(3, (int)(totLength / spacing));
+            return numOfSegments * 2;
+        }
+        private static int MaxGenSegments(LizardType type, float startPoint, float maxLength)
+        {
+            float totLength = Mathf.Max(startPoint + 0.2f, maxLength) * GetBodyAndTailLength(type, 1.4f);
+            float spacing = (type == LizardType.Red ? 7f * 0.75f : 7f);
+            int numOfSegments = Math.Max(3, (int)(totLength / spacing));
+            return numOfSegments * 6;
+        }
+
 
         public static int NumTailSegments(LizardType type)
         {
@@ -139,8 +170,6 @@ namespace FinderMod.Search.Util
         }
         private static float GetBodyAndTailLength(LizardType type, float tailLengthIVar)
         {
-            // NOTE: the theoretical range of values from this function is 70.8 to 455.82
-
             float bodyLenFacParam = 1f; // always 1
             float bodySizeFacParam = type switch
             {
@@ -214,6 +243,9 @@ namespace FinderMod.Search.Util
             return bodyLength + tailLength;
         }
 
+        private static float GetMinBodyAndTailLength(LizardType type) => GetBodyAndTailLength(type, 0.6f);
+        private static float GetMaxBodyAndTailLength(LizardType type) => GetBodyAndTailLength(type, 1.4f);
+
 
         public struct AntennaeVars
         {
@@ -269,6 +301,8 @@ namespace FinderMod.Search.Util
             }
 
             public int numScales;
+
+            public static int MaxNumScales(LizardType type) => (int)((0.8f * GetMaxBodyAndTailLength(type)) / (5f * 1.5f));
         }
 
         public struct BumpHawkVars
@@ -295,6 +329,11 @@ namespace FinderMod.Search.Util
                 Random.Shift(3);
                 numBumps = (int)(spineLength / spacing);
             }
+
+            public static float MinSpineLength(LizardType type) => 0.3f * GetMinBodyAndTailLength(type);
+            public static float MaxSpineLength(LizardType type) => 0.9f * GetMaxBodyAndTailLength(type);
+            public static int MinNumBumps(LizardType type) => (int)(MinSpineLength(type) / 12f);
+            public static int MaxNumBumps(LizardType type) => (int)(0.7f * GetMaxBodyAndTailLength(type) / 3f);
 
             public bool colored;
             public float spineLength;
@@ -416,6 +455,9 @@ namespace FinderMod.Search.Util
                 Random.Shift();
             }
 
+            public static int MinNumScales(LizardType type) => Math.Min(4, Math.Min(MinGenTwoLines(type, 0.07f, 3f), MinGenSegments(type, 0.1f)));
+            public static int MaxNumScales(LizardType type) => Math.Max(14, Math.Max(MaxGenTwoLines(type, 0.07f, 1f, 3f), MaxGenSegments(type, 0.1f, 0.8f)));
+
             public LizardBodyScaleType scaleType;
             public int numScales;
             public bool colored;
@@ -457,6 +499,9 @@ namespace FinderMod.Search.Util
                 }
             }
 
+            public static int MinNumScales(LizardType type) => Math.Min(4, Math.Min(MinGenTwoLines(type, 0.1f, 1f), MinGenSegments(type, 0.1f)));
+            public static int MaxNumScales(LizardType type) => Math.Max(14, Math.Max(MaxGenTwoLines(type, 0.1f, 1f, 1f), MaxGenSegments(type, 0.1f, 0.9f)));
+
             public LizardBodyScaleType scaleType;
             public int numScales;
         }
@@ -496,6 +541,11 @@ namespace FinderMod.Search.Util
                 else if (type == LizardType.Green && Random.Value >= 0.5f) Random.Shift();
             }
 
+            public static float MinSpineLength(LizardType type) => 0.2f * GetMinBodyAndTailLength(type);
+            public static float MaxSpineLength(LizardType type) => 0.95f * GetMaxBodyAndTailLength(type);
+            public static int MinNumScales(LizardType type) => (int)(MinSpineLength(type) / 8f);
+            public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 5f);
+
             public float spineLength;
             public int numScales;
             public int graphic;
@@ -527,6 +577,11 @@ namespace FinderMod.Search.Util
                 else if (graphic != 0) Random.Shift();
                 colored = Random.Value > 0.33333334f;
             }
+
+            public static float MinSpineLength(LizardType type) => (type == LizardType.Red ? 0.3f - 0.17f : 0.5f - 0.17f) * GetMinBodyAndTailLength(type);
+            public static float MaxSpineLength(LizardType type) => (type == LizardType.Red ? 0.3f + 0.17f : 0.5f + 0.17f) * GetMaxBodyAndTailLength(type);
+            public static int MinNumScales(LizardType type) => (int)(MinSpineLength(type) / 7f);
+            public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 4f);
 
             public float spineLength;
             public float undersideSize;
@@ -564,7 +619,6 @@ namespace FinderMod.Search.Util
         {
             public TailTuftVars(XORShift128 Random, float tailLength, LizardType type)
             {
-                //float bodyAndTailLength = GetBodyAndTailLength(type, tailLengthIVar);
 
                 if (Random.Value < 0.14285715f || Random.Value < 0.9f && type == LizardType.Blue || type == LizardType.Red || type == LizardType.Zoop)
                 {
@@ -593,6 +647,13 @@ namespace FinderMod.Search.Util
                 if (Random.Value < 0.033333335f) Random.Shift();
                 Random.Shift(2);
             }
+
+            public static int MinNumScales(LizardType type) =>
+                (type == LizardType.Blue || type == LizardType.Red) ? MinGenTwoLines(type, 0f, 3f) : MinGenTwoLines(type, 0f, 1.3f);
+            public static int MaxNumScales(LizardType type) =>
+                Math.Max(
+                    (type == LizardType.Blue || type == LizardType.Red) ? MaxGenTwoLines(type, 0f, type == LizardType.Red ? 0.3f : 0.7f, 3f) : MaxGenTwoLines(type, 0f, 0.4f, 1.3f)
+                    , 7);
 
             public LizardBodyScaleType scaleType;
             public int numScales;
