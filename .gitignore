@@ -400,6 +400,6 @@ FodyWeavers.xsd
 ###############################################################################
 # My stuff
 todo.txt
-output/*
-!output/modinfo.json
-!output/Thumbnail.png
+mod/workshopdata.json
+mod/newest/plugins/*
+!mod/newest/plugins/Newtonsoft.Json.dll
