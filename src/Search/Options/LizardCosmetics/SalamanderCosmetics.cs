@@ -64,6 +64,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         r += DistanceIf(axolotlGillsVars.numGills, axolotlGillsCosmetic.NumGillsInput);
                         r += DistanceIf(axolotlGillsVars.graphic, axolotlGillsCosmetic.GraphicInput);
                         break;
+
                     case TailFinVars tailFinVars:
                         r += DistanceIf(tailFinVars.spineLength, tailFinCosmetic.LengthInput);
                         r += DistanceIf(tailFinVars.undersideSize, tailFinCosmetic.UndersideSizeInput);
@@ -72,6 +73,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         r += DistanceIf(tailFinVars.graphic, tailFinCosmetic.GraphicInput);
                         r += DistanceIf(tailFinVars.colored, tailFinCosmetic.ColoredInput);
                         break;
+
+                    case LizardRotVars lizardRotVars:
+                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        break;
+
                     default:
                         throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }

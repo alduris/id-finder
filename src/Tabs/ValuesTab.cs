@@ -49,12 +49,7 @@ namespace FinderMod.Tabs
             const float LINE_HEIGHT = 15f; // line height of OpLabelLong when bigText is false
             const float WHITESPACE_HEIGHT = 10f;
 
-            foreach (var element in outputBox.items)
-            {
-                element.Deactivate();
-                element.tab.items.Remove(element);
-            }
-            outputBox.items.Clear();
+            RemoveItems([.. outputBox.items]);
 
             var name = searchItems.value;
             if (OptionRegistry.TryGetOption(name, out var option))

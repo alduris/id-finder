@@ -10,7 +10,7 @@ namespace FinderMod.Inputs
     public class MultiChoiceInput(string name, string[] options, int init = 0) : Input<int>(name, init)
     {
         private readonly string[] options = options;
-        private readonly float width = options.Max(x => LabelTest.GetWidth(x)) + 30f;
+        private readonly float width = options.Max(x => LabelTest.GetWidth(x)) + 36f;
 
         public override float InputHeight => 24f;
 

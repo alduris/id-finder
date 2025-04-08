@@ -46,6 +46,7 @@ namespace FinderMod.Inputs
                 var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : InputHeight / 2f - 12f)));
                 cb.OnValueUpdate += ToggleEnable;
                 elements.Add(cb);
+                Plugin.logger.LogDebug("Wheeeeeeeeeeeeeeeeeeeee " + enabled);
             }
             else
             {
@@ -82,8 +83,12 @@ namespace FinderMod.Inputs
 
         private void ToggleEnable(UIconfig config, string value, string oldValue)
         {
-            enabled = (config as OpCheckBox)!.GetValueBool();
-            UpdateQueryBox();
+            if (value != oldValue)
+            {
+                Plugin.logger.LogDebug($"{value}, {oldValue}. {enabled}");
+                enabled = (config as OpCheckBox)!.GetValueBool();
+                UpdateQueryBox();
+            }
         }
 
         private void ValueChange(UIconfig config, string value, string oldValue)

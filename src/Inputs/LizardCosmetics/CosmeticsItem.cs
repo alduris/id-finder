@@ -109,6 +109,20 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
     }
 
+    public class LizardRotCosmetic : CosmeticsItem
+    {
+        public IntInput NumTentaclesInput;
+        public IntInput NumDeadTentaclesInput;
+        public IntInput NumEyesInput;
+
+        public LizardRotCosmetic() : base(CosmeticType.LizardRot)
+        {
+            children.Add(NumTentaclesInput = new("Number of alive tentacles", 5, 9) { enabled = false });
+            children.Add(NumDeadTentaclesInput = new("Number of dead tentacles", 0, 2) { enabled = false });
+            children.Add(NumEyesInput = new("Number of eyes", 2, 5) { enabled = false });
+        }
+    }
+
     public class LongHeadScalesCosmetic : CosmeticsItem
     {
         public FloatInput LengthInput;
@@ -157,6 +171,15 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
         }
         public ShortBodyScalesCosmetic(LizardType type) : this(ShortBodyScalesVars.MinNumScales(type), ShortBodyScalesVars.MaxNumScales(type)) { }
+    }
+
+    public class SkinkSpecklesCosmetic : CosmeticsItem
+    {
+        public IntInput NumSpotsInput;
+        public SkinkSpecklesCosmetic() : base(CosmeticType.SkinkSpeckles)
+        {
+            children.Add(NumSpotsInput = new("Number of speckles", 0, 49) { enabled = false });
+        }
     }
 
     public class SnowAccumulationCosmetic : CosmeticsItem

@@ -12,14 +12,55 @@ namespace FinderMod.Search.Options.LizardCosmetics
         protected LizardType type;
         protected CosmeticsItemContainer cosmetics;
 
+        private readonly EnumInput<RotType> rotTypeInput = null!;
+        protected LizardRotCosmetic lizardRotCosmetic = null!;
+
         public BaseLizardCosmetics(LizardType type)
         {
             this.type = type;
             elements = [cosmetics = new CosmeticsItemContainer()];
+            if (ModManager.Watcher)
+            {
+                var submodule = new CosmeticsItemContainer.LizardRotSubholder(lizardRotCosmetic = new LizardRotCosmetic());
+                rotTypeInput = submodule.RotTypeInput;
+                cosmetics.Add(submodule);
+            }
         }
 
         protected IEnumerable GetResults(XORShift128 Random)
         {
+            return GetResults(Random, ModManager.Watcher ? rotTypeInput.value : RotType.None);
+        }
+
+        protected IEnumerable GetResults(XORShift128 Random, RotType rotType)
+        {
+            // Lizard rot!
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
+
+            switch (type)
+            {
+                case LizardType.Pink
+                or LizardType.Green
+                or LizardType.Blue
+                or LizardType.Yellow
+                or LizardType.Salamander
+                or LizardType.Red
+                or LizardType.Caramel
+                or LizardType.Blizzard
+                or LizardType.Basilisk
+                or LizardType.Indigo:
+                    Random.Shift(4);
+                    break;
+                case LizardType.Cyan:
+                    Random.Shift(5);
+                    break;
+                default: break;
+            }
+
+            var rotModule = new LizardRotModule(Random, rotType);
+
+            Random.InitState(x, y, z, w);
+
             // Calculate IVars ahead of time
             Random.Shift(5);
             float tailLength = ClampedRandomVariation(0.5f, 0.2f, 0.3f, Random) * 2f;
@@ -121,7 +162,11 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 bool longShoulderScales = false;
                 bool shortBodyScales = false;
 
-                if (type == LizardType.Caramel && Random.Value < 0.6f)
+                if (type == LizardType.Indigo)
+                {
+                    yield return new SkinkSpecklesVars(Random);
+                }
+                else if (type == LizardType.Caramel && Random.Value < 0.6f)
                 {
                     yield return new BodyStripesVars(Random, tailLength, type);
                     backDecals++;
@@ -155,7 +200,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     backDecals++;
                 }
 
-                if (type != LizardType.Salamander)
+                if (type != LizardType.Salamander && type != LizardType.Indigo)
                 {
                     if (type == LizardType.Caramel && Random.Value < 0.5f)
                     {
@@ -180,7 +225,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     }
                 }
 
-                if (Random.Value < (backDecals == 0 ? 0.7f : 0.1f) && type != LizardType.Salamander && type != LizardType.Yellow && (!longShoulderScales && Random.Value < 0.9f || Random.Value < 0.033333335f))
+                if (Random.Value < (backDecals == 0 ? 0.7f : 0.1f) && type != LizardType.Salamander && type != LizardType.Yellow && type != LizardType.Indigo && (!longShoulderScales && Random.Value < 0.9f || Random.Value < 0.033333335f))
                 {
                     yield return new LongHeadScalesVars(Random, type);
                 }
@@ -217,6 +262,62 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return new TailTuftVars(Random, tailLength, type);
                     }
                 }
+                else if (type == LizardType.Basilisk)
+                {
+                    yield return new BumpHawkVars(Random, tailLength, type);
+                    yield return new TailGeckoScalesVars(Random, tailColor);
+                    yield return new TailGeckoScalesVars(Random, tailColor);
+                    for (int i = 0; i < 9; i++)
+                    {
+                        yield return new ShortBodyScalesVars(Random, tailLength, type);
+                        yield return new TailTuftVars(Random, tailLength, type);
+                    }
+                    yield return new LongHeadScalesVars(Random, type);
+                    // BasiliskSlowField
+                    yield return new SkinkSpecklesVars(Random);
+                }
+                else if (type == LizardType.Blizzard)
+                {
+                    for (int num10 = 0; num10 < 5; num10++)
+                    {
+                        if ((double)Random.Value + 1E-05 < 0.5)
+                        {
+                            yield return new AxolotlGillsVars(Random);
+                        }
+                    }
+                    for (int num11 = 0; num11 < 5; num11++)
+                    {
+                        if ((double)Random.Value + 1E-05 < 0.5)
+                        {
+                            yield return new AxolotlGillsVars(Random);
+                        }
+                    }
+                    yield return new LongHeadScalesVars(Random, type);
+                    for (int num12 = 0; num12 < 8; num12++)
+                    {
+                        if ((double)Random.Value + 1E-05 < 0.5)
+                        {
+                            yield return new ShortBodyScalesVars(Random, tailLength, type);
+                        }
+                    }
+                    for (int num13 = 0; num13 < 5; num13++)
+                    {
+                        if ((double)Random.Value + 1E-05 < 0.800000011920929)
+                        {
+                            yield return new SpineSpikesVars(Random, tailLength, type);
+                        }
+                    }
+                    for (int num14 = 0; num14 < 10; num14++)
+                    {
+                        yield return new TailTuftVars(Random, tailLength, type);
+                    }
+                    if ((double)Random.Value + 1E-05 < 0.05000000074505806)
+                    {
+                        yield return new WhiskersVars(Random);
+                    }
+                    // BlizzardBeam
+                    // BlizzardSteam
+                }
 
                 if (backDecals == 0 && type == LizardType.Caramel)
                 {
@@ -229,11 +330,18 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 yield return new SnowAccumulationVars(Random);
             }
+
+            if (rotType != RotType.None)
+            {
+                yield return new LizardRotVars(Random, rotModule, rotType);
+            }
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
         {
-            foreach (var value in GetResults(Random))
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
+
+            foreach (var value in GetResults(Random, RotType.None))
             {
                 switch (value)
                 {
@@ -320,6 +428,26 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Number of scales: {wingScales.numScales}";
                         break;
                     default: break;
+                }
+            }
+
+            if (ModManager.Watcher)
+            {
+                yield return null!;
+                RotType[] rotTypes = [RotType.Slight, RotType.Opossom, RotType.Full];
+                foreach (var rotType in rotTypes)
+                {
+                    Random.InitState(x, y, z, w);
+                    foreach (var result in GetResults(Random, rotType))
+                    {
+                        if (result is LizardRotVars rotVars)
+                        {
+                            yield return $"LizardRotGraphics ({rotType}):";
+                            yield return $"  Number of alive tentacles: {rotVars.numLegs}";
+                            yield return $"  Number of dead tentacles: {rotVars.numDeadLegs}";
+                            yield return $"  Number of eyes: {rotVars.numEyes}";
+                        }
+                    }
                 }
             }
         }

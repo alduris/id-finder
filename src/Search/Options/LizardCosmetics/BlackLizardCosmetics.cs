@@ -137,6 +137,12 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         r += DistanceIf(whiskersVars.numWhiskers, whiskersCosmetic.NumWhiskersInput);
                         break;
 
+                    case LizardRotVars lizardRotVars:
+                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        break;
+
                     default:
                         throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }

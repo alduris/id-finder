@@ -2,6 +2,7 @@
 using FinderMod.Search.Options;
 using MoreSlugcats;
 using UnityEngine;
+using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Util
 {
@@ -21,7 +22,10 @@ namespace FinderMod.Search.Util
             Caramel,
             Zoop,
             Train,
-            Eel
+            Eel,
+            Blizzard,
+            Basilisk,
+            Indigo
         }
         public enum LizardBodyScaleType
         {
@@ -45,7 +49,17 @@ namespace FinderMod.Search.Util
             TailGeckoScales,
             TailTuft,
             Whiskers,
-            WingScales
+            WingScales,
+            LizardRot,
+            SkinkSpeckles,
+            SkinkStripes, // no vars
+        }
+        public enum RotType
+        {
+            None,
+            Slight,
+            Opossom,
+            Full
         }
 
 
@@ -135,6 +149,9 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 4,
                 LizardType.Train => 15,
                 LizardType.Eel => 16,
+                LizardType.Blizzard => 6,
+                LizardType.Basilisk => 5,
+                LizardType.Indigo => 7,
                 _ => throw new NotImplementedException()
             };
         }
@@ -150,6 +167,7 @@ namespace FinderMod.Search.Util
                 LizardType.Cyan => 7,
                 LizardType.Zoop => 10,
                 LizardType.Train => 10,
+                LizardType.Indigo => 7,
                 _ => 0
             };
         }
@@ -165,6 +183,9 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 0.9f,
                 LizardType.Train => 1.4f,
                 LizardType.Eel => 0.95f,
+                LizardType.Blizzard => 1.08f,
+                LizardType.Basilisk => 0.8f,
+                LizardType.Indigo => 0.72f,
                 _ => 1f
             };
         }
@@ -186,6 +207,9 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 0.74f,
                 LizardType.Train => 1.4f,
                 LizardType.Eel => 0.95f,
+                LizardType.Blizzard => 1.4f,
+                LizardType.Basilisk => 1.1f,
+                LizardType.Indigo => 1.2f,
                 _ => throw new NotImplementedException()
             };
             float bodyStiffnessParam = type switch
@@ -203,6 +227,9 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 0.32f,
                 LizardType.Train => 0.3f,
                 LizardType.Eel => 0.7f,
+                LizardType.Blizzard => 0.55f,
+                LizardType.Basilisk => 0.2f,
+                LizardType.Indigo => 0.5f,
                 _ => throw new NotImplementedException()
             };
             float tailLengthFactorParam = type switch
@@ -220,6 +247,9 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 1.8f,
                 LizardType.Train => 2.5f,
                 LizardType.Eel => 1.1f,
+                LizardType.Blizzard => 0.3f,
+                LizardType.Basilisk => 0.6f,
+                LizardType.Indigo => 0.9f,
                 _ => throw new NotImplementedException(),
             };
 
@@ -341,6 +371,91 @@ namespace FinderMod.Search.Util
         }
 
         public struct JumpRingsVars();
+
+        public struct LizardRotModule
+        {
+            public int numTentacles = 0;
+            public float[] tentacleLengths;
+
+            public LizardRotModule(XORShift128 Random, RotType state)
+            {
+                if (state != RotType.None && state != RotType.Slight)
+                {
+                    numTentacles = Random.Range(5, 10);
+                    float num = Mathf.Lerp(1440f, numTentacles * 192f, 0.5f);
+                    tentacleLengths = new float[numTentacles];
+                    for (int i = 0; i < numTentacles; i++)
+                    {
+                        tentacleLengths[i] = num / numTentacles;
+                    }
+                    for (int j = 0; j < 5 * numTentacles; j++)
+                    {
+                        int num2 = Random.Range(0, numTentacles);
+                        float num3 = tentacleLengths[num2] * Random.Value * 0.3f;
+                        if (tentacleLengths[num2] - num3 > 100f)
+                        {
+                            int num4 = Random.Range(0, numTentacles);
+                            tentacleLengths[num4] += num3;
+                            num4 = num2;
+                            tentacleLengths[num4] -= num3;
+                        }
+                    }
+                }
+                else
+                {
+                    tentacleLengths = [];
+                }
+            }
+        }
+
+        public struct LizardRotVars
+        {
+            public int numLegs;
+            public int numDeadLegs;
+            public int numEyes;
+
+            public LizardRotVars(XORShift128 Random, LizardRotModule rotModule, RotType state)
+            {
+                numLegs = rotModule.numTentacles;
+                for (int i = 0; i < numLegs; i++)
+                {
+                    // DaddyLegGraphic.ctor
+                    int numBumps = (int)(rotModule.tentacleLengths[i] / 10f) / 2 + Random.Range(5, 8);
+                    for (int j = 0; j < numBumps; j++)
+                    {
+                        // bumps
+                        float eyeFac = Mathf.Pow(Random.Value, 0.3f);
+                        if (j == 0) eyeFac = 1f;
+                        Random.Shift(3);
+                        if (Random.Value < Mathf.Lerp(0f, 0.6f, eyeFac)) Random.Shift();
+                    }
+                }
+
+                numDeadLegs = Random.Range((state == RotType.Slight) ? 0 : 1, Random.Range(2, 4));
+                for (int i = 0; i < numDeadLegs; i++)
+                {
+                    // DaddyDeadLeg.ctor
+                    int parts = Random.Range(4, Random.Range(8, 17)) / ((state != RotType.Full) ? 2 : 1);
+                    Random.Shift(2 + parts);
+                    float deadness = Random.Value;
+                    int numBumps = parts / 2 + Random.Range(5, 8);
+                    for (int j = 0; j < numBumps; j++)
+                    {
+                        // bumps
+                        float eyeFac = Mathf.Pow(Random.Value, 0.3f);
+                        if (j == 0) eyeFac = 1f;
+                        Random.Shift(3);
+                        if (Random.Value * (1f + deadness) < Mathf.Lerp(0f, 0.6f, eyeFac)) Random.Shift();
+                    }
+
+                    // end DaddyDeadLeg.ctor
+                    Random.Shift();
+                }
+
+                numEyes = Random.Range(2, Random.Range(4, 7));
+                Random.Shift(5 * numEyes);
+            }
+        }
 
         public struct LongHeadScalesVars
         {
@@ -504,6 +619,17 @@ namespace FinderMod.Search.Util
 
             public LizardBodyScaleType scaleType;
             public int numScales;
+        }
+
+        public struct SkinkSpecklesVars
+        {
+            public int spots;
+
+            public SkinkSpecklesVars(XORShift128 Random)
+            {
+                spots = Random.Range(Random.Range(0, 20), 50);
+                Random.Shift(3 * spots);
+            }
         }
 
         public struct SnowAccumulationVars

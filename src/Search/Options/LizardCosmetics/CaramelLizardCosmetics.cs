@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
@@ -152,6 +153,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             r += MISSING_PENALTY;
                         }
                         break;
+
+                    case LizardRotVars lizardRotVars:
+                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        break;
+
                     default:
                         throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
@@ -171,7 +179,6 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
             // Caramel colors
             Random.Shift(4); // techinically there is also a shift for saint but boo hoo I don't care
-
 
             float val = Random.Range(0.7f, 1f);
             if (val >= 0.8f)
@@ -197,6 +204,42 @@ namespace FinderMod.Search.Options.LizardCosmetics
             r += DistanceIf(headColor.lightness, headColorInput.LightInput);
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            // Original head color
+            HSLColor bodyColor, headColor;
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
+            headColor = new HSLColor(WrappedRandomVariation(0.1f, 0.03f, 0.2f, Random), 0.55f, ClampedRandomVariation(0.55f, 0.36f, 0.2f, Random));
+            Random.InitState(x, y, z, w);
+
+            // Caramel cosmetics
+            foreach (var str in base.GetValues(Random))
+            {
+                yield return str;
+            }
+
+            // Caramel colors
+            Random.Shift(4); // techinically there is also a shift for saint but boo hoo I don't care
+
+            float val = Random.Range(0.7f, 1f);
+            if (val >= 0.8f)
+            {
+                // body color
+                bodyColor = new HSLColor(Random.Range(0.075f, 0.125f), Random.Range(0.4f, 0.9f), val);
+
+                // head color
+                headColor = new HSLColor(WrappedRandomVariation(0.1f, 0.03f, 0.2f, Random), 0.55f, ClampedRandomVariation(0.55f, 0.05f, 0.2f, Random));
+            }
+            else
+            {
+                // body color
+                bodyColor = new HSLColor(Random.Range(0.075f, 0.125f), Random.Range(0.3f, 0.5f), val);
+            }
+
+            yield return $"Body color: hsl({bodyColor.hue}, {bodyColor.saturation}, {bodyColor.lightness})";
+            yield return $"Head color: hsl({headColor.hue}, {headColor.saturation}, {headColor.lightness})";
         }
     }
 }

@@ -66,6 +66,16 @@ namespace FinderMod.Search
             if (InitDLC) return;
             InitDLC = true;
 
+            if (ModManager.DLCShared)
+            {
+                Plugin.logger.LogInfo("Initializing registry with shared DLC options");
+
+                // Lizards
+                Options.Add("Lizard Cosmetics (Caramel)", () => new CaramelLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
+            }
+
             if (ModManager.MSC)
             {
                 Plugin.logger.LogInfo("Initializing registry with MSC options");
@@ -81,10 +91,15 @@ namespace FinderMod.Search
                 Options["Slugpup Food"] = () => new SlupFoodOption();
 
                 // Lizards
-                Options.Add("Lizard Cosmetics (Caramel)", () => new CaramelLizardCosmetics());
-                Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());
-                Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
+            }
+
+            if (ModManager.Watcher)
+            {
+                Plugin.logger.LogInfo("Initializing registry with Watcher options");
+
+                // Lizards
+                Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
             }
         }
 

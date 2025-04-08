@@ -35,15 +35,14 @@ namespace FinderMod.Search.Options.LizardCosmetics
             bool tail = false;
             var results = GetResults(Random).GetEnumerator();
 
-            if (results.MoveNext())
+            foreach (var result in GetResults(Random))
             {
-                body = true;
                 switch (results.Current)
                 {
                     case BumpHawkVars bumpHawkVars:
+                        body = true;
                         if (bumpHawkCosmetic.Active)
                         {
-                            // len num col
                             r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
                             r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
                             r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
@@ -54,6 +53,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
+                        body = true;
                         if (shortBodyScalesCosmetic.Active)
                         {
                             r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
@@ -66,6 +66,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
+                        body = true;
                         if (longShoulderScalesCosmetic.Active)
                         {
                             r += DistanceIf(longShoulderScalesVars.minSize, longShoulderScalesCosmetic.MinSizeInput);
@@ -82,6 +83,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         }
                         break;
                     case LongHeadScalesVars longHeadScalesVars:
+                        body = true;
                         if (longHeadScalesCosmetic.Active)
                         {
                             r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
@@ -94,9 +96,9 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             r += MISSING_PENALTY;
                         }
                         break;
+
                     case TailTuftVars tailTuftVars:
                         tail = true;
-                        body = false;
                         if (tailTuftCosmetic.Active)
                         {
                             r += DistanceIf(tailTuftVars.numScales, tailTuftCosmetic.NumScalesInput);
@@ -107,29 +109,15 @@ namespace FinderMod.Search.Options.LizardCosmetics
                             r += MISSING_PENALTY;
                         }
                         break;
+
+                    case LizardRotVars lizardRotVars:
+                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        break;
+
                     default:
                         throw new InvalidOperationException("Unexpected result! " + results.Current.GetType().Name);
-                }
-
-                if (!tail && results.MoveNext())
-                {
-                    if (results.Current is TailTuftVars tailTuftVars)
-                    {
-                        tail = true;
-                        if (tailTuftCosmetic.Active)
-                        {
-                            r += DistanceIf(tailTuftVars.numScales, tailTuftCosmetic.NumScalesInput);
-                            r += DistanceIf(tailTuftVars.scaleType, tailTuftCosmetic.ScaleTypeInput);
-                        }
-                        else if (tailTuftCosmetic.Enabled && !tailTuftCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Result was not TailTuftVars!");
-                    }
                 }
             }
 
