@@ -153,6 +153,8 @@ namespace FinderMod.Search.Options
         /// </summary>
         public struct Personality
         {
+            public Personality() => throw new InvalidOperationException("Please use XORShift128 argument");
+
             /// <summary>
             /// Initializes the personality struct and resets the random state when done so it can be used.
             /// </summary>
@@ -225,6 +227,12 @@ namespace FinderMod.Search.Options
                 return Vector4.Distance((Vector4)col, (Vector4)target.value) * target.bias;
             }
             return 0f;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float DistanceIf(HSLColor col, ColorHSLInput? target)
+        {
+            if (target is null) return 0f;
+            return WrapDistanceIf(col.hue, target.HueInput) + DistanceIf(col.saturation, target.SatInput) + DistanceIf(col.lightness, target.LightInput);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(bool b, Input<bool>? target)

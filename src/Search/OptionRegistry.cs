@@ -100,6 +100,11 @@ namespace FinderMod.Search
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
+                // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
+
+                // Misc
+                Options.Add("Tardigrade Variations", () => new TardigradeOption());
+                Options.Add("Rat Variations", () => new RatOption());
             }
         }
 

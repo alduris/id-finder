@@ -15,6 +15,8 @@ namespace FinderMod.Inputs
         private float defaultHue, defaultSat, defaultLight;
         public bool fixColors = false;
 
+        // private OpRect colorRect = null!;
+
         public string descripion
         {
             set
@@ -48,6 +50,8 @@ namespace FinderMod.Inputs
         public override void Create(float x, ref float y, List<UIelement> elements)
         {
             base.Create(x, ref y, elements);
+            // float height = (HueInput?.Height + MARGIN ?? 0) + (SatInput?.Height + MARGIN ?? 0) + (LightInput?.Height + MARGIN ?? 0) - MARGIN;
+            // elements.Add(colorRect = new OpRect(new Vector2(300f, y + height / 2f), Vector2.one * Mathf.Max(30f, height), 1f));
             UpdateColor(null!, 0, 0);
         }
 
@@ -59,6 +63,7 @@ namespace FinderMod.Inputs
             Color color = Custom.HSL2RGB(fixColors ? h - Mathf.Floor(h) : h, s, l);
             ColorEdge = color;
             ColorFill = color;
+            // if (colorRect != null) colorRect.colorFill = color;
         }
 
         public override void FromSaveData(JObject data)

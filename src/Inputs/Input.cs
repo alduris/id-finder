@@ -46,7 +46,6 @@ namespace FinderMod.Inputs
                 var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : InputHeight / 2f - 12f)));
                 cb.OnValueUpdate += ToggleEnable;
                 elements.Add(cb);
-                Plugin.logger.LogDebug("Wheeeeeeeeeeeeeeeeeeeee " + enabled);
             }
             else
             {
@@ -73,7 +72,7 @@ namespace FinderMod.Inputs
                 {
                     float edge = 600f - 20f - 20f - Mathf.Floor(x / 10f) * 10f; // screen width - scrollbar width - padding - extra padding for the hell of it
                     var biasTicker = new OpDragger(OpUtil.CosmeticRange(bias, 1, 999), new Vector2(edge - 24f, topY));
-                    var biasLabel = new OpLabel(edge - 30f - LabelTest.GetWidth("Bias:"), topY, "Bias:");
+                    var biasLabel = new OpLabel(edge - 30f - LabelTest.GetWidth("Bias:"), topY, "Bias:") { verticalAlignment = OpLabel.LabelVAlignment.Center };
                     biasTicker.OnValueUpdate += (_, _, _) => bias = biasTicker.GetValueInt();
                     elements.Add(biasTicker);
                     elements.Add(biasLabel);
@@ -85,7 +84,6 @@ namespace FinderMod.Inputs
         {
             if (value != oldValue)
             {
-                Plugin.logger.LogDebug($"{value}, {oldValue}. {enabled}");
                 enabled = (config as OpCheckBox)!.GetValueBool();
                 UpdateQueryBox();
             }

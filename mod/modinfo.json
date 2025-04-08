@@ -6,6 +6,6 @@
     "description": "Find the creature you want out of the 4 billion possible ids.",
     "requirements": [],
     "requirements_names": [],
-    "tags": ["Ids", "Utility", "Tools", "Creatures"],
+    "tags": ["Ids", "Utility", "Tools", "Creatures", "Base", "Downpour", "Watcher"],
     "checksum_override_version": true
 }

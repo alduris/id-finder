@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
+using RWCustom;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -21,9 +22,8 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private (float h, float s, float l) GetColor(XORShift128 Random, LizardType type)
         {
-            LizardType type = typeInp.value;
             float h, s, l;
 
             switch (type)
@@ -63,61 +63,50 @@ namespace FinderMod.Search.Options
                     s = 1f;
                     l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
                     break;
+                case LizardType.Blizzard:
+                    var blizzardStandardColor = new Color(0.55f, 0.6f, 0.7f);
+                    var blizzardRandomColor = Custom.HSL2RGB(WrappedRandomVariation(0.5f, 0.2f, 0.44f, Random), 1f, ClampedRandomVariation(0.7f, 0.15f, 0.85f, Random));
+                    var rawBlizzardColor = Color.Lerp(blizzardStandardColor, blizzardRandomColor, 0.05f);
+                    var blizzardHSL = Custom.RGB2HSL(rawBlizzardColor);
+                    (h, s, l) = (blizzardHSL.x, blizzardHSL.y, blizzardHSL.z);
+                    break;
+                case LizardType.Basilisk:
+                    var basiliskRandomColor = Custom.HSL2RGB(WrappedRandomVariation(0.11f, 0.06f, 0.44f, Random), 1f, ClampedRandomVariation(0.5f, 0.15f, 0.1f, Random));
+                    var basiliskHSL = Custom.RGB2HSL(Color.Lerp(basiliskRandomColor, Color.black, 0.85f));
+                    (h, s, l) = (basiliskHSL.x, basiliskHSL.y, basiliskHSL.z);
+                    break;
+                case LizardType.Indigo:
+                    h = WrappedRandomVariation(0.7f, 0.08f, 0.6f, Random);
+                    s = 1f;
+                    l = ClampedRandomVariation(0.52f, 0.15f, 0.1f, Random);
+                    break;
                 default:
                     h = s = l = 0; break;
             }
+            return (h, s, l);
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            LizardType type = typeInp.value;
+            var (h, s, l) = GetColor(Random, type);
 
             return DistanceIf(h, colrInp.HueInput) + DistanceIf(s, colrInp.SatInput) + DistanceIf(l, colrInp.LightInput);
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
         {
-            LizardType[] types = [LizardType.Pink, LizardType.Green, LizardType.Blue, LizardType.Yellow, LizardType.Salamander, LizardType.Red, LizardType.Cyan];
+            List<LizardType> types = [LizardType.Pink, LizardType.Green, LizardType.Blue, LizardType.Yellow, LizardType.Salamander, LizardType.Red, LizardType.Cyan];
+            if (ModManager.Watcher)
+            {
+                types.AddRange([LizardType.Blizzard, LizardType.Basilisk, LizardType.Indigo]);
+            }
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
 
             foreach (var type in types)
             {
-                float h, s, l;
-                switch (type)
-                {
-                    case LizardType.Pink:
-                        h = WrappedRandomVariation(0.87f, 0.1f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Green:
-                        h = WrappedRandomVariation(0.32f, 0.1f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Blue:
-                        h = WrappedRandomVariation(0.57f, 0.08f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Yellow:
-                        h = WrappedRandomVariation(0.1f, 0.05f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Salamander:
-                        h = WrappedRandomVariation(0.9f, 0.15f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.4f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Red:
-                        h = WrappedRandomVariation(0.0025f, 0.02f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    case LizardType.Cyan:
-                        h = WrappedRandomVariation(0.49f, 0.04f, 0.6f, Random);
-                        s = 1f;
-                        l = WrappedRandomVariation(0.5f, 0.15f, 0.1f, Random);
-                        break;
-                    default:
-                        continue;
-                }
-
+                Random.InitState(x, y, z, w);
+                var (h, s, l) = GetColor(Random, type);
                 yield return $"{type}: hsl({h}, {s}, {l})";
             }
         }
@@ -139,6 +128,10 @@ namespace FinderMod.Search.Options
                     LizardType.Train,
                     LizardType.Eel
                 ];
+                if (!ModManager.Watcher)
+                {
+                    excludeOptions.AddRange([LizardType.Blizzard, LizardType.Basilisk, LizardType.Indigo]);
+                }
             }
 
             private void LizardInput_OnValueChanged(Input<LizardType> input, LizardType value, LizardType oldValue)
@@ -149,7 +142,7 @@ namespace FinderMod.Search.Options
             protected override UIconfig GetElement(Vector2 pos)
             {
                 var el = base.GetElement(pos);
-                (el as OpResourceSelector)!.listHeight = (ushort)Enum.GetNames(typeof(LizardType)).Length;
+                (el as OpResourceSelector)!.listHeight = (ushort)(Enum.GetNames(typeof(LizardType)).Length - excludeOptions.Count);
                 return el;
             }
         }
@@ -176,7 +169,10 @@ namespace FinderMod.Search.Options
                 { LizardType.Caramel, null! }, // we have to skip this one because it's fucked up and evil and does its own color thing
                 { LizardType.Zoop, null! },
                 { LizardType.Train, null! },
-                { LizardType.Eel, null! }
+                { LizardType.Eel, null! },
+                { LizardType.Blizzard, new ColorHSLInput("Blizzard Lizard Color", true, 0.558f, 0.631f, true, 0.168f, 0.248f, true, 0.598f, 0.638f) },
+                { LizardType.Basilisk, new ColorHSLInput("Basilisk Lizard Color", true, 0.05f, 0.17f, true, 0.538f, 1f, true, 0.0525f, 0.0975f) },
+                { LizardType.Indigo, new ColorHSLInput("Indigo Lizard Color", true, 0.62f, 0.78f, false, 1f, 1f, true, 0.37f, 0.67f) },
             };
 
             public float Height => groups[lizInput.value]?.Height ?? LabelTest.LineHeight(false);
