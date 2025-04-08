@@ -7,22 +7,22 @@ namespace FinderMod.Search.Options.LizardCosmetics
 {
     public class EelLizardCosmetics : BaseLizardCosmetics
     {
-        private readonly AxolotlGillsCosmetic axoGills;
-        private readonly TailGeckoScalesCosmetic geckoScales;
-        private readonly LongShoulderScalesCosmetic longSScales;
-        private readonly ShortBodyScalesCosmetic shortBScales;
-        private readonly TailFinCosmetic tailFin1;
-        private readonly TailFinCosmetic tailFin2;
-        private readonly TailTuftCosmetic tailTuft;
+        private readonly AxolotlGillsCosmetic axolotlGillsCosmetic;
+        private readonly TailGeckoScalesCosmetic tailGeckoScalesCosmetic;
+        private readonly LongShoulderScalesCosmetic mainLongShoulderScalesCosmetic;
+        private readonly ShortBodyScalesCosmetic mainShortBodyScalesCosmetic;
+        private readonly TailFinCosmetic lssTailFinCosmetic;
+        private readonly TailFinCosmetic sbsTailFinCosmetic;
+        private readonly TailTuftCosmetic mainTailTuftCosmetic;
 
-        private readonly SpineSpikesCosmetic spineSpikes;
-        private readonly BumpHawkCosmetic bumpHawk;
-        private readonly LongShoulderScalesCosmetic extraLongSScales;
-        private readonly ShortBodyScalesCosmetic extraShortBScales;
+        private readonly SpineSpikesCosmetic spineSpikesCosmetic;
+        private readonly BumpHawkCosmetic bumpHawkCosmetic;
+        private readonly LongShoulderScalesCosmetic longShoulderScalesCosmetic;
+        private readonly ShortBodyScalesCosmetic shortBodyScalesCosmetic;
 
-        private readonly TailTuftCosmetic extraTailTuft;
+        private readonly TailTuftCosmetic tailTuftCosmetic;
 
-        private readonly LongHeadScalesCosmetic longHeadScales;
+        private readonly LongHeadScalesCosmetic longHeadScalesCosmetic;
 
         public EelLizardCosmetics() : base(LizardType.Eel)
         {
@@ -34,299 +34,228 @@ namespace FinderMod.Search.Options.LizardCosmetics
             // 2. SBS and one of:
             //    a. tail fin
             //    b. tail tuft
-            cosmetics.Add(axoGills = new AxolotlGillsCosmetic());
-            cosmetics.Add(geckoScales = new TailGeckoScalesCosmetic());
+            cosmetics.Add(Label("Eel-specific cosmetics group"));
+            cosmetics.Add(axolotlGillsCosmetic = new AxolotlGillsCosmetic());
+            cosmetics.Add(tailGeckoScalesCosmetic = new TailGeckoScalesCosmetic());
             cosmetics.Add(
                 OneOf(
-                    "Eel-specific cosmetics",
+                    "Back-tail cosmetics",
                     Group(
                         "LongShoulderScales group",
-                        longSScales = new LongShoulderScalesCosmetic(type),
-                        tailFin1 = new TailFinCosmetic(type)),
+                        mainLongShoulderScalesCosmetic = new LongShoulderScalesCosmetic(type),
+                        lssTailFinCosmetic = new TailFinCosmetic(type)),
                     Group(
                         "ShortBodyScales group",
-                        shortBScales = new ShortBodyScalesCosmetic(type),
+                        mainShortBodyScalesCosmetic = new ShortBodyScalesCosmetic(type),
                         OneOf(
                             "Tail decoration",
-                            tailFin2 = new TailFinCosmetic(type),
-                            tailTuft = new TailTuftCosmetic(type)
+                            sbsTailFinCosmetic = new TailFinCosmetic(type),
+                            mainTailTuftCosmetic = new TailTuftCosmetic(type)
                             )
                         )
                     )
                 );
             // normal lizard cases
+            cosmetics.Add(Label("Generic cosmetics group"));
             cosmetics.Add(
                 OneOf(
                     "Body cosmetic",
-                    spineSpikes = new SpineSpikesCosmetic(type),
-                    bumpHawk = new BumpHawkCosmetic(type),
-                    extraLongSScales = new LongShoulderScalesCosmetic(type),
-                    extraShortBScales = new ShortBodyScalesCosmetic(type),
+                    spineSpikesCosmetic = new SpineSpikesCosmetic(type),
+                    bumpHawkCosmetic = new BumpHawkCosmetic(type),
+                    longShoulderScalesCosmetic = new LongShoulderScalesCosmetic(type),
+                    shortBodyScalesCosmetic = new ShortBodyScalesCosmetic(type),
                     None()
                     )
                 );
-            cosmetics.Add(Toggleable("Has TailTuft", extraTailTuft = new TailTuftCosmetic(type)));
-            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScales = new LongHeadScalesCosmetic()));
+            cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
+            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
         }
 
         public override float Execute(XORShift128 Random)
         {
-            // TODO: need to redo this probably
             float r = 0f;
-            var results = GetResults(Random).GetEnumerator();
+            bool foundEelGroup = false;
+            bool wasLSSGroup = false;
+            bool finishedEelGroup = false;
+            bool body = false;
+            bool tail = false;
+            bool lhs = false;
 
-            // Eel-exclusive
-            if (results.MoveNext() && results.Current is AxolotlGillsVars axolotlGillsVars)
+            foreach (var result in GetResults(Random))
             {
-                if (axoGills.Active)
+                switch (result)
                 {
-                    r += DistanceIf(axolotlGillsVars.rigor, axoGills.RigorInput);
-                    r += DistanceIf(axolotlGillsVars.numGills, axoGills.NumGillsInput);
-                    r += DistanceIf(axolotlGillsVars.graphic, axoGills.GraphicInput);
-                }
-            }
-            else throw new InvalidOperationException("Result was not AxolotlGills");
-            if (results.MoveNext() && results.Current is TailGeckoScalesVars tailGeckoScalesVars)
-            {
-                if (geckoScales.Active)
-                {
-                    r += DistanceIf(tailGeckoScalesVars.rows, geckoScales.RowsInput);
-                    r += DistanceIf(tailGeckoScalesVars.lines, geckoScales.LinesInput);
-                }
-            }
-            else throw new InvalidOperationException("Result was not TailGeckoScales");
+                    case AxolotlGillsVars axolotlGillsVars:
+                        r += DistanceIf(axolotlGillsVars.rigor, axolotlGillsCosmetic.RigorInput);
+                        r += DistanceIf(axolotlGillsVars.numGills, axolotlGillsCosmetic.NumGillsInput);
+                        r += DistanceIf(axolotlGillsVars.graphic, axolotlGillsCosmetic.GraphicInput);
+                        break;
+                    case TailGeckoScalesVars tailGeckoScalesVars:
+                        r += DistanceIf(tailGeckoScalesVars.rows, tailGeckoScalesCosmetic.RowsInput);
+                        r += DistanceIf(tailGeckoScalesVars.lines, tailGeckoScalesCosmetic.LinesInput);
+                        break;
 
-            results.MoveNext();
-            switch (results.Current)
-            {
-                case LongShoulderScalesVars longShoulderScalesVars:
-                    {
-                        if (longSScales.Enabled && !longSScales.Toggled)
+                    case LongShoulderScalesVars longShoulderScalesVars:
                         {
-                            r += MISSING_PENALTY;
-                        }
-                        else
-                        {
-                            if (longSScales.Active)
+                            LongShoulderScalesCosmetic input;
+                            if (foundEelGroup)
                             {
-                                r += DistanceIf(longShoulderScalesVars.minSize, longSScales.MinSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.maxSize, longSScales.MaxSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.numScales, longSScales.NumScalesInput);
-                                r += DistanceIf(longShoulderScalesVars.graphic, longSScales.GraphicInput);
-                                if (longSScales.ScaleTypeInput.enabled && longSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += longSScales.ScaleTypeInput.bias;
-                                r += DistanceIf(longShoulderScalesVars.colored, longSScales.ColoredInput);
+                                body = true;
+                                input = longShoulderScalesCosmetic;
+                            }
+                            else
+                            {
+                                foundEelGroup = true;
+                                wasLSSGroup = true;
+                                input = mainLongShoulderScalesCosmetic;
+                            }
+
+                            if (input.Active)
+                            {
+                                r += DistanceIf(longShoulderScalesVars.minSize, input.MinSizeInput);
+                                r += DistanceIf(longShoulderScalesVars.maxSize, input.MaxSizeInput);
+                                r += DistanceIf(longShoulderScalesVars.numScales, input.NumScalesInput);
+                                r += DistanceIf(longShoulderScalesVars.graphic, input.GraphicInput);
+                                if (input.ScaleTypeInput.enabled && input.ScaleTypeInput.value != longShoulderScalesVars.scaleType)
+                                    r += input.ScaleTypeInput.bias;
+                                r += DistanceIf(longShoulderScalesVars.colored, input.ColoredInput);
+                            }
+                            else if (input.Enabled && !input.Toggled)
+                            {
+                                r += MISSING_PENALTY;
                             }
                         }
-
-                        results.MoveNext();
-                        TailFinCosmetic tailFin = tailFin1;
-                        if (results.Current is TailFinVars tailFinVars)
+                        break;
+                    case ShortBodyScalesVars shortBodyScalesVars:
                         {
-                            if (tailFin.Active)
+                            ShortBodyScalesCosmetic input;
+                            if (foundEelGroup)
                             {
-                                r += DistanceIf(tailFinVars.spineLength, tailFin.LengthInput);
-                                r += DistanceIf(tailFinVars.undersideSize, tailFin.UndersideSizeInput);
-                                r += DistanceIf(tailFinVars.spineScaleX, tailFin.ScaleXInput);
-                                r += DistanceIf(tailFinVars.numScales, tailFin.NumScalesInput);
-                                r += DistanceIf(tailFinVars.graphic, tailFin.GraphicInput);
-                                r += DistanceIf(tailFinVars.colored, tailFin.ColoredInput);
+                                body = true;
+                                input = shortBodyScalesCosmetic;
+                            }
+                            else
+                            {
+                                foundEelGroup = true;
+                                wasLSSGroup = false;
+                                input = mainShortBodyScalesCosmetic;
+                            }
+
+                            if (shortBodyScalesCosmetic.Active)
+                            {
+                                r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
+                                if (shortBodyScalesCosmetic.ScaleTypeInput.enabled && shortBodyScalesCosmetic.ScaleTypeInput.value != shortBodyScalesVars.scaleType)
+                                    r += shortBodyScalesCosmetic.ScaleTypeInput.bias;
+                            }
+                            else if (shortBodyScalesCosmetic.Enabled && !shortBodyScalesCosmetic.Toggled)
+                            {
+                                r += MISSING_PENALTY;
                             }
                         }
-                        else throw new InvalidOperationException("Result was not TailFin");
-
                         break;
-                    }
-                case ShortBodyScalesVars shortBodyScalesVars:
-                    {
-                        if (shortBScales.Active)
-                        {
-                            r += DistanceIf(shortBodyScalesVars.numScales, shortBScales.NumScalesInput);
-                            if (shortBScales.ScaleTypeInput.enabled && shortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += shortBScales.ScaleTypeInput.bias;
-                        }
-                        else if (shortBScales.Enabled && !shortBScales.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
 
-                        results.MoveNext();
-                        switch (results.Current)
+                    case TailFinVars tailFinVars:
                         {
-                            case TailFinVars tailFinVars:
-                                TailFinCosmetic tailFin = tailFin2;
-                                if (tailFin.Active)
-                                {
-                                    r += DistanceIf(tailFinVars.spineLength, tailFin.LengthInput);
-                                    r += DistanceIf(tailFinVars.undersideSize, tailFin.UndersideSizeInput);
-                                    r += DistanceIf(tailFinVars.spineScaleX, tailFin.ScaleXInput);
-                                    r += DistanceIf(tailFinVars.numScales, tailFin.NumScalesInput);
-                                    r += DistanceIf(tailFinVars.graphic, tailFin.GraphicInput);
-                                    r += DistanceIf(tailFinVars.colored, tailFin.ColoredInput);
-                                }
-                                else if (tailFin.Enabled && !tailFin.Toggled)
-                                {
-                                    r += MISSING_PENALTY;
-                                }
-                                break;
-                            case TailTuftVars tailTuftVars: // cool
-                                if (tailTuft.Active)
-                                {
-                                    r += DistanceIf(tailTuftVars.numScales, tailTuft.NumScalesInput);
-                                    r += DistanceIf(tailTuftVars.scaleType, tailTuft.ScaleTypeInput);
-                                }
-                                else if (tailTuft.Enabled && !tailTuft.Toggled)
-                                {
-                                    r += MISSING_PENALTY;
-                                }
-                                break;
-                            default: throw new NotImplementedException("Result was not TailFin or TailTuft!");
+                            finishedEelGroup = true;
+                            TailFinCosmetic input = wasLSSGroup ? lssTailFinCosmetic : sbsTailFinCosmetic;
+                            if (wasLSSGroup || input.Active)
+                            {
+                                r += DistanceIf(tailFinVars.spineLength, input.LengthInput);
+                                r += DistanceIf(tailFinVars.undersideSize, input.UndersideSizeInput);
+                                r += DistanceIf(tailFinVars.spineScaleX, input.ScaleXInput);
+                                r += DistanceIf(tailFinVars.numScales, input.NumScalesInput);
+                                r += DistanceIf(tailFinVars.graphic, input.GraphicInput);
+                                r += DistanceIf(tailFinVars.colored, input.ColoredInput);
+                            }
+                            else if (input.Enabled && !input.Toggled)
+                            {
+                                r += MISSING_PENALTY;
+                            }
                         }
                         break;
-                    }
-                default: throw new InvalidOperationException("Result was not LongShoulderScales or ShortBodyScales");
-            }
+                    case TailTuftVars tailTuftVars:
+                        {
+                            TailTuftCosmetic input;
+                            if (finishedEelGroup)
+                            {
+                                tail = true;
+                                input = tailTuftCosmetic;
+                            }
+                            else
+                            {
+                                finishedEelGroup = true;
+                                input = mainTailTuftCosmetic;
+                            }
 
-            // Generic lizard shenanigans
-            if (results.MoveNext())
-            {
-                bool cont = true;
-                bool lhs = true;
-                switch (results.Current)
-                {
+                            if (input.Active)
+                            {
+                                r += DistanceIf(tailTuftVars.numScales, input.NumScalesInput);
+                                r += DistanceIf(tailTuftVars.scaleType, input.ScaleTypeInput);
+                            }
+                            else if (input.Enabled && !input.Toggled)
+                            {
+                                r += MISSING_PENALTY;
+                            }
+                        }
+                        break;
+
                     case SpineSpikesVars spineSpikesVars:
-                        if (spineSpikes.Active)
+                        body = true;
+                        if (spineSpikesCosmetic.Active)
                         {
-                            r += DistanceIf(spineSpikesVars.spineLength, spineSpikes.LengthInput);
-                            r += DistanceIf(spineSpikesVars.numScales, spineSpikes.NumScalesInput);
-                            r += DistanceIf(spineSpikesVars.graphic, spineSpikes.GraphicInput);
+                            r += DistanceIf(spineSpikesVars.spineLength, spineSpikesCosmetic.LengthInput);
+                            r += DistanceIf(spineSpikesVars.numScales, spineSpikesCosmetic.NumScalesInput);
+                            r += DistanceIf(spineSpikesVars.graphic, spineSpikesCosmetic.GraphicInput);
                         }
-                        else if (spineSpikes.Enabled && !spineSpikes.Toggled)
+                        else if (spineSpikesCosmetic.Enabled && !spineSpikesCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
                     case BumpHawkVars bumpHawkVars:
-                        if (bumpHawk.Active)
+                        body = true;
+                        if (bumpHawkCosmetic.Active)
                         {
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawk.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawk.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawk.ColoredInput);
+                            // len num col
+                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
+                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
+                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
                         }
-                        else if (bumpHawk.Enabled &&  !bumpHawk.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                        break;
-                    case LongShoulderScalesVars longShoulderScalesVars:
-                        if (extraLongSScales.Active)
-                        {
-                            r += DistanceIf(longShoulderScalesVars.minSize, extraLongSScales.MinSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.maxSize, extraLongSScales.MaxSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.numScales, extraLongSScales.NumScalesInput);
-                            r += DistanceIf(longShoulderScalesVars.graphic, extraLongSScales.GraphicInput);
-                            if (extraLongSScales.ScaleTypeInput.enabled && extraLongSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += extraLongSScales.ScaleTypeInput.bias;
-                            r += DistanceIf(longShoulderScalesVars.colored, extraLongSScales.ColoredInput);
-                        }
-                        else if (extraLongSScales.Enabled && !extraLongSScales.Toggled)
+                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
-                    case ShortBodyScalesVars shortBodyScalesVars:
-                        if (extraShortBScales.Active)
-                        {
-                            r += DistanceIf(shortBodyScalesVars.numScales, extraShortBScales.NumScalesInput);
-                            if (extraShortBScales.ScaleTypeInput.enabled && extraShortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += extraShortBScales.ScaleTypeInput.bias;
-                        }
-                        else if (extraShortBScales.Enabled && !extraShortBScales.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                        break;
-                    case TailTuftVars tailTuftVars:
-                        cont = false;
-                        if (extraTailTuft.Active)
-                        {
-                            r += DistanceIf(tailTuftVars.numScales, extraTailTuft.NumScalesInput);
-                            r += DistanceIf(tailTuftVars.scaleType, extraTailTuft.ScaleTypeInput);
-                        }
-                        else if (extraTailTuft.Enabled && !extraTailTuft.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                        break;
+
                     case LongHeadScalesVars longHeadScalesVars:
-                        cont = false;
-                        lhs = false;
-                        if (longHeadScales.Active)
+                        lhs = true;
+                        if (longHeadScalesCosmetic.Active)
                         {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
+                            r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
+                            r += DistanceIf(longHeadScalesVars.width, longHeadScalesCosmetic.WidthInput);
+                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScalesCosmetic.RigorInput);
+                            r += DistanceIf(longHeadScalesVars.colored, longHeadScalesCosmetic.ColoredInput);
                         }
-                        else if (longHeadScales.Enabled && !longHeadScales.Toggled)
+                        else if (longHeadScalesCosmetic.Enabled && !longHeadScalesCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
-                    default: throw new InvalidOperationException("Extra cosmetic 1 was not a valid type");
-                }
 
-                if (cont && results.MoveNext())
-                {
-                    switch (results.Current)
-                    {
-                        case TailTuftVars tailTuftVars:
-                            if (extraTailTuft.Active)
-                            {
-                                r += DistanceIf(tailTuftVars.numScales, extraTailTuft.NumScalesInput);
-                                r += DistanceIf(tailTuftVars.scaleType, extraTailTuft.ScaleTypeInput);
-                            }
-                            else if (extraTailTuft.Enabled && !extraTailTuft.Toggled)
-                            {
-                                r += MISSING_PENALTY;
-                            }
-                            break;
-                        case LongHeadScalesVars longHeadScalesVars:
-                            lhs = false;
-                            if (longHeadScales.Active)
-                            {
-                                r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                                r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                                r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                                r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
-                            }
-                            else if (longHeadScales.Enabled && !longHeadScales.Toggled)
-                            {
-                                r += MISSING_PENALTY;
-                            }
-                            break;
-                        default: throw new InvalidOperationException("Extra cosmetic 2 was not a valid type");
-                    }
-                }
-
-                if (lhs && results.MoveNext())
-                {
-                    if (results.Current is LongHeadScalesVars longHeadScalesVars)
-                    {
-                        if (longHeadScales.Active)
-                        {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
-                        }
-                        else if (longHeadScales.Enabled && !longHeadScales.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Result was not LongHeadScales");
-                    }
+                    default:
+                        throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
             }
+
+            bool wantedBodyCosmetic = spineSpikesCosmetic.Enabled && spineSpikesCosmetic.Toggled;
+            wantedBodyCosmetic |= longShoulderScalesCosmetic.Enabled && longShoulderScalesCosmetic.Toggled;
+            wantedBodyCosmetic |= shortBodyScalesCosmetic.Enabled && shortBodyScalesCosmetic.Toggled;
+            wantedBodyCosmetic |= bumpHawkCosmetic.Enabled && bumpHawkCosmetic.Toggled;
+            if (!body && wantedBodyCosmetic) r += MISSING_PENALTY;
+
+            if (!tail && tailTuftCosmetic.Enabled && tailTuftCosmetic.Toggled) r += MISSING_PENALTY;
+
+            if (!lhs && longHeadScalesCosmetic.Enabled && longHeadScalesCosmetic.Toggled) r += MISSING_PENALTY;
 
             return r;
         }

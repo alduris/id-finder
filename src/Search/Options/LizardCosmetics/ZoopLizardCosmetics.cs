@@ -7,228 +7,197 @@ namespace FinderMod.Search.Options.LizardCosmetics
 {
     public class ZoopLizardCosmetics : BaseLizardCosmetics
     {
-        private readonly WingScalesCosmetic wingScales;
-        private readonly SpineSpikesCosmetic spineSpikes;
-        private readonly TailTuftCosmetic tailTuft;
+        private readonly WingScalesCosmetic wingScalesCosmetic;
+        private readonly SpineSpikesCosmetic mainSpineSpikesCosmetic;
+        private readonly TailTuftCosmetic mainTailTuftCosmetic;
 
-        private readonly SpineSpikesCosmetic extraSpineSpikes;
-        private readonly BumpHawkCosmetic bumpHawk;
-        private readonly LongShoulderScalesCosmetic longSScales;
-        private readonly ShortBodyScalesCosmetic shortBScales;
+        private readonly SpineSpikesCosmetic spineSpikesCosmetic;
+        private readonly BumpHawkCosmetic bumpHawkCosmetic;
+        private readonly LongShoulderScalesCosmetic longShoulderScalesCosmetic;
+        private readonly ShortBodyScalesCosmetic shortBodyScalesCosmetic;
 
-        private readonly TailTuftCosmetic extraTailTuft;
+        private readonly TailTuftCosmetic tailTuftCosmetic;
 
-        private readonly LongHeadScalesCosmetic longHeadScales;
+        private readonly LongHeadScalesCosmetic longHeadScalesCosmetic;
 
         public ZoopLizardCosmetics() : base(LizardType.Zoop)
         {
+            cosmetics.Add(Label("Zoop-specific cosmetics group"));
             cosmetics.Add(
                 OneOf(
                     "Zoop-specific cosmetic",
-                    wingScales = new WingScalesCosmetic(),
-                    spineSpikes = new SpineSpikesCosmetic(type)
+                    wingScalesCosmetic = new WingScalesCosmetic(),
+                    mainSpineSpikesCosmetic = new SpineSpikesCosmetic(type)
                     )
                 );
-            cosmetics.Add(tailTuft = new TailTuftCosmetic(type));
+            cosmetics.Add(mainTailTuftCosmetic = new TailTuftCosmetic(type));
 
             // normal lizard cases
+            cosmetics.Add(Label("Generic cosmetics group"));
             cosmetics.Add(
                 OneOf(
                     "Body cosmetic",
-                    extraSpineSpikes = new SpineSpikesCosmetic(type),
-                    bumpHawk = new BumpHawkCosmetic(type),
-                    longSScales = new LongShoulderScalesCosmetic(type),
-                    shortBScales = new ShortBodyScalesCosmetic(type),
+                    spineSpikesCosmetic = new SpineSpikesCosmetic(type),
+                    bumpHawkCosmetic = new BumpHawkCosmetic(type),
+                    longShoulderScalesCosmetic = new LongShoulderScalesCosmetic(type),
+                    shortBodyScalesCosmetic = new ShortBodyScalesCosmetic(type),
                     None()
                     )
                 );
-            cosmetics.Add(Toggleable("Has TailTuft", extraTailTuft = new TailTuftCosmetic(type)));
-            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScales = new LongHeadScalesCosmetic()));
+            cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
+            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
         }
 
         public override float Execute(XORShift128 Random)
         {
-            // TODO: need to redo this probably
             float r = 0f;
-            var results = GetResults(Random).GetEnumerator();
+            bool finishedZoopSpecific = false;
+            bool body = false;
+            bool tail = false;
+            bool lhs = false;
 
-            // Zoop lizard stuff
-            results.MoveNext();
-            switch (results.Current)
+            foreach (var result in GetResults(Random))
             {
-                case WingScalesVars wingScalesVars:
-                    if (wingScales.Active)
-                    {
-                        r += DistanceIf(wingScalesVars.scaleLength, wingScales.LengthInput);
-                        r += DistanceIf(wingScalesVars.numScales, wingScales.NumScalesInput);
-                    }
-                    else if (wingScales.Enabled && !wingScales.Toggled)
-                    {
-                        r += MISSING_PENALTY;
-                    }
-                    break;
-                case SpineSpikesVars spineSpikesVars:
-                    if (spineSpikes.Active)
-                    {
-                        r += DistanceIf(spineSpikesVars.spineLength, spineSpikes.LengthInput);
-                        r += DistanceIf(spineSpikesVars.numScales, spineSpikes.NumScalesInput);
-                        r += DistanceIf(spineSpikesVars.graphic, spineSpikes.GraphicInput);
-                    }
-                    else if (spineSpikes.Enabled && !spineSpikes.Toggled)
-                    {
-                        r += MISSING_PENALTY;
-                    }
-                    break;
-                default: throw new InvalidOperationException("Result was not WingScales or SpineSpikes");
-            }
-
-            results.MoveNext();
-            if (results.Current is TailTuftVars tailTuftVars)
-            {
-
-                if (tailTuft.Active)
+                switch (result)
                 {
-                    r += DistanceIf(tailTuftVars.numScales, tailTuft.NumScalesInput);
-                    r += DistanceIf(tailTuftVars.scaleType, tailTuft.ScaleTypeInput);
-                }
-                else if (tailTuft.Enabled && !tailTuft.Toggled)
-                {
-                    r += MISSING_PENALTY;
-                }
-            }
-            else new InvalidOperationException("Result was not TailTuft");
-
-            // Generic lizard shenanigans
-            if (results.MoveNext())
-            {
-                bool cont = true;
-                bool lhs = true;
-                switch (results.Current)
-                {
+                    case WingScalesVars wingScalesVars:
+                        if (wingScalesCosmetic.Active)
+                        {
+                            r += DistanceIf(wingScalesVars.scaleLength, wingScalesCosmetic.LengthInput);
+                            r += DistanceIf(wingScalesVars.numScales, wingScalesCosmetic.NumScalesInput);
+                        }
+                        else if (wingScalesCosmetic.Enabled && !wingScalesCosmetic.Toggled)
+                        {
+                            r += MISSING_PENALTY;
+                        }
+                        break;
                     case SpineSpikesVars spineSpikesVars:
-                        if (extraSpineSpikes.Active)
                         {
-                            r += DistanceIf(spineSpikesVars.spineLength, extraSpineSpikes.LengthInput);
-                            r += DistanceIf(spineSpikesVars.numScales, extraSpineSpikes.NumScalesInput);
-                            r += DistanceIf(spineSpikesVars.graphic, extraSpineSpikes.GraphicInput);
-                        }
-                        else if (extraSpineSpikes.Enabled && !extraSpineSpikes.Toggled)
-                        {
-                            r += MISSING_PENALTY;
+                            SpineSpikesCosmetic input;
+                            if (finishedZoopSpecific)
+                            {
+                                body = true;
+                                input = spineSpikesCosmetic;
+                            }
+                            else
+                            {
+                                input = mainSpineSpikesCosmetic;
+                            }
+
+                            if (input.Active)
+                            {
+                                r += DistanceIf(spineSpikesVars.spineLength, input.LengthInput);
+                                r += DistanceIf(spineSpikesVars.numScales, input.NumScalesInput);
+                                r += DistanceIf(spineSpikesVars.graphic, input.GraphicInput);
+                            }
+                            else if (input.Enabled && !input.Toggled)
+                            {
+                                r += MISSING_PENALTY;
+                            }
                         }
                         break;
-                    case BumpHawkVars bumpHawkVars:
-                        if (bumpHawk.Active)
+
+                    case TailTuftVars tailTuftVars:
                         {
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawk.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawk.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawk.ColoredInput);
-                        }
-                        else if (bumpHawk.Enabled && !bumpHawk.Toggled)
-                        {
-                            r += MISSING_PENALTY;
+                            TailTuftCosmetic input;
+                            if (finishedZoopSpecific)
+                            {
+                                tail = true;
+                                input = tailTuftCosmetic;
+                            }
+                            else
+                            {
+                                finishedZoopSpecific = true;
+                                input = mainTailTuftCosmetic;
+                            }
+
+                            if (input.Active)
+                            {
+                                r += DistanceIf(tailTuftVars.numScales, input.NumScalesInput);
+                                r += DistanceIf(tailTuftVars.scaleType, input.ScaleTypeInput);
+                            }
+                            else if (input.Enabled && !input.Toggled)
+                            {
+                                r += MISSING_PENALTY;
+                            }
                         }
                         break;
+
                     case LongShoulderScalesVars longShoulderScalesVars:
-                        if (longSScales.Active)
+                        body = true;
+                        if (longShoulderScalesCosmetic.Active)
                         {
-                            r += DistanceIf(longShoulderScalesVars.minSize, longSScales.MinSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.maxSize, longSScales.MaxSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.numScales, longSScales.NumScalesInput);
-                            r += DistanceIf(longShoulderScalesVars.graphic, longSScales.GraphicInput);
-                            if (longSScales.ScaleTypeInput.enabled && longSScales.ScaleTypeInput.value != longShoulderScalesVars.scaleType) r += longSScales.ScaleTypeInput.bias;
-                            r += DistanceIf(longShoulderScalesVars.colored, longSScales.ColoredInput);
+                            r += DistanceIf(longShoulderScalesVars.minSize, longShoulderScalesCosmetic.MinSizeInput);
+                            r += DistanceIf(longShoulderScalesVars.maxSize, longShoulderScalesCosmetic.MaxSizeInput);
+                            r += DistanceIf(longShoulderScalesVars.numScales, longShoulderScalesCosmetic.NumScalesInput);
+                            r += DistanceIf(longShoulderScalesVars.graphic, longShoulderScalesCosmetic.GraphicInput);
+                            if (longShoulderScalesCosmetic.ScaleTypeInput.enabled && longShoulderScalesCosmetic.ScaleTypeInput.value != longShoulderScalesVars.scaleType)
+                                r += longShoulderScalesCosmetic.ScaleTypeInput.bias;
+                            r += DistanceIf(longShoulderScalesVars.colored, longShoulderScalesCosmetic.ColoredInput);
                         }
-                        else if (longSScales.Enabled && !longSScales.Toggled)
+                        else if (longShoulderScalesCosmetic.Enabled && !longShoulderScalesCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
-                        if (shortBScales.Active)
+                        body = true;
+                        if (shortBodyScalesCosmetic.Active)
                         {
-                            r += DistanceIf(shortBodyScalesVars.numScales, shortBScales.NumScalesInput);
-                            if (shortBScales.ScaleTypeInput.enabled && shortBScales.ScaleTypeInput.value != shortBodyScalesVars.scaleType) r += shortBScales.ScaleTypeInput.bias;
+                            r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
+                            if (shortBodyScalesCosmetic.ScaleTypeInput.enabled && shortBodyScalesCosmetic.ScaleTypeInput.value != shortBodyScalesVars.scaleType)
+                                r += shortBodyScalesCosmetic.ScaleTypeInput.bias;
                         }
-                        else if (shortBScales.Enabled && !shortBScales.Toggled)
+                        else if (shortBodyScalesCosmetic.Enabled && !shortBodyScalesCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
-                    case TailTuftVars:
-                        cont = false;
-                        if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += MISSING_PENALTY;
+                    case BumpHawkVars bumpHawkVars:
+                        body = true;
+                        if (bumpHawkCosmetic.Active)
+                        {
+                            // len num col
+                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
+                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
+                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
+                        }
+                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
+                        {
+                            r += MISSING_PENALTY;
+                        }
                         break;
+
                     case LongHeadScalesVars longHeadScalesVars:
-                        cont = false;
-                        lhs = false;
-                        if (longHeadScales.Active)
+                        lhs = true;
+                        if (longHeadScalesCosmetic.Active)
                         {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
+                            r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
+                            r += DistanceIf(longHeadScalesVars.width, longHeadScalesCosmetic.WidthInput);
+                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScalesCosmetic.RigorInput);
+                            r += DistanceIf(longHeadScalesVars.colored, longHeadScalesCosmetic.ColoredInput);
                         }
-                        else if (longHeadScales.Enabled && !longHeadScales.Toggled)
+                        else if (longHeadScalesCosmetic.Enabled && !longHeadScalesCosmetic.Toggled)
                         {
                             r += MISSING_PENALTY;
                         }
                         break;
-                    case SnowAccumulationVars:
-                        cont = false;
-                        lhs = false;
-                        break;
-                    default: throw new InvalidOperationException("Extra cosmetic 1 was not a valid type");
-                }
 
-                if (cont && results.MoveNext())
-                {
-                    switch (results.Current)
-                    {
-                        case TailTuftVars:
-                            if (extraTailTuft.Enabled && !extraTailTuft.Toggled) r += MISSING_PENALTY;
-                            break;
-                        case LongHeadScalesVars longHeadScalesVars:
-                            lhs = false;
-                            if (longHeadScales.Active)
-                            {
-                                r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                                r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                                r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                                r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
-                            }
-                            else if (longHeadScales.Enabled && !longHeadScales.Toggled)
-                            {
-                                r += MISSING_PENALTY;
-                            }
-                            break;
-                        case SnowAccumulationVars: break;
-                        default: throw new InvalidOperationException("Extra cosmetic 2 was not a valid type");
-                    }
-                }
-
-                if (lhs && results.MoveNext())
-                {
-                    if (results.Current is LongHeadScalesVars longHeadScalesVars)
-                    {
-                        if (longHeadScales.Active)
-                        {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScales.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScales.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScales.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScales.ColoredInput);
-                        }
-                        else if (longHeadScales.Enabled && !longHeadScales.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
-                    }
-                    else if (results.Current is not SnowAccumulationVars)
-                    {
-                        throw new InvalidOperationException("Result was not LongHeadScales");
-                    }
+                    case SnowAccumulationVars: break;
+                    default:
+                        throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
             }
+
+            bool wantedBodyCosmetic = spineSpikesCosmetic.Enabled && spineSpikesCosmetic.Toggled;
+            wantedBodyCosmetic |= longShoulderScalesCosmetic.Enabled && longShoulderScalesCosmetic.Toggled;
+            wantedBodyCosmetic |= shortBodyScalesCosmetic.Enabled && shortBodyScalesCosmetic.Toggled;
+            wantedBodyCosmetic |= bumpHawkCosmetic.Enabled && bumpHawkCosmetic.Toggled;
+            if (!body && wantedBodyCosmetic) r += MISSING_PENALTY;
+
+            if (!tail && tailTuftCosmetic.Enabled && tailTuftCosmetic.Toggled) r += MISSING_PENALTY;
+
+            if (!lhs && longHeadScalesCosmetic.Enabled && longHeadScalesCosmetic.Toggled) r += MISSING_PENALTY;
 
             return r;
         }
