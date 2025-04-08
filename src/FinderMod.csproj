@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="../../REFERENCES/*.dll">
+		<Reference Include="../lib/*.dll">
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
