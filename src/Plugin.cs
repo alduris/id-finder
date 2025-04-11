@@ -57,7 +57,6 @@ namespace FinderMod
 
                 On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
                 On.GameSession.ctor += GameSessionOnctor;
-                On.Watcher.RatGraphics.InitiateSprites += (orig, self, a, b) => { orig(self, a, b); logger.LogDebug(self.coatColor); };
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
