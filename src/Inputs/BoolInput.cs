@@ -4,10 +4,15 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class BoolInput(string name, bool init = false) : Input<bool>(name, init)
+    public class BoolInput : Input<bool>
     {
 
         public override float InputHeight => 24f;
+
+        public BoolInput(string name, bool init = false) : base(name, init)
+        {
+            hasBias = true;
+        }
 
         protected override UIconfig GetElement(Vector2 pos) => new OpLabelCheckbox(Config(), pos);
 
