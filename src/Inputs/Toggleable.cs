@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 
@@ -22,6 +23,8 @@ namespace FinderMod.Inputs
             this.name = name;
             ToggleInput = new BoolInput(name, toggled) { hasBias = true };
             Element = element;
+
+            ToggleInput.OnValueChanged += (_, v, o) => { if (v != o) SearchTab.instance.UpdateQueryBox(); };
         }
 
         public float Height => ToggleInput.Height + (Toggled ? Element.Height + 6f : 0);

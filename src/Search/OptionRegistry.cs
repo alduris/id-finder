@@ -105,6 +105,7 @@ namespace FinderMod.Search
                 // Misc
                 Options.Add("Tardigrade Variations", () => new TardigradeOption());
                 Options.Add("Rat Variations", () => new RatOption());
+                Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
             }
         }
 
