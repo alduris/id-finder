@@ -103,9 +103,10 @@ namespace FinderMod.Search
                 // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
 
                 // Misc
-                Options.Add("Tardigrade Variations", () => new TardigradeOption());
+                Options.Add("Frog Variations", () => new FrogVarsOption());
                 Options.Add("Rat Variations", () => new RatOption());
                 Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
+                Options.Add("Tardigrade Variations", () => new TardigradeOption());
             }
         }
 
