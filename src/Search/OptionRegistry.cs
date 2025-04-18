@@ -74,6 +74,9 @@ namespace FinderMod.Search
                 Options.Add("Lizard Cosmetics (Caramel)", () => new CaramelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
+
+                // Misc
+                Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
             }
 
             if (ModManager.MSC)
