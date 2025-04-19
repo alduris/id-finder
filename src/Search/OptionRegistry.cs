@@ -50,6 +50,7 @@ namespace FinderMod.Search
 
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
+                { "Miros Bird Variations", () => new MirosBirdVarsOption() },
                 { "Snail Variations", () => new SnailOption() },
 
             };

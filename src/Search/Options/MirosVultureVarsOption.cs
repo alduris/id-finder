@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace FinderMod.Search.Options
 {
