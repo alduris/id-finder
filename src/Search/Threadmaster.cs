@@ -25,7 +25,7 @@ namespace FinderMod.Search
         private int finished = 0;
 
         public bool Running => finished != threads && started && !abort;
-        public float Progress => progress.Sum() / threads;
+        public float Progress => progress.Min();
         public string? AbortReason { get; private set; } = null;
 
         public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)

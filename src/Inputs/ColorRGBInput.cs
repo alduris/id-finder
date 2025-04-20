@@ -1,4 +1,5 @@
-﻿using Menu.Remix.MixedUI;
+﻿using System.Collections.Generic;
+using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace FinderMod.Inputs
     public class ColorRGBInput : Input<Color>
     {
         public override float InputHeight => 150f;
+        private OpColorPicker.PickerMode pickerMode = OpColorPicker.PickerMode.HSL;
 
         public ColorRGBInput(string name, Color color) : base(name, color)
         {
@@ -17,7 +19,10 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            return new OpColorPicker(Config(), pos);
+            var picker = new OpColorPicker(Config(), pos);
+            picker._SwitchMode(pickerMode);
+            picker.OnChange += () => pickerMode = picker._mode;
+            return picker;
         }
 
         protected override Color GetValue(UIconfig element)
@@ -42,6 +47,15 @@ namespace FinderMod.Inputs
             enabled = (bool)data["enabled"]!;
             value = new Color((float)data["r"]!, (float)data["g"]!, (float)data["b"]!);
             bias = (int)data["bias"]!;
+        }
+
+        public override IEnumerable<string> GetHistoryLines()
+        {
+            if (enabled)
+            {
+                yield return $"{name}: rgb({value.r}, {value.g}, {value.b})" + (bias != 1 ? $" (bias: {bias})" : "");
+            }
+            yield break;
         }
     }
 

@@ -133,7 +133,7 @@ namespace FinderMod.Inputs
             bias = (int)data["bias"]!;
         }
 
-        public IEnumerable<string> GetHistoryLines()
+        public virtual IEnumerable<string> GetHistoryLines()
         {
             if (enabled)
             {

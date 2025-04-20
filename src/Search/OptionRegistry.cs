@@ -48,8 +48,13 @@ namespace FinderMod.Search
                 { "Lizard Cosmetics (White)", () => new WhiteLizardCosmetics() },
                 { "Lizard Cosmetics (Yellow)", () => new YellowLizardCosmetics() },
 
+                // Big Spiders
+                { "Big Spider (Big) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Big) },
+                { "Big Spider (Spitter) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Spitter) },
+
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
+                { "Leviathan Variations", () => new LeviathanVarsOption() },
                 { "Miros Bird Variations", () => new MirosBirdVarsOption() },
                 { "Snail Variations", () => new SnailOption() },
 
@@ -78,6 +83,7 @@ namespace FinderMod.Search
 
                 // Misc
                 Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
+                Options.Add("Big Spider (Mother) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
             }
 
             if (ModManager.MSC)
