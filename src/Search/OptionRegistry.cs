@@ -52,11 +52,17 @@ namespace FinderMod.Search
                 { "Big Spider (Big) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Big) },
                 { "Big Spider (Spitter) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Spitter) },
 
+                // Centipedes
+                { "Centipede (Adult) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Normal) },
+                { "Centipede (Centiwing) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Centiwing) },
+                { "Centipede (Red) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Red) },
+
                 // Misc Creatures
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
                 { "Leviathan Variations", () => new LeviathanVarsOption() },
                 { "Miros Bird Variations", () => new MirosBirdVarsOption() },
                 { "Snail Variations", () => new SnailOption() },
+                { "Squidcada Variations", () => new CicadaVarsOption() },
 
             };
 #if !RELEASE
@@ -84,6 +90,7 @@ namespace FinderMod.Search
                 // Misc
                 Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
                 Options.Add("Big Spider (Mother) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
+                Options.Add("Centipede (Aqua) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
             }
 
             if (ModManager.MSC)
