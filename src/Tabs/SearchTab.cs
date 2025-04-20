@@ -44,7 +44,7 @@ namespace FinderMod.Tabs
                     .Select(s => new ListItem(s))
                 )
             )
-            { listHeight = 20 };
+            { listHeight = 24 };
             var button_add = new OpSimpleButton(new(266f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
             var button_copy = new OpSimpleButton(new(464f, 520f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
             var button_paste = new OpSimpleButton(new(530f, 520f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };

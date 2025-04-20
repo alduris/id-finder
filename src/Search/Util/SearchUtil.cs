@@ -140,7 +140,11 @@ namespace FinderMod.Search.Options
         public static float WrapDistanceIf(float num, Input<float> target)
         {
             if (target != null && target.enabled)
-                return Mathf.Min(Mathf.Abs(num - target.value), Mathf.Abs(num - (target.value + 1)), Mathf.Abs(num - (target.value - 1))) * target.bias;
+            {
+                float a = Custom.Decimal(num);
+                float b = Custom.Decimal(target.value);
+                return Mathf.Min(Mathf.Abs(a - b), Mathf.Abs(a - (b + 1f)), Mathf.Abs(a - (b - 1f))) * target.bias;
+            }
             return 0f;
         }
     }

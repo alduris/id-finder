@@ -49,15 +49,17 @@ namespace FinderMod.Search
                 { "Lizard Cosmetics (Yellow)", () => new YellowLizardCosmetics() },
 
                 // Big Spiders
-                { "Big Spider (Big) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Big) },
-                { "Big Spider (Spitter) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Spitter) },
+                { "Big Spider Variations (Normal)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Big) },
+                { "Big Spider Variations (Spitter)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Spitter) },
 
                 // Centipedes
-                { "Centipede (Adult) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Normal) },
-                { "Centipede (Centiwing) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Centiwing) },
-                { "Centipede (Red) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Red) },
+                { "Centipede Variations (Adult)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Normal) },
+                { "Centipede Variations (Centiwing)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Centiwing) },
+                { "Centipede Variations (Red)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Red) },
 
                 // Misc Creatures
+                { "Dropwig Variations", () => new DropwigVarsOption() },
+                { "Eggbug Colors", () => new EggbugColorsOption(false) },
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
                 { "Leviathan Variations", () => new LeviathanVarsOption() },
                 { "Miros Bird Variations", () => new MirosBirdVarsOption() },
@@ -89,8 +91,8 @@ namespace FinderMod.Search
 
                 // Misc
                 Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
-                Options.Add("Big Spider (Mother) Variations", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
-                Options.Add("Centipede (Aqua) Variations", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
+                Options.Add("Big Spider Variations (Mother)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
+                Options.Add("Centipede Variations (Aqua)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
             }
 
             if (ModManager.MSC)
@@ -109,6 +111,9 @@ namespace FinderMod.Search
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());
+
+                // Misc
+                Options.Add("Firebug Colors", () => new EggbugColorsOption(true));
             }
 
             if (ModManager.Watcher)
