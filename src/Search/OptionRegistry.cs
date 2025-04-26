@@ -60,6 +60,7 @@ namespace FinderMod.Search
                 // Misc Creatures
                 { "Dropwig Variations", () => new DropwigVarsOption() },
                 { "Eggbug Colors", () => new EggbugColorsOption(false) },
+                { "Grapple Worm Variations", () => new GrappleWormColorsOption() },
                 { "Hazer Variations", () => new HazerVarsOption() },
                 { "Jetfish Variations", () => new JetfishVarsOption() },
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
@@ -92,9 +93,10 @@ namespace FinderMod.Search
                 Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
 
                 // Misc
-                Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
                 Options.Add("Big Spider Variations (Mother)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
                 Options.Add("Centipede Variations (Aqua)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
+                Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
+                Options.Add("Yeek Color", () => new YeekColorsOption());
             }
 
             if (ModManager.MSC)
