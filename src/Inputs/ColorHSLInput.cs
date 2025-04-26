@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using RWCustom;
@@ -12,12 +13,14 @@ namespace FinderMod.Inputs
         public FloatInput SatInput { get; private set; } = null!;
         public FloatInput LightInput { get; private set; } = null!;
 
-        private float defaultHue, defaultSat, defaultLight;
+        public float defaultHue, defaultSat, defaultLight;
         public bool fixColors = false;
+
+        private HSLColor lastColor;
 
         // private OpRect colorRect = null!;
 
-        public string descripion
+        public string description
         {
             set
             {
@@ -43,9 +46,11 @@ namespace FinderMod.Inputs
             defaultSat = sMax;
             defaultLight = (lMin + lMax) / 2;
 
-            if (HueInput != null) HueInput.OnValueChanged += UpdateColor;
-            if (SatInput != null) SatInput.OnValueChanged += UpdateColor;
-            if (LightInput != null) LightInput.OnValueChanged += UpdateColor;
+            if (HueInput != null) HueInput.OnValueChanged += OnUpdateColor;
+            if (SatInput != null) SatInput.OnValueChanged += OnUpdateColor;
+            if (LightInput != null) LightInput.OnValueChanged += OnUpdateColor;
+
+            lastColor = new HSLColor(HueInput?.value ?? defaultHue, SatInput?.value ?? defaultSat, LightInput?.value ?? defaultLight);
         }
 
         public override void Create(float x, ref float y, List<UIelement> elements)
@@ -53,10 +58,21 @@ namespace FinderMod.Inputs
             base.Create(x, ref y, elements);
             // float height = (HueInput?.Height + MARGIN ?? 0) + (SatInput?.Height + MARGIN ?? 0) + (LightInput?.Height + MARGIN ?? 0) - MARGIN;
             // elements.Add(colorRect = new OpRect(new Vector2(300f, y + height / 2f), Vector2.one * Mathf.Max(30f, height), 1f));
-            UpdateColor(null!, 0, 0);
+            ForceUpdateColor();
         }
 
-        private void UpdateColor(Input<float> _, float __, float ___)
+        private void OnUpdateColor(Input<float> inp, float __, float ___)
+        {
+            float h = HueInput?.value ?? defaultHue;
+            float s = SatInput?.value ?? defaultSat;
+            float l = LightInput?.value ?? defaultLight;
+            var newColor = new HSLColor(h, s, l);
+            OnValueChanged?.Invoke(this, newColor, lastColor);
+            lastColor = newColor;
+            ForceUpdateColor();
+        }
+
+        public void ForceUpdateColor()
         {
             float h = HueInput?.value ?? defaultHue;
             float s = SatInput?.value ?? defaultSat;
@@ -64,13 +80,12 @@ namespace FinderMod.Inputs
             Color color = Custom.HSL2RGB(fixColors ? h - Mathf.Floor(h) : h, s, l);
             ColorEdge = color;
             ColorFill = color;
-            // if (colorRect != null) colorRect.colorFill = color;
         }
 
         public override void FromSaveData(JObject data)
         {
             base.FromSaveData(data);
-            UpdateColor(null!, 0, 0);
+            ForceUpdateColor();
         }
 
         public override IEnumerable<string> GetHistoryLines()
@@ -79,5 +94,9 @@ namespace FinderMod.Inputs
             if (SatInput is not null) yield return internalName + " S: " + SatInput.value;
             if (LightInput is not null) yield return internalName + " L: " + LightInput.value;
         }
+
+
+        public delegate void ValueChanged(ColorHSLInput input, HSLColor value, HSLColor oldValue);
+        public event ValueChanged OnValueChanged = null!;
     }
 }

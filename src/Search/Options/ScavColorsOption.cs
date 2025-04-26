@@ -14,7 +14,7 @@ namespace FinderMod.Search.Options
             elements = [
                 body = new ColorHSLInput("Body color"),
                 head = new ColorHSLInput("Head color"),
-                deco = new ColorHSLInput("Decoration color") { descripion = "Controls eartler tip colors if enabled. Can sometimes control eye or belly color." },
+                deco = new ColorHSLInput("Decoration color") { description = "Controls eartler tip colors if enabled. Can sometimes control eye or belly color." },
                 eye = new ColorHSLInput("Eye color", true, false, true), // eye saturation is locked to 1
             ];
         }

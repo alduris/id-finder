@@ -60,6 +60,8 @@ namespace FinderMod.Search
                 // Misc Creatures
                 { "Dropwig Variations", () => new DropwigVarsOption() },
                 { "Eggbug Colors", () => new EggbugColorsOption(false) },
+                { "Hazer Variations", () => new HazerVarsOption() },
+                { "Jetfish Variations", () => new JetfishVarsOption() },
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
                 { "Leviathan Variations", () => new LeviathanVarsOption() },
                 { "Miros Bird Variations", () => new MirosBirdVarsOption() },
