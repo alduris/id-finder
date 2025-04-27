@@ -33,6 +33,10 @@ namespace FinderMod.Inputs
             };
         }
 
+        public bool ForceEnabled
+        {
+            set => SwitchInput.forceEnabled = value;
+        }
         public bool Enabled => SwitchInput.enabled;
         public bool HasBias
         {

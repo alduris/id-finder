@@ -136,6 +136,7 @@ namespace FinderMod.Search
                 // Misc
                 Options.Add("Barnacle Variations", () => new BarnacleVarsOption());
                 Options.Add("Box Worm Variations", () => new BoxWormVarsOption());
+                Options.Add("Drill Crab Variations", () => new DrillCrabVarsOption());
                 Options.Add("Frog Variations", () => new FrogVarsOption());
                 Options.Add("Rat Variations", () => new RatOption());
                 Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());

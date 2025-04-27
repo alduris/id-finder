@@ -9,7 +9,8 @@ namespace FinderMod.Search.Options
     public partial class Option
     {
         /// <summary>
-        /// Personality struct. When used with the <see cref="XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.
+        /// <para>Personality struct. When used with the <see cref="XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.</para>
+        /// <para>When using, ensure that it is created first or immediately after initializing a state so that it may make use of the seed properly.</para>
         /// </summary>
         public struct Personality
         {
@@ -18,7 +19,7 @@ namespace FinderMod.Search.Options
             /// <summary>
             /// Initializes the personality struct and resets the random state when done so it can be used.
             /// </summary>
-            /// <param name="Random"></param>
+            /// <param name="Random">The random state. Ensure that it is created before any other Random calls so it may make use of the seed properly.</param>
             public Personality(XORShift128 Random)
             {
                 var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);

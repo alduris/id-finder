@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
 
@@ -10,8 +9,9 @@ namespace FinderMod.Search.Options
         private readonly IntInput HornCountInput;
         private readonly FloatInput HornScaleInput;
 
-        private readonly ColorHSLInput BodyColorInput;
-        private readonly ColorHSLInput BellyColorInput;
+        private readonly Alternatable<FrogColorGroup> ColorGroup;
+        private ColorHSLInput BodyColorInput => ColorGroup.Element.BodyColorInput;
+        private ColorHSLInput BellyColorInput => ColorGroup.Element.BellyColorInput;
 
         public FrogVarsOption()
         {
@@ -19,8 +19,18 @@ namespace FinderMod.Search.Options
                 HornCountInput = new IntInput("Number of horns", 0, 3),
                 HornScaleInput = new FloatInput("Horn scale", 0.8f, 1.2f),
                 new Whitespace(),
-                BodyColorInput = new ColorHSLInput("Body Color", -0.04f, 0.3f, 0.07f, 0.57f, 0f, 0.58f),
-                BellyColorInput = new ColorHSLInput("Belly Color", -0.01f, 0.22f, 0f, 0.55f, 0.21f, 0.94f),
+                ColorGroup = new Alternatable<FrogColorGroup>(
+                    "Rare coloring", false,
+                    new FrogColorGroup(
+                        new ColorHSLInput("Body Color", -0.04f, 0.16f, 0.37f, 0.57f, 0.18f, 0.58f),
+                        new ColorHSLInput("Belly Color", -0.01f, 0.19f, 0.35f, 0.55f, 0.54f, 0.94f)
+                        ),
+                    new FrogColorGroup(
+                        new ColorHSLInput("Body Color", 0.1f, 0.3f, 0.07f, 0.27f, 0f, 0.35f),
+                        new ColorHSLInput("Belly Color", 0.02f, 0.22f, 0f, 0.19f, 0.21f, 0.61f)
+                        )
+                    ) { ForceEnabled = true, HasBias = false },
+                new Label("Note: frog colors are heavily affected by room palette.")
                 ];
         }
 
@@ -86,6 +96,12 @@ namespace FinderMod.Search.Options
             public float hornScale;
             public HSLColor bodyColor;
             public HSLColor bellyColor;
+        }
+
+        private class FrogColorGroup(ColorHSLInput bodyColorInput, ColorHSLInput bellyColorInput) : Group([bodyColorInput, bellyColorInput], "Frog colors")
+        {
+            public readonly ColorHSLInput BodyColorInput = bodyColorInput;
+            public readonly ColorHSLInput BellyColorInput = bellyColorInput;
         }
     }
 }
