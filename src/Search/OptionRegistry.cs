@@ -58,6 +58,7 @@ namespace FinderMod.Search
                 { "Centipede Variations (Red)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Red) },
 
                 // Misc Creatures
+                { "Coalescipede Size", () => new CoalescipedeOption() },
                 { "Dropwig Variations", () => new DropwigVarsOption() },
                 { "Eggbug Colors", () => new EggbugColorsOption(false) },
                 { "Grapple Worm Variations", () => new GrappleWormColorsOption() },
@@ -128,7 +129,13 @@ namespace FinderMod.Search
                 Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
                 // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
 
+                // Moths!
+                Options.Add("Moth (Big) Variations", () => new MothVarsOption(true));
+                Options.Add("Moth (Small) Variations", () => new MothVarsOption(false));
+
                 // Misc
+                Options.Add("Barnacle Variations", () => new BarnacleVarsOption());
+                Options.Add("Box Worm Variations", () => new BoxWormVarsOption());
                 Options.Add("Frog Variations", () => new FrogVarsOption());
                 Options.Add("Rat Variations", () => new RatOption());
                 Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
