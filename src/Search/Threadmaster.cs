@@ -222,6 +222,8 @@ namespace FinderMod.Search
         {
             public int Compare(Result x, Result y)
             {
+                if (x.id == int.MinValue) return -1;
+                if (y.id == int.MinValue) return 1;
                 return Math.Abs(y.id) - Math.Abs(x.id);
             }
         }

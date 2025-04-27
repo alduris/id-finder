@@ -32,6 +32,7 @@ namespace FinderMod.Search.Options
             {
                 numLarvae = numLarvae,
                 size = sizeVar,
+                larvaeFlags = 0
             };
         }
 
