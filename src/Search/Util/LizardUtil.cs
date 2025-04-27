@@ -10,6 +10,7 @@ namespace FinderMod.Search.Util
     {
         public enum LizardType
         {
+            NONE,
             Pink,
             Green,
             Blue,

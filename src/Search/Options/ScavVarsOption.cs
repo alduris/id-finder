@@ -23,7 +23,7 @@ namespace FinderMod.Search.Options
                 new Whitespace(),
                 fatInp = new FloatInput("Fatness"),
                 wnInp = new FloatInput("Waist narrowness"),
-                ntInp = new FloatInput("Neck thickness"),
+                ntInp = new FloatInput("Neck thickness") { description = "Note: smaller values mean a thicker neck." },
                 new Whitespace(),
                 psInp = new FloatInput("Pupil size") { description = "Deep pupils always makes this 0.7" },
                 dpInp = new BoolInput("Deep pupils?") { description = "Creates an inset look in the eyes. Makes pupil size constant." },

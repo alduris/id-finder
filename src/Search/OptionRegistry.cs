@@ -48,9 +48,27 @@ namespace FinderMod.Search
                 { "Lizard Cosmetics (White)", () => new WhiteLizardCosmetics() },
                 { "Lizard Cosmetics (Yellow)", () => new YellowLizardCosmetics() },
 
+                // Big Spiders
+                { "Big Spider Variations (Normal)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Big) },
+                { "Big Spider Variations (Spitter)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Spitter) },
+
+                // Centipedes
+                { "Centipede Variations (Adult)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Normal) },
+                { "Centipede Variations (Centiwing)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Centiwing) },
+                { "Centipede Variations (Red)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Red) },
+
                 // Misc Creatures
+                { "Coalescipede Size", () => new CoalescipedeOption() },
+                { "Dropwig Variations", () => new DropwigVarsOption() },
+                { "Eggbug Colors", () => new EggbugColorsOption(false) },
+                { "Grapple Worm Variations", () => new GrappleWormColorsOption() },
+                { "Hazer Variations", () => new HazerVarsOption() },
+                { "Jetfish Variations", () => new JetfishVarsOption() },
                 { "Lantern Mouse Variations", () => new LanternMouseOption() },
+                { "Leviathan Variations", () => new LeviathanVarsOption() },
+                { "Miros Bird Variations", () => new MirosBirdVarsOption() },
                 { "Snail Variations", () => new SnailOption() },
+                { "Squidcada Variations", () => new CicadaVarsOption() },
 
             };
 #if !RELEASE
@@ -74,6 +92,12 @@ namespace FinderMod.Search
                 Options.Add("Lizard Cosmetics (Caramel)", () => new CaramelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Eel)", () => new EelLizardCosmetics());
                 Options.Add("Lizard Cosmetics (Zoop)", () => new ZoopLizardCosmetics());
+
+                // Misc
+                Options.Add("Big Spider Variations (Mother)", () => new BigSpiderVarsOption(BigSpiderVarsOption.SpiderType.Mother));
+                Options.Add("Centipede Variations (Aqua)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
+                Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
+                Options.Add("Yeek Color", () => new YeekColorsOption());
             }
 
             if (ModManager.MSC)
@@ -92,6 +116,9 @@ namespace FinderMod.Search
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());
+
+                // Misc
+                Options.Add("Firebug Colors", () => new EggbugColorsOption(true));
             }
 
             if (ModManager.Watcher)
@@ -102,9 +129,18 @@ namespace FinderMod.Search
                 Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
                 // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
 
+                // Moths!
+                Options.Add("Moth (Big) Variations", () => new MothVarsOption(true));
+                Options.Add("Moth (Small) Variations", () => new MothVarsOption(false));
+
                 // Misc
-                Options.Add("Tardigrade Variations", () => new TardigradeOption());
+                Options.Add("Barnacle Variations", () => new BarnacleVarsOption());
+                Options.Add("Box Worm Variations", () => new BoxWormVarsOption());
+                Options.Add("Drill Crab Variations", () => new DrillCrabVarsOption());
+                Options.Add("Frog Variations", () => new FrogVarsOption());
                 Options.Add("Rat Variations", () => new RatOption());
+                Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
+                Options.Add("Tardigrade Variations", () => new TardigradeOption());
             }
         }
 
