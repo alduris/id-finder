@@ -18,7 +18,7 @@ namespace FinderMod
         private readonly Options Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
-        public const string VERSION = "2.1";
+        public const string VERSION = "2.1.1";
         public static readonly Version CurrentVersion = new(VERSION);
 
         public Plugin()

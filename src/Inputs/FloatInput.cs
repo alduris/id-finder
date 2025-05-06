@@ -19,7 +19,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            int dNum = Math.Max(1, -Mathf.CeilToInt(Mathf.Log10(max - min)) + 3);
+            int dNum = Math.Max(1, -Mathf.FloorToInt(Mathf.Log10(max - min)) + 3);
             return new OpFloatSlider(ConfigRange(min, max), pos - new Vector2(0, 3f), 160) { _dNum = (byte)dNum };
         }
 

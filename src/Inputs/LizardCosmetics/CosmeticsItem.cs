@@ -24,29 +24,6 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
             yield break;
         }
-
-        /*public static implicit operator CosmeticsItem(CosmeticType type)
-        {
-            return type switch
-            {
-                CosmeticType.Antennae => new AntennaeCosmetic(),
-                CosmeticType.AxolotlGills => new AxolotlGillsCosmetic(),
-                CosmeticType.BodyStripes => new BodyStripesCosmetic(),
-                CosmeticType.BumpHawk => new BumpHawkCosmetic(),
-                CosmeticType.JumpRings => new JumpRingsCosmetic(),
-                CosmeticType.LongHeadScales => new LongHeadScalesCosmetic(),
-                CosmeticType.LongShoulderScales => new LongShoulderScalesCosmetic(),
-                CosmeticType.ShortBodyScales => new ShortBodyScalesCosmetic(),
-                CosmeticType.SnowAccumulation => new SnowAccumulationCosmetic(),
-                CosmeticType.SpineSpikes => new SpineSpikesCosmetic(),
-                CosmeticType.TailFin => new TailFinCosmetic(),
-                CosmeticType.TailGeckoScales => new TailGeckoScalesCosmetic(),
-                CosmeticType.TailTuft => new TailTuftCosmetic(),
-                CosmeticType.Whiskers => new WhiskersCosmetic(),
-                CosmeticType.WingScales => new WingScalesCosmetic(),
-                _ => null!,
-            };
-        }*/
     }
 
     public class AntennaeCosmetic : CosmeticsItem
@@ -274,7 +251,7 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public WingScalesCosmetic() : base(CosmeticType.WingScales)
         {
-            children.Add(LengthInput = new("Length", 31.25f, 40f) { enabled = false });
+            children.Add(LengthInput = new("Length", 5f, 40f) { enabled = false });
             children.Add(NumScalesInput = new("Scales per side", 2, 3) { enabled = false });
         }
     }
