@@ -253,6 +253,15 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 }
             }
 
+            if (!wasLSSGroup && mainLongShoulderScalesCosmetic.Enabled && mainLongShoulderScalesCosmetic.Toggled)
+            {
+                r += MISSING_PENALTY;
+            }
+            if (wasLSSGroup && mainShortBodyScalesCosmetic.Enabled && mainShortBodyScalesCosmetic.Toggled)
+            {
+                r += MISSING_PENALTY;
+            }
+
             bool wantedBodyCosmetic = spineSpikesCosmetic.Enabled && spineSpikesCosmetic.Toggled;
             wantedBodyCosmetic |= longShoulderScalesCosmetic.Enabled && longShoulderScalesCosmetic.Toggled;
             wantedBodyCosmetic |= shortBodyScalesCosmetic.Enabled && shortBodyScalesCosmetic.Toggled;
