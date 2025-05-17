@@ -33,11 +33,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
             float r = 0f;
             bool body = false;
             bool tail = false;
-            var results = GetResults(Random).GetEnumerator();
 
             foreach (var result in GetResults(Random))
             {
-                switch (results.Current)
+                switch (result)
                 {
                     case BumpHawkVars bumpHawkVars:
                         body = true;
@@ -117,7 +116,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     default:
-                        throw new InvalidOperationException("Unexpected result! " + results.Current.GetType().Name);
+                        throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
             }
 
