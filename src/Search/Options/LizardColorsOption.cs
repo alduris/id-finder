@@ -126,7 +126,8 @@ namespace FinderMod.Search.Options
                     LizardType.Caramel,
                     LizardType.Zoop,
                     LizardType.Train,
-                    LizardType.Eel
+                    LizardType.Eel,
+                    LizardType.NONE
                 ];
                 if (!ModManager.Watcher)
                 {
@@ -156,6 +157,7 @@ namespace FinderMod.Search.Options
             private readonly LizardInput lizInput = lizInput;
             private readonly Dictionary<LizardType, ColorHSLInput> groups = new()
             {
+                { LizardType.NONE, null! },
                 { LizardType.Pink, new ColorHSLInput("Pink Lizard Color", true, 0.77f, 0.97f, false, 1f, 1f, true, 0.35f, 0.65f) },
                 { LizardType.Green, new ColorHSLInput("Green Lizard Color", true, 0.22f, 0.42f, false, 1f, 1f, true, 0.35f, 0.65f) },
                 { LizardType.Blue, new ColorHSLInput("Blue Lizard Color", true, 0.49f, 0.65f, false, 1f, 1f, true, 0.35f, 0.65f) },
@@ -182,9 +184,9 @@ namespace FinderMod.Search.Options
 
             public void Create(float x, ref float y, List<UIelement> elements)
             {
-                if (groups[lizInput.value] != null)
+                if (groups.TryGetValue(lizInput.value, out var input) && input != null)
                 {
-                    groups[lizInput.value].Create(x, ref y, elements);
+                    input.Create(x, ref y, elements);
                 }
                 else
                 {

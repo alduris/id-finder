@@ -10,24 +10,25 @@ namespace FinderMod.Search.Options
 {
     public class EliteScavBackPatternOption : Option
     {
-        private readonly MultiChoiceInput spInp, ctInp;
-        private readonly IntInput nsInp;
-        private readonly FloatInput csInp, rsInp, reInp, gsInp;
+        private readonly EnumInput<ScavBodyScalePattern> SpinePatternInput;
+        private readonly MultiChoiceInput ColorTypeInput;
+        private readonly IntInput NumSpinesInput;
+        private readonly FloatInput ColorStrengthInput, RangeStartInput, RangeEndInput, GeneralSizeInput;
 
         public EliteScavBackPatternOption() : base()
         {
             elements = [
                 new Label("See hover descriptions at bottom for some inputs"),
                 new Whitespace(),
-                spInp = new MultiChoiceInput("Spine pattern", ["SpineRidge", "DoubleSpineRidge", "RandomBackBlotch"]),
-                nsInp = new IntInput("Number of spines", 2, 40) { description = "SpineRidge range: (2, 37), DoubleSpineRidge range: (2, 40), RandomBackBlotch range: (4, 40)" },
+                SpinePatternInput = new EnumInput<ScavBodyScalePattern>("Spine pattern", ScavBodyScalePattern.SpineRidge),
+                NumSpinesInput = new IntInput("Number of spines", 2, 40) { description = "SpineRidge range: (2, 37), DoubleSpineRidge range: (2, 40), RandomBackBlotch range: (4, 40)" },
                 new Whitespace(),
-                ctInp = new MultiChoiceInput("Color type", ["None", "Decoration", "Head"]),
-                csInp = new FloatInput("Color strength") { description = "With color type = none, this will always be 0" },
+                ColorTypeInput = new MultiChoiceInput("Color type", ["None", "Decoration", "Head"]),
+                ColorStrengthInput = new FloatInput("Color strength") { description = "With color type = none, this will always be 0" },
                 new Whitespace(),
-                rsInp = new FloatInput("Range start", 0.02f, 0.3f) { description = "Where along the back the spines start generating, higher = lower down the back" },
-                reInp = new FloatInput("Range end", 0.4f, 1f) { description = "Where along the back the spines stop generating, higher = lower down the back" },
-                gsInp = new FloatInput("General spine size")
+                RangeStartInput = new FloatInput("Range start", 0.02f, 0.3f) { description = "Where along the back the spines start generating, higher = lower down the back" },
+                RangeEndInput = new FloatInput("Range end", 0.4f, 1f) { description = "Where along the back the spines stop generating, higher = lower down the back" },
+                GeneralSizeInput = new FloatInput("General spine size")
             ];
         }
 
@@ -197,7 +198,7 @@ namespace FinderMod.Search.Options
             // Calculate pattern and generate corresponding attributes
             pattern = Random.Value < 0.6f ? ScavBodyScalePattern.SpineRidge : ScavBodyScalePattern.DoubleSpineRidge;
             if (Random.Value < 0.1f) pattern = ScavBodyScalePattern.RandomBackBlotch;
-            ScavUtil.GeneratePattern(Random, ScavUtil.ScavBackType.HardBackSpikes, pattern, out top, out bottom, out numScales);
+            ScavUtil.GeneratePattern(Random, ScavBackType.HardBackSpikes, pattern, out top, out bottom, out numScales);
 
             // Advance pointer
             if (Random.Value < 0.5f && Random.Value < 0.85f) Random.Shift();
@@ -228,13 +229,13 @@ namespace FinderMod.Search.Options
             var results = GetResults(Random);
 
             float r = 0f;
-            r += DistanceIf(results.colorType, ctInp);
-            r += DistanceIf(results.colorStrength, csInp);
-            r += DistanceIf((int)results.spinePattern, spInp);
-            r += DistanceIf(results.rangeStart, rsInp);
-            r += DistanceIf(results.rangeEnd, reInp);
-            r += DistanceIf(results.numSpines, nsInp);
-            r += DistanceIf(results.generalSpineSize, gsInp);
+            r += DistanceIf(results.colorType, ColorTypeInput);
+            r += DistanceIf(results.colorStrength, ColorStrengthInput);
+            r += (SpinePatternInput.enabled && SpinePatternInput.value != results.spinePattern ? SpinePatternInput.bias : 0f);
+            r += DistanceIf(results.rangeStart, RangeStartInput);
+            r += DistanceIf(results.rangeEnd, RangeEndInput);
+            r += DistanceIf(results.numSpines, NumSpinesInput);
+            r += DistanceIf(results.generalSpineSize, GeneralSizeInput);
 
             return r;
         }

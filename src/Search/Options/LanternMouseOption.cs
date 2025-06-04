@@ -30,7 +30,7 @@ namespace FinderMod.Search.Options
                 }
             }
             dominance = Random.Value;
-            return DistanceIf(hue, elements[0] as Input<float>) + DistanceIf(dominance, elements[1] as Input<float>);
+            return DistanceIf(hue, elements[0] as RangedInput<float>) + DistanceIf(dominance, elements[1] as RangedInput<float>);
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)

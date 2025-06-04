@@ -40,79 +40,28 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 {
                     case BumpHawkVars bumpHawkVars:
                         body = true;
-                        if (bumpHawkCosmetic.Active)
-                        {
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
-                        }
-                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += bumpHawkCosmetic.Distance(bumpHawkVars);
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         body = true;
-                        if (shortBodyScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
-                            if (shortBodyScalesCosmetic.ScaleTypeInput.enabled && shortBodyScalesCosmetic.ScaleTypeInput.value != shortBodyScalesVars.scaleType)
-                                r += shortBodyScalesCosmetic.ScaleTypeInput.bias;
-                        }
-                        else if (shortBodyScalesCosmetic.Enabled && !shortBodyScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
                         body = true;
-                        if (longShoulderScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(longShoulderScalesVars.minSize, longShoulderScalesCosmetic.MinSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.maxSize, longShoulderScalesCosmetic.MaxSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.numScales, longShoulderScalesCosmetic.NumScalesInput);
-                            r += DistanceIf(longShoulderScalesVars.graphic, longShoulderScalesCosmetic.GraphicInput);
-                            if (longShoulderScalesCosmetic.ScaleTypeInput.enabled && longShoulderScalesCosmetic.ScaleTypeInput.value != longShoulderScalesVars.scaleType)
-                                r += longShoulderScalesCosmetic.ScaleTypeInput.bias;
-                            r += DistanceIf(longShoulderScalesVars.colored, longShoulderScalesCosmetic.ColoredInput);
-                        }
-                        else if (longShoulderScalesCosmetic.Enabled && !longShoulderScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                         break;
                     case LongHeadScalesVars longHeadScalesVars:
                         body = true;
-                        if (longHeadScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScalesCosmetic.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScalesCosmetic.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScalesCosmetic.ColoredInput);
-                        }
-                        else if (longHeadScalesCosmetic.Enabled && !longHeadScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += longHeadScalesCosmetic.Distance(longHeadScalesVars);
                         break;
 
                     case TailTuftVars tailTuftVars:
                         tail = true;
-                        if (tailTuftCosmetic.Active)
-                        {
-                            r += DistanceIf(tailTuftVars.numScales, tailTuftCosmetic.NumScalesInput);
-                            r += DistanceIf(tailTuftVars.scaleType, tailTuftCosmetic.ScaleTypeInput);
-                        }
-                        else if (tailTuftCosmetic.Enabled && !tailTuftCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += tailTuftCosmetic.Distance(tailTuftVars);
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        r += lizardRotCosmetic.Distance(lizardRotVars);
                         break;
 
                     default:

@@ -59,30 +59,17 @@ namespace FinderMod.Search.Options
             return num - Mathf.Floor(num);
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Distance(float num, Input<float> target)
+        public static float DistanceIf(float num, RangedInput<float>? target)
         {
-            return Mathf.Abs(num - target.value) * target.bias;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Distance(float num, Input<int> target)
-        {
-            return Math.Abs(num - target.value) * target.bias;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DistanceIf(float num, Input<float>? target)
-        {
-            if (target != null && target.enabled) return Mathf.Abs(num - target.value) * target.bias;
+            if (target != null && target.enabled) return Mathf.Abs(num - target.value) / (target.max - target.min) * target.bias;
             return 0f;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DistanceIf(float num, Input<int>? target)
+        public static float DistanceIf(int num, RangedInput<int>? target)
         {
-            if (target != null && target.enabled) return Math.Abs(num - target.value) * target.bias;
+            if (target != null && target.enabled) return Math.Abs(num - target.value) / (target.max - target.min) * target.bias;
             return 0f;
         }
 

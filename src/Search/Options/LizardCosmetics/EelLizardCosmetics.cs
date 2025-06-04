@@ -81,75 +81,92 @@ namespace FinderMod.Search.Options.LizardCosmetics
             bool tail = false;
             bool lhs = false;
 
+            // Tracking variables so we know which inputs to poll for distance if we already encountered them once.
+            // This is necessary because the user does not necessarily know which order they may come in.
+            LongShoulderScalesCosmetic otherLSS = null!;
+            ShortBodyScalesCosmetic otherSBS = null!;
+            TailTuftCosmetic otherTT = null!;
+
             foreach (var result in GetResults(Random))
             {
                 switch (result)
                 {
                     case AxolotlGillsVars axolotlGillsVars:
-                        r += DistanceIf(axolotlGillsVars.rigor, axolotlGillsCosmetic.RigorInput);
-                        r += DistanceIf(axolotlGillsVars.numGills, axolotlGillsCosmetic.NumGillsInput);
-                        r += DistanceIf(axolotlGillsVars.graphic, axolotlGillsCosmetic.GraphicInput);
+                        r += axolotlGillsCosmetic.Distance(axolotlGillsVars);
                         break;
                     case TailGeckoScalesVars tailGeckoScalesVars:
-                        r += DistanceIf(tailGeckoScalesVars.rows, tailGeckoScalesCosmetic.RowsInput);
-                        r += DistanceIf(tailGeckoScalesVars.lines, tailGeckoScalesCosmetic.LinesInput);
+                        r += tailGeckoScalesCosmetic.Distance(tailGeckoScalesVars);
                         break;
 
                     case LongShoulderScalesVars longShoulderScalesVars:
                         {
-                            LongShoulderScalesCosmetic input;
-                            if (foundEelGroup)
-                            {
-                                body = true;
-                                input = longShoulderScalesCosmetic;
-                            }
-                            else
+                            bool tryBoth = true;
+                            if (!foundEelGroup)
                             {
                                 foundEelGroup = true;
                                 wasLSSGroup = true;
-                                input = mainLongShoulderScalesCosmetic;
+                            }
+                            else
+                            {
+                                body = true;
+                                if (otherLSS != null)
+                                {
+                                    r += otherLSS.Distance(longShoulderScalesVars);
+                                    tryBoth = false;
+                                }
                             }
 
-                            if (input.Active)
+                            if (tryBoth)
                             {
-                                r += DistanceIf(longShoulderScalesVars.minSize, input.MinSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.maxSize, input.MaxSizeInput);
-                                r += DistanceIf(longShoulderScalesVars.numScales, input.NumScalesInput);
-                                r += DistanceIf(longShoulderScalesVars.graphic, input.GraphicInput);
-                                if (input.ScaleTypeInput.enabled && input.ScaleTypeInput.value != longShoulderScalesVars.scaleType)
-                                    r += input.ScaleTypeInput.bias;
-                                r += DistanceIf(longShoulderScalesVars.colored, input.ColoredInput);
-                            }
-                            else if (input.Enabled && !input.Toggled)
-                            {
-                                r += MISSING_PENALTY;
+                                float a = longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
+                                float b = mainLongShoulderScalesCosmetic.Distance(longShoulderScalesVars);
+
+                                if (a <= b && longShoulderScalesCosmetic.Enabled)
+                                {
+                                    otherLSS = mainLongShoulderScalesCosmetic;
+                                    r += a;
+                                }
+                                else
+                                {
+                                    otherLSS = longShoulderScalesCosmetic;
+                                    r += b;
+                                }
                             }
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         {
-                            ShortBodyScalesCosmetic input;
-                            if (foundEelGroup)
-                            {
-                                body = true;
-                                input = shortBodyScalesCosmetic;
-                            }
-                            else
+                            bool tryBoth = true;
+                            if (!foundEelGroup)
                             {
                                 foundEelGroup = true;
                                 wasLSSGroup = false;
-                                input = mainShortBodyScalesCosmetic;
+                            }
+                            else
+                            {
+                                body = true;
+                                if (otherSBS != null)
+                                {
+                                    r += otherSBS.Distance(shortBodyScalesVars);
+                                    tryBoth = false;
+                                }
                             }
 
-                            if (shortBodyScalesCosmetic.Active)
+                            if (tryBoth)
                             {
-                                r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
-                                if (shortBodyScalesCosmetic.ScaleTypeInput.enabled && shortBodyScalesCosmetic.ScaleTypeInput.value != shortBodyScalesVars.scaleType)
-                                    r += shortBodyScalesCosmetic.ScaleTypeInput.bias;
-                            }
-                            else if (shortBodyScalesCosmetic.Enabled && !shortBodyScalesCosmetic.Toggled)
-                            {
-                                r += MISSING_PENALTY;
+                                float a = shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
+                                float b = mainShortBodyScalesCosmetic.Distance(shortBodyScalesVars);
+                                
+                                if (a <= b && shortBodyScalesCosmetic.Enabled)
+                                {
+                                    otherSBS = mainShortBodyScalesCosmetic;
+                                    r += a;
+                                }
+                                else
+                                {
+                                    otherSBS = shortBodyScalesCosmetic;
+                                    r += b;
+                                }
                             }
                         }
                         break;
@@ -158,94 +175,62 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         {
                             finishedEelGroup = true;
                             TailFinCosmetic input = wasLSSGroup ? lssTailFinCosmetic : sbsTailFinCosmetic;
-                            if (wasLSSGroup || input.Active)
-                            {
-                                r += DistanceIf(tailFinVars.spineLength, input.LengthInput);
-                                r += DistanceIf(tailFinVars.undersideSize, input.UndersideSizeInput);
-                                r += DistanceIf(tailFinVars.spineScaleX, input.ScaleXInput);
-                                r += DistanceIf(tailFinVars.numScales, input.NumScalesInput);
-                                r += DistanceIf(tailFinVars.graphic, input.GraphicInput);
-                                r += DistanceIf(tailFinVars.colored, input.ColoredInput);
-                            }
-                            else if (input.Enabled && !input.Toggled)
-                            {
-                                r += MISSING_PENALTY;
-                            }
+                            r += input.Distance(tailFinVars);
                         }
                         break;
                     case TailTuftVars tailTuftVars:
                         {
-                            TailTuftCosmetic input;
-                            if (finishedEelGroup)
+                            bool tryBoth = true;
+                            if (!finishedEelGroup)
                             {
-                                tail = true;
-                                input = tailTuftCosmetic;
+                                finishedEelGroup = true;
                             }
                             else
                             {
-                                finishedEelGroup = true;
-                                input = mainTailTuftCosmetic;
+                                tail = true;
+                                
+                                if (otherTT != null)
+                                {
+                                    r += otherTT.Distance(tailTuftVars);
+                                    tryBoth = false;
+                                }
                             }
 
-                            if (input.Active)
+                            if (tryBoth)
                             {
-                                r += DistanceIf(tailTuftVars.numScales, input.NumScalesInput);
-                                r += DistanceIf(tailTuftVars.scaleType, input.ScaleTypeInput);
-                            }
-                            else if (input.Enabled && !input.Toggled)
-                            {
-                                r += MISSING_PENALTY;
+                                float a = tailTuftCosmetic.Distance(tailTuftVars);
+                                float b = mainTailTuftCosmetic.Distance(tailTuftVars);
+
+                                if (a <= b && tailTuftCosmetic.Enabled)
+                                {
+                                    otherTT = mainTailTuftCosmetic;
+                                    r += a;
+                                }
+                                else
+                                {
+                                    otherTT = tailTuftCosmetic;
+                                    r += b;
+                                }
                             }
                         }
                         break;
 
                     case SpineSpikesVars spineSpikesVars:
                         body = true;
-                        if (spineSpikesCosmetic.Active)
-                        {
-                            r += DistanceIf(spineSpikesVars.spineLength, spineSpikesCosmetic.LengthInput);
-                            r += DistanceIf(spineSpikesVars.numScales, spineSpikesCosmetic.NumScalesInput);
-                            r += DistanceIf(spineSpikesVars.graphic, spineSpikesCosmetic.GraphicInput);
-                        }
-                        else if (spineSpikesCosmetic.Enabled && !spineSpikesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += spineSpikesCosmetic.Distance(spineSpikesVars);
                         break;
                     case BumpHawkVars bumpHawkVars:
                         body = true;
-                        if (bumpHawkCosmetic.Active)
-                        {
-                            // len num col
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
-                        }
-                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += bumpHawkCosmetic.Distance(bumpHawkVars);
                         break;
 
                     case LongHeadScalesVars longHeadScalesVars:
                         lhs = true;
-                        if (longHeadScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScalesCosmetic.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScalesCosmetic.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScalesCosmetic.ColoredInput);
-                        }
-                        else if (longHeadScalesCosmetic.Enabled && !longHeadScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += longHeadScalesCosmetic.Distance(longHeadScalesVars);
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        r += lizardRotCosmetic.Distance(lizardRotVars);
                         break;
 
                     default:
@@ -257,7 +242,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 r += MISSING_PENALTY;
             }
-            if (wasLSSGroup && mainShortBodyScalesCosmetic.Enabled && mainShortBodyScalesCosmetic.Toggled)
+            else if (wasLSSGroup && mainShortBodyScalesCosmetic.Enabled && mainShortBodyScalesCosmetic.Toggled)
             {
                 r += MISSING_PENALTY;
             }

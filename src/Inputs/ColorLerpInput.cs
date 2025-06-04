@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class ColorLerpInput(string name, Color end1, Color end2) : RangedInput<float>(name, 0.5f)
+    public class ColorLerpInput(string name, Color end1, Color end2) : RangedInput<float>(name, 0.5f, 0f, 1f)
     {
         private readonly Color end1 = end1, end2 = end2;
 
         public override float InputHeight => 30f;
 
-        protected override UIconfig GetElement(Vector2 pos) => new OpFloatColorSlider(ConfigRange(0f, 1f), pos, 160, end1, end2);
+        protected override UIconfig GetElement(Vector2 pos) => new OpFloatColorSlider(ConfigRange(), pos, 160, end1, end2);
 
         protected override float GetValue(UIconfig element) => (element as OpFloatSlider).GetValueFloat();
 

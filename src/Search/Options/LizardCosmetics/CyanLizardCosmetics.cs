@@ -33,45 +33,19 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 {
                     case WingScalesVars wingScalesVars:
                         wingScales = true;
-                        if (wingScalesInput.Active)
-                        {
-                            r += DistanceIf(wingScalesVars.scaleLength, wingScalesInput.LengthInput);
-                            r += DistanceIf(wingScalesVars.numScales, wingScalesInput.NumScalesInput);
-                        }
-                        else if (wingScalesInput.Enabled && !wingScalesInput.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += wingScalesInput.Distance(wingScalesVars);
                         break;
                     case TailTuftVars tailTuftVars:
-                        if (tailTuftInput.Active)
-                        {
-                            r += DistanceIf(tailTuftVars.numScales, tailTuftInput.NumScalesInput);
-                            r += DistanceIf(tailTuftVars.scaleType, tailTuftInput.ScaleTypeInput);
-                        }
-                        else if (tailTuftInput.Enabled && !tailTuftInput.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += tailTuftInput.Distance(tailTuftVars);
                         break;
                     case TailGeckoScalesVars tailGeckoScalesVars:
-                        if (tailGeckoScalesInput.Active)
-                        {
-                            r += DistanceIf(tailGeckoScalesVars.rows, tailGeckoScalesInput.RowsInput);
-                            r += DistanceIf(tailGeckoScalesVars.lines, tailGeckoScalesInput.LinesInput);
-                        }
-                        else if (tailGeckoScalesInput.Enabled && !tailGeckoScalesInput.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += tailGeckoScalesInput.Distance(tailGeckoScalesVars);
                         break;
                     case JumpRingsVars:
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        r += lizardRotCosmetic.Distance(lizardRotVars);
                         break;
 
                     default:

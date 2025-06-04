@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using FinderMod.Inputs;
 using UnityEngine;
 
@@ -8,6 +7,7 @@ namespace FinderMod.Search.Options
     public class SlupStatsOption : Option
     {
         private readonly FloatInput wgtInp, vz0Inp, vz1Inp, louInp, lngInp, polInp, tunInp, spdInp;
+
         public SlupStatsOption() : base()
         {
             elements = [
@@ -22,11 +22,10 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private Results GetResults(XORShift128 Random)
         {
             float bal, met, stl, wde;
 
-            // Physical attributes
             // Physical attributes
             bal = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
             met = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
@@ -52,58 +51,60 @@ namespace FinderMod.Search.Options
             pol *= 0.85f + 0.15f * met + 0.15f * bal + 0.1f * (1f - stl);
             tun *= 0.85f + 0.15f * met + 0.15f * (1f - bal) + 0.1f * (1f - stl);
 
-            // Compile results
+            return new Results
+            {
+                wgt = wgt,
+                vz0 = vz0,
+                vz1 = vz1,
+                lou = lou,
+                lng = lng,
+                pol = pol,
+                tun = tun,
+                spd = spd,
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
             float r = 0f;
-            if (wgtInp.enabled) r += Distance(wgt, wgtInp);
-            if (vz0Inp.enabled) r += Distance(vz0, vz0Inp);
-            if (vz1Inp.enabled) r += Distance(vz1, vz1Inp);
-            if (louInp.enabled) r += Distance(lou, louInp);
-            if (lngInp.enabled) r += Distance(lng, lngInp);
-            if (polInp.enabled) r += Distance(pol, polInp);
-            if (tunInp.enabled) r += Distance(tun, tunInp);
-            if (spdInp.enabled) r += Distance(spd, spdInp);
+            r += DistanceIf(results.wgt, wgtInp);
+            r += DistanceIf(results.vz0, vz0Inp);
+            r += DistanceIf(results.vz1, vz1Inp);
+            r += DistanceIf(results.lou, louInp);
+            r += DistanceIf(results.lng, lngInp);
+            r += DistanceIf(results.pol, polInp);
+            r += DistanceIf(results.tun, tunInp);
+            r += DistanceIf(results.spd, spdInp);
             return r;
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
         {
-            float bal, met, stl, wde;
-
-            // Physical attributes
-            // Physical attributes
-            bal = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
-            met = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
-            stl = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
-            wde = Mathf.Pow(Random.Range(0f, 1f), 1.5f);
-
-            // Performance attributes
-            float wgt = 0.65f; // body weight
-            float vz0 = -0.2f; // visibility (standing)
-            float vz1 = 0.6f;  // visibility (crouching)
-            float lou = 0.5f;  // loudness factor
-            float lng = 0.8f;  // lung capacity
-            float pol = 0.8f;  // pole climbing speed
-            float tun = 0.8f;  // corridor climbing speed
-            float spd = 0.8f;  // running speed
-
-            spd *= 0.85f + 0.15f * met + 0.15f * (1f - bal) + 0.1f * (1f - stl);
-            wgt *= 0.85f + 0.15f * wde + 0.1f * met;
-            vz0 *= 0.8f + 0.2f * (1f - stl) + 0.2f * met;
-            vz1 *= 0.75f + 0.35f * stl + 0.15f * (1f - met);
-            lou *= 0.8f + 0.2f * wde + 0.2f * (1f - stl);
-            lng *= 0.8f + 0.2f * (1f - met) + 0.2f * (1f - stl);
-            pol *= 0.85f + 0.15f * met + 0.15f * bal + 0.1f * (1f - stl);
-            tun *= 0.85f + 0.15f * met + 0.15f * (1f - bal) + 0.1f * (1f - stl);
+            var results = GetResults(Random);
 
             // Compile results
-            yield return $"Body weight: {wgt}";
-            yield return $"Visibility (standing): {vz0}";
-            yield return $"Visibility (crouching): {vz1}";
-            yield return $"Loudness: {lou}";
-            yield return $"Lung capacity: {lng}";
-            yield return $"Pole climbing speed: {pol}";
-            yield return $"Tunnel crawling speed: {tun}";
-            yield return $"Running speed: {spd}";
+            yield return $"Body weight: {results.wgt}";
+            yield return $"Visibility (standing): {results.vz0}";
+            yield return $"Visibility (crouching): {results.vz1}";
+            yield return $"Loudness: {results.lou}";
+            yield return $"Lung capacity: {results.lng}";
+            yield return $"Pole climbing speed: {results.pol}";
+            yield return $"Tunnel crawling speed: {results.tun}";
+            yield return $"Running speed: {results.spd}";
+        }
+
+        private struct Results
+        {
+            public float wgt;
+            public float vz0;
+            public float vz1;
+            public float lou;
+            public float lng;
+            public float pol;
+            public float tun;
+            public float spd;
         }
     }
 }

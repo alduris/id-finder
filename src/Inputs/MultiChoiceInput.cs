@@ -7,7 +7,7 @@ namespace FinderMod.Inputs
     /// <summary>
     /// Represents an OpComboBox. However, the value is an int. What does it mean? The index of the selected option as found in the options list passed in.
     /// </summary>
-    public class MultiChoiceInput(string name, string[] options, int init = 0) : Input<int>(name, init)
+    public class MultiChoiceInput(string name, string[] options, int init = 0) : RangedInput<int>(name, init, 0, options.Length - 1)
     {
         private readonly string[] options = options;
         private readonly float width = options.Max(x => LabelTest.GetWidth(x)) + 42f;

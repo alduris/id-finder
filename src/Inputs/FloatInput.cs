@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class FloatInput(string name, float min, float max) : RangedInput<float>(name, (min + max) / 2)
+    public class FloatInput(string name, float min, float max) : RangedInput<float>(name, (min + max) / 2, min, max)
     {
-        private readonly float min = min, max = max;
-
         /// <summary>
         /// Initializes with min=0, max=1
         /// </summary>
@@ -20,7 +18,7 @@ namespace FinderMod.Inputs
         protected override UIconfig GetElement(Vector2 pos)
         {
             int dNum = Math.Max(1, -Mathf.FloorToInt(Mathf.Log10(max - min)) + 3);
-            return new OpFloatSlider(ConfigRange(min, max), pos - new Vector2(0, 3f), 160) { _dNum = (byte)dNum };
+            return new OpFloatSlider(ConfigRange(), pos - new Vector2(0, 3f), 160) { _dNum = (byte)dNum };
         }
 
         protected override float GetValue(UIconfig element) => (element as OpFloatSlider).GetValueFloat();

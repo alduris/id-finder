@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class IntManualInput(string name, int init) : RangedInput<int>(name, init)
+    public class IntManualInput(string name, int init) : Input<int>(name, init)
     {
         public int? minValue;
         public int? maxValue;
@@ -12,7 +12,7 @@ namespace FinderMod.Inputs
 
         protected override UIconfig GetElement(Vector2 pos)
         {
-            return new OpTextBox(ConfigRange(minValue ?? int.MinValue, maxValue ?? int.MaxValue), pos, 80f) { allowSpace = true, accept = OpTextBox.Accept.Int };
+            return new OpTextBox(OpUtil.CosmeticRange(value, minValue ?? int.MinValue, maxValue ?? int.MaxValue), pos, 80f) { allowSpace = true, accept = OpTextBox.Accept.Int };
         }
 
         protected override int GetValue(UIconfig element)

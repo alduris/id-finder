@@ -154,11 +154,15 @@ namespace FinderMod.Inputs
     /// <typeparam name="T">The value type. Must be a comparable type.</typeparam>
     public abstract class RangedInput<T> : Input<T> where T : IComparable
     {
-        public RangedInput(string name, T init) : base(name, init)
+        public T min, max;
+
+        public RangedInput(string name, T init, T min, T max) : base(name, init)
         {
             hasBias = true;
+            this.min = min;
+            this.max = max;
         }
 
-        protected Configurable<T> ConfigRange(T min, T max) => OpUtil.CosmeticRange(value, min, max);
+        protected Configurable<T> ConfigRange() => OpUtil.CosmeticRange(value, min, max);
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace FinderMod.Inputs
 {
-    public class EnumInput<T> : Input<T> where T : Enum
+    public class EnumInput<T> : Input<T> where T : struct, Enum
     {
         private readonly T init;
         protected readonly Func<T, string> nameConv = null!;
@@ -39,7 +39,14 @@ namespace FinderMod.Inputs
         {
             if (element.value != null)
             {
-                return (T)Enum.Parse(typeof(T), element.value);
+                if (Enum.TryParse(element.value, out T result))
+                {
+                    return result;
+                }
+                else if (int.TryParse(element.value, out int i))
+                {
+                    return (T)Enum.GetValues(typeof(T)).GetValue(i);
+                }
             }
             return init;
         }
