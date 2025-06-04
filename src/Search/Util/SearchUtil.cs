@@ -69,7 +69,7 @@ namespace FinderMod.Search.Options
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(int num, RangedInput<int>? target)
         {
-            if (target != null && target.enabled) return Math.Abs(num - target.value) / (target.max - target.min) * target.bias;
+            if (target != null && target.enabled) return Math.Abs(num - target.value) / (float)(target.max - target.min) * target.bias;
             return 0f;
         }
 

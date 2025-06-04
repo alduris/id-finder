@@ -418,7 +418,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         {
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.TwoLines) { enabled = false, excludeOptions = [LizardBodyScaleType.Patch] });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.TwoLines) { enabled = false, excludeOptions = [LizardBodyScaleType.Segments] });
             children.Add(ColoredInput = new("Is colored") { enabled = false });
         }
 

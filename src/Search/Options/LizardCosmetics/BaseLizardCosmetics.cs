@@ -426,6 +426,8 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return "Has TailTuft:";
                         yield return $"  Scale type: {tailTuft.scaleType}";
                         yield return $"  Number of scales: {tailTuft.numScales}";
+                        yield return $"  Graphic: {tailTuft.graphic}";
+                        yield return $"  Is colored: {(tailTuft.colored ? "Yes" : "No")}";
                         break;
                     case WhiskersVars whiskers:
                         yield return "Has Whiskers:";
