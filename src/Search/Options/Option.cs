@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FinderMod.Inputs;
+using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -89,6 +90,11 @@ namespace FinderMod.Search.Options
             }
         }
         protected abstract IEnumerable<string> GetValues(XORShift128 Random);
+
+        internal protected void UpdateQueryBox()
+        {
+            SearchTab.instance?.UpdateQueryBox();
+        }
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
