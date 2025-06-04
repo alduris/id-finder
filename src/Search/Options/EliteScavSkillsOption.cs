@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
@@ -21,7 +20,12 @@ namespace FinderMod.Search.Options
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private struct Results
+        {
+            public float dge, mid, mle, blk, rea;
+        }
+
+        private Results GetResults(XORShift128 Random)
         {
             float dge, mid, mle, blk, rea;
             Personality p = new(Random);
@@ -34,41 +38,42 @@ namespace FinderMod.Search.Options
 
             float n = Mathf.Lerp(p.dom, 1f, 0.15f);
             dge = Mathf.Lerp(dge, 1f, n * 0.15f); // Dodge
-            mid = Mathf.Lerp(mid, 1f, n * 0.1f); // Mid-range
+            mid = Mathf.Lerp(mid, 1f, n * 0.1f);  // Mid-range
             blk = Mathf.Lerp(blk, 1f, n * 0.1f);  // Blocking
-            rea = Mathf.Lerp(rea, 1f, n * 0.05f);  // Reaction
+            rea = Mathf.Lerp(rea, 1f, n * 0.05f); // Reaction
+
+            return new Results
+            {
+                dge = dge,
+                mid = mid,
+                mle = mle,
+                blk = blk,
+                rea = rea
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
 
             float r = 0f;
-            if (dgeInp.enabled) r += Mathf.Abs(dge - dgeInp.value);
-            if (midInp.enabled) r += Mathf.Abs(mid - midInp.value);
-            if (mleInp.enabled) r += Mathf.Abs(mle - mleInp.value);
-            if (blkInp.enabled) r += Mathf.Abs(blk - blkInp.value);
-            if (reaInp.enabled) r += Mathf.Abs(rea - reaInp.value);
+            r += DistanceIf(results.dge, dgeInp);
+            r += DistanceIf(results.mid, midInp);
+            r += DistanceIf(results.mle, mleInp);
+            r += DistanceIf(results.blk, blkInp);
+            r += DistanceIf(results.rea, reaInp);
             return r;
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
         {
-            float dge, mid, mle, blk, rea;
-            Personality p = new(Random);
+            var results = GetResults(Random);
 
-            dge = Custom.PushFromHalf(Mathf.Lerp((Random.Value < 0.5f) ? p.nrv : p.agg, Random.Value, Random.Value), 1f + Random.Value);
-            mid = Custom.PushFromHalf(Mathf.Lerp((Random.Value < 0.5f) ? p.nrg : p.agg, Random.Value, Random.Value), 1f + Random.Value);
-            mle = Custom.PushFromHalf(Random.Value, 1f + Random.Value);
-            blk = Custom.PushFromHalf(Mathf.InverseLerp(0.35f, 1f, Mathf.Lerp((Random.Value < 0.5f) ? p.brv : p.nrg, Random.Value, Random.Value)), 1f + Random.Value);
-            rea = Custom.PushFromHalf(Mathf.Lerp(p.nrg, Random.Value, Random.Value), 1f + Random.Value);
-
-            float n = Mathf.Lerp(p.dom, 1f, 0.15f);
-            dge = Mathf.Lerp(dge, 1f, n * 0.15f); // Dodge
-            mid = Mathf.Lerp(mid, 1f, n * 0.1f); // Mid-range
-            blk = Mathf.Lerp(blk, 1f, n * 0.1f);  // Blocking
-            rea = Mathf.Lerp(rea, 1f, n * 0.05f);  // Reaction
-
-            yield return $"Dodge: {dge}";
-            yield return $"Mid-range: {mid}";
-            yield return $"Melee: {mle}";
-            yield return $"Blocking: {blk}";
-            yield return $"Reaction: {rea}";
+            yield return $"Dodge: {results.dge}";
+            yield return $"Mid-range: {results.mid}";
+            yield return $"Melee: {results.mle}";
+            yield return $"Blocking: {results.blk}";
+            yield return $"Reaction: {results.rea}";
             yield break;
         }
     }
