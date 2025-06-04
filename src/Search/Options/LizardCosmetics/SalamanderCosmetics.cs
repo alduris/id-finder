@@ -85,7 +85,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 if (result is Melanistic melanistic)
                 {
-                    yield return $"Is melanistic: {melanistic.melanistic}";
+                    yield return $"Is melanistic: {(melanistic.melanistic ? "Yes" : "No")}";
                     break;
                 }
             }

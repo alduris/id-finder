@@ -371,7 +371,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return "Has BumpHawk:";
                         yield return $"  Number of bumps: {bumpHawk.numBumps}";
                         yield return $"  Spine length: {bumpHawk.spineLength}";
-                        yield return $"  Is colored: {bumpHawk.colored}";
+                        yield return $"  Is colored: {(bumpHawk.colored ? "Yes" : "No")}";
                         break;
                     case JumpRingsVars:
                         yield return "Has JumpRings";
@@ -381,7 +381,8 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Length: {longHeadScales.length}";
                         yield return $"  Width: {longHeadScales.width}";
                         yield return $"  Rigor: {longHeadScales.rigor}";
-                        yield return $"  Is colored: {longHeadScales.colored}";
+                        yield return $"  Graphic: {longHeadScales.graphic}";
+                        yield return $"  Is colored: {(longHeadScales.colored ? "Yes" : "No")}";
                         break;
                     case LongShoulderScalesVars longShoulderScales:
                         yield return "Has LongShoulderScales:";
@@ -390,7 +391,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Graphic: {longShoulderScales.graphic}";
                         yield return $"  Scale type: {longShoulderScales.scaleType}";
                         yield return $"  Number of scales: {longShoulderScales.numScales}";
-                        yield return $"  Is colored: {longShoulderScales.colored}";
+                        yield return $"  Is colored: {(longShoulderScales.colored ? "Yes" : "No")}";
                         break;
                     case ShortBodyScalesVars shortBodyScales:
                         yield return "Has ShortBodyScaleVars:";
@@ -413,12 +414,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Underside size: {tailFin.undersideSize}";
                         yield return $"  Graphic: {tailFin.graphic}";
                         yield return $"  Number of spines: {tailFin.numScales}";
-                        yield return $"  Is colored: {tailFin.colored}";
+                        yield return $"  Is colored: {(tailFin.colored ? "Yes" : "No")}";
                         break;
                     case TailGeckoScalesVars tailGeckoScales:
                         yield return "Has TailGeckoScales:";
                         yield return $"  Rows: {tailGeckoScales.rows}";
                         yield return $"  Lines: {tailGeckoScales.lines}";
+                        yield return $"  Big scales: {(tailGeckoScales.bigScales ? "Yes" : "No")}";
                         break;
                     case TailTuftVars tailTuft:
                         yield return "Has TailTuft:";
