@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using static FinderMod.OpUtil;

@@ -21,7 +21,8 @@ namespace FinderMod
             [
                 new SearchTab(this),
                 new ValuesTab(this),
-                new HistoryTab(this)
+                new HistoryTab(this),
+                new PreviewTab(this),
                 // new HelpTab(this)
             ];
             

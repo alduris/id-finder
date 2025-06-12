@@ -40,6 +40,7 @@ namespace FinderMod
         {
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+            Preview.Hooks.Apply();
         }
 
         private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
