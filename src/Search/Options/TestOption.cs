@@ -43,7 +43,8 @@ namespace FinderMod.Search.Options
                         new Group([
                             new Label("Inner 2"),
                             new Group([
-                                new Label("Inner 3")
+                                new Label("Inner 3"),
+                                new HueInput("Bias position test")
                             ], "inner3")
                         ], "inner2")
                     ], "inner1")
