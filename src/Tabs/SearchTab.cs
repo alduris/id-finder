@@ -64,7 +64,7 @@ namespace FinderMod.Tabs
             // button_save.OnClick += (_) => HistoryManager.SaveHistory(options, [], (input_min.valueInt, input_max.valueInt));
             button_copy.OnClick += (_) =>
             {
-                UniClipboard.SetText(HistoryManager.CreateStringNoResults(options, (input_min.valueInt, input_max.valueInt)));
+                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
                 ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "search"));
             };
             button_paste.OnClick += (_) =>

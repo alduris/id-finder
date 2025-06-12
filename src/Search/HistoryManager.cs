@@ -49,7 +49,7 @@ namespace FinderMod.Search
                     tab.UpdateQueryBox();
                     tab.input_min.valueInt = min;
                     tab.input_max.valueInt = max;
-                    if (results.Length > 0 && results[0] != null) tab.input_find.SetValueInt(results[0].Length);
+                    if (results != null && results.Length > 0 && results[0] != null) tab.input_find.SetValueInt(results[0].Length);
                 }
             }
 
@@ -109,8 +109,10 @@ namespace FinderMod.Search
             File.WriteAllLines(SaveFile, historyItems.Select(x => JsonConvert.SerializeObject(x)));
         }
 
-        public static string CreateStringNoResults(List<Option> options, (int min, int max) range)
+        public static string CreateCopyString(List<Option> options, (int min, int max) range, Result[][] results = null!)
         {
+            results ??= [];
+
             var array = new JArray();
             foreach (var item in options)
             {
@@ -125,7 +127,7 @@ namespace FinderMod.Search
                 min = range.min,
                 max = range.max,
                 options = array,
-                results = [],
+                results = results,
                 date = DateTime.Now,
                 version = Plugin.VERSION
             };
