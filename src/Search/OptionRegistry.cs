@@ -97,6 +97,7 @@ namespace FinderMod.Search
                 "Slugpup Variations",
                 "Slugpup Stats",
                 "Slugpup Food",
+                "Slugpup Behaviors",
                 "Lizard Cosmetics (Train)",
                 "Firebug Colors",
 
@@ -145,6 +146,7 @@ namespace FinderMod.Search
                 Options["Slugpup Variations"] = () => new SlupVarsOption();
                 Options["Slugpup Stats"] = () => new SlupStatsOption();
                 Options["Slugpup Food"] = () => new SlupFoodOption();
+                Options["Slugpup Behaviors"] = () => new SlupBehaviorOption();
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());

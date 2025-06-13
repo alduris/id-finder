@@ -91,7 +91,7 @@ namespace FinderMod.Search.Options
         }
         protected abstract IEnumerable<string> GetValues(XORShift128 Random);
 
-        internal protected void UpdateQueryBox()
+        internal protected static void UpdateQueryBox()
         {
             SearchTab.instance?.UpdateQueryBox();
         }
