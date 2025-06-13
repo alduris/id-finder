@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class CicadaVarsOption : Option
+    internal class CicadaVarsOption : Option
     {
         private readonly HueInput ColorInput;
         private readonly FloatInput FatnessInput;

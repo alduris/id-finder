@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class CentipedeVarsOption : Option
+    internal class CentipedeVarsOption : Option
     {
         public enum CentipedeType
         {

@@ -9,7 +9,7 @@ using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options
 {
-    public class LizardColorsOption : Option
+    internal class LizardColorsOption : Option
     {
         private readonly LizardInput typeInp;
         private readonly LizardColor colrInp;

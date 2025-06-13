@@ -16,26 +16,40 @@ namespace FinderMod.Inputs
     /// <param name="init">The initial value</param>
     public abstract class Input<T>(string name, T init) : IElement, ISaveInHistory
     {
+        /// <summary>Display name</summary>
         public string name = name;
+        /// <summary>Description displayed at bottom of screen</summary>
         public string description = null!;
         private string LabelText => name + (enabled && !inputOnNewLine ? ":  " : ""); // yes the two spaces are intentional
+        /// <summary>Enabled state</summary>
         public bool enabled = true;
+        /// <summary>Whether or not element is forcefully enabled</summary>
         public bool forceEnabled = false;
+        /// <summary>Whether or not actual input created by <see cref="GetElement(Vector2)"/> is placed separately from label</summary>
         protected bool inputOnNewLine = false;
 
-        protected internal T value = init;
-        protected internal int bias = 1;
+        /// <summary>Actual internal value</summary>
+        public T value = init;
+        /// <summary>Bias</summary>
+        public int bias = 1;
+        /// <summary>Whether input has bias dragger</summary>
         public bool hasBias = false;
 
-        /// <summary>
-        /// Height of the input. Should be larger than 24f.
-        /// </summary>
+        /// <summary>Height of the input. Should be larger than 24f.</summary>
         public abstract float InputHeight { get; }
 
+        /// <summary>Calculated overall height.</summary>
         public float Height => inputOnNewLine ? (enabled || forceEnabled ? 28f + InputHeight : 24f) : InputHeight;
 
 
         // Element creation
+
+        /// <summary>
+        /// Creates the element.
+        /// </summary>
+        /// <param name="x">What x to start from</param>
+        /// <param name="y">What y to start from</param>
+        /// <param name="elements">The list of elements to add to</param>
         public void Create(float x, ref float y, List<UIelement> elements)
         {
             y -= inputOnNewLine ? 24f : InputHeight;
@@ -99,13 +113,26 @@ namespace FinderMod.Inputs
             }
         }
 
+        /// <summary>Returns actual UI element to create</summary>
+        /// <param name="pos">Position of UI element</param>
+        /// <returns>New instance of element</returns>
         protected abstract UIconfig GetElement(Vector2 pos);
+
+        /// <summary>Gets the value of the element</summary>
+        /// <param name="element">Element whose value to check</param>
+        /// <returns>Value of the input</returns>
         protected abstract T GetValue(UIconfig element);
 
 
         // Helpers
+
+        /// <summary>Helper method. Creates a <see cref="Configurable{T}"/> with current value</summary>
+        /// <returns></returns>
         protected Configurable<T> Config() => OpUtil.CosmeticBind(value);
 
+        /// <summary>
+        /// Helper method to update query box in search tab
+        /// </summary>
         protected void UpdateQueryBox()
         {
             SearchTab.instance.UpdateQueryBox();
@@ -113,9 +140,13 @@ namespace FinderMod.Inputs
 
 
         // Save data
+
+        /// <summary>Save key</summary>
         public string SaveKey => name;
 
 
+        /// <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+        /// <returns>A struct containing the data for easy conversion</returns>
         public virtual JObject ToSaveData()
         {
             return new JObject
@@ -126,6 +157,10 @@ namespace FinderMod.Inputs
             };
         }
 
+        /// <summary>
+        /// Returns the element to the state it was given the save state data.
+        /// </summary>
+        /// <param name="data">The save data to restore data to</param>
         public virtual void FromSaveData(JObject data)
         {
             enabled = (bool)data["enabled"]!;
@@ -133,6 +168,8 @@ namespace FinderMod.Inputs
             bias = (int)data["bias"]!;
         }
 
+        /// <summary>Returns the string representation for the input on the history tab.</summary>
+        /// <returns>The strings to represent the input on the history tab.</returns>
         public virtual IEnumerable<string> GetHistoryLines()
         {
             if (enabled)
@@ -144,18 +181,34 @@ namespace FinderMod.Inputs
 
 
         // Event thingy
+
+        /// <summary>Delegate definition for input value change</summary>
+        /// <param name="input">Reference to input</param>
+        /// <param name="value">New value</param>
+        /// <param name="oldValue">Previous value</param>
         public delegate void ValueChanged(Input<T> input, T value, T oldValue);
+        /// <summary>Called when input value changes</summary>
         public event ValueChanged? OnValueChanged;
     }
 
     /// <summary>
-    /// <see cref="Input"/> type with some extra helper stuff
+    /// <see cref="Input{T}"/> type with an explicit minimum and maximum value
     /// </summary>
     /// <typeparam name="T">The value type. Must be a comparable type.</typeparam>
     public abstract class RangedInput<T> : Input<T> where T : IComparable
     {
-        public T min, max;
+        /// <summary>Range minimum</summary>
+        public T min;
+        /// <summary>Range maximum</summary>
+        public T max;
 
+        /// <summary>
+        /// Creates an input with an explicit minimum and maximum.
+        /// </summary>
+        /// <param name="name">Name of input</param>
+        /// <param name="init">Initial value</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
         public RangedInput(string name, T init, T min, T max) : base(name, init)
         {
             hasBias = true;
@@ -163,6 +216,8 @@ namespace FinderMod.Inputs
             this.max = max;
         }
 
+        /// <summary>Helper method. Creates a <see cref="Configurable{T}"/> with a <see cref="ConfigAcceptableRange{T}"/></summary>
+        /// <returns></returns>
         protected Configurable<T> ConfigRange() => OpUtil.CosmeticRange(value, min, max);
     }
 }

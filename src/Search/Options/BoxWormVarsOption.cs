@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class BoxWormVarsOption : Option
+    internal class BoxWormVarsOption : Option
     {
         private readonly IntInput NumLarvaeInput;
         private readonly FloatInput SizeVarInput;

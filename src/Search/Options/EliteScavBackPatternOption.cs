@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace FinderMod.Search.Options
 {
-    public class EliteScavBackPatternOption : Option
+    internal class EliteScavBackPatternOption : Option
     {
         private readonly EnumInput<ScavBodyScalePattern> SpinePatternInput;
         private readonly MultiChoiceInput ColorTypeInput;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class SnailOption : Option
+    internal class SnailOption : Option
     {
         private FloatInput sizeInput;
         private ColorRGBInput colorAInput, colorBInput;

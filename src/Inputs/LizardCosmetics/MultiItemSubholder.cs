@@ -5,11 +5,21 @@ using Newtonsoft.Json.Linq;
 
 namespace FinderMod.Inputs.LizardCosmetics
 {
+    /// <summary>
+    /// Contains a group of <see cref="Subholder"/>s.
+    /// </summary>
     public class MultiItemSubholder : Subholder
     {
+        /// <summary>Internal group</summary>
         protected readonly Group holdingGroup;
+        /// <summary>Child subholders, in list of appropriate type.</summary>
         protected readonly List<Subholder> children;
 
+        /// <summary>
+        /// Creates a group of <see cref="Subholder"/>s.
+        /// </summary>
+        /// <param name="name">Internal name of subholder</param>
+        /// <param name="children">List of child subholders</param>
         public MultiItemSubholder(string name, List<Subholder> children) : base(name)
         {
             this.children = children;
@@ -20,13 +30,20 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
         }
 
+        /// <summary>Total height of the element.</summary>
         public override float Height => holdingGroup.Height;
 
+        /// <summary>Creates elements</summary>
+        /// <param name="x">Starting x position</param>
+        /// <param name="y">Starting y position</param>
+        /// <param name="elements">List to dump created elements in</param>
         public override void Create(float x, ref float y, List<UIelement> elements)
         {
             holdingGroup.Create(x, ref y, elements);
         }
 
+        /// <summary>Recreates inputs from save data</summary>
+        /// <param name="data">The JSON representation to recreate from</param>
         public override void FromSaveData(JObject data)
         {
             var list = (JObject)data["children"]!;
@@ -39,6 +56,8 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
         }
 
+        /// <summary>Turns the inputs into a format convertable to JSON</summary>
+        /// <returns>The JSON representation of this particular subholder</returns>
         public override JObject ToSaveData()
         {
             var list = new JObject();
@@ -52,6 +71,8 @@ namespace FinderMod.Inputs.LizardCosmetics
             };
         }
 
+        /// <summary>Generates history tab representation</summary>
+        /// <returns>String representation for history tab</returns>
         public override IEnumerable<string> GetHistoryLines()
         {
             foreach (var child in children)

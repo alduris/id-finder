@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
-using FinderMod.Tabs;
 using RWCustom;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class SlupVarsOption : Option
+    internal class SlupVarsOption : Option
     {
         private readonly FloatInput SizeInput, WidenessInput, EyeInput;
         private readonly ColorHSLInput ColorInp;

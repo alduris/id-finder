@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class LanternMouseOption : Option
+    internal class LanternMouseOption : Option
     {
         public LanternMouseOption() : base()
         {

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
+using Unity.Burst;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class ScavColorsOption : Option
+    internal class ScavColorsOption : Option
     {
         private readonly ColorHSLInput body, head, deco, eye;
 
@@ -19,6 +20,7 @@ namespace FinderMod.Search.Options
             ];
         }
 
+        [BurstCompile]
         private (HSLColor, HSLColor, HSLColor, HSLColor) GetColors(XORShift128 Random)
         {
             var p = new Personality(Random);

@@ -6,13 +6,20 @@ using Newtonsoft.Json.Linq;
 
 namespace FinderMod.Inputs.LizardCosmetics
 {
-
-    public class OneOfSubholder : Subholder, IToggleableChildren
+    /// <summary>
+    /// Allows a <see cref="Subholder"/> to be picked from a list.
+    /// </summary>
+    public sealed class OneOfSubholder : Subholder, IToggleableChildren
     {
         private readonly MultiChoiceInput selector;
         private readonly List<Subholder> children;
-        internal Subholder Selected => children[selector.value];
+        private Subholder Selected => children[selector.value];
 
+        /// <summary>
+        /// Creates a subholder from which only one child can be displayed at a time. Names of the subholders are used as the items in the selection dropdown.
+        /// </summary>
+        /// <param name="name">Label for dropdown</param>
+        /// <param name="children">Children for selection</param>
         public OneOfSubholder(string name, List<Subholder> children) : base(name)
         {
             this.children = children;
@@ -24,9 +31,15 @@ namespace FinderMod.Inputs.LizardCosmetics
             selector.OnValueChanged += (_, v, o) => { if (v != o) SearchTab.instance.UpdateQueryBox(); };
         }
 
+        /// <summary>Enabled</summary>
         public override bool Enabled => selector.enabled && base.Enabled;
+        /// <summary>Total height of the element.</summary>
         public override float Height => selector.Height + (Enabled ? Selected.Height + 6f : 0f);
 
+        /// <summary>Creates elements</summary>
+        /// <param name="x">Starting x position</param>
+        /// <param name="y">Starting y position</param>
+        /// <param name="elements">List to dump created elements in</param>
         public override void Create(float x, ref float y, List<UIelement> elements)
         {
             selector.Create(x, ref y, elements);
@@ -37,6 +50,8 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
         }
 
+        /// <summary>Recreates inputs from save data</summary>
+        /// <param name="data">The JSON representation to recreate from</param>
         public override void FromSaveData(JObject data)
         {
             selector.FromSaveData((JObject)data["selector"]!);
@@ -50,6 +65,8 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
         }
 
+        /// <summary>Turns the inputs into a format convertable to JSON</summary>
+        /// <returns>The JSON representation of this particular subholder</returns>
         public override JObject ToSaveData()
         {
             var list = new JObject();
@@ -64,6 +81,8 @@ namespace FinderMod.Inputs.LizardCosmetics
             };
         }
 
+        /// <summary>Generates history tab representation</summary>
+        /// <returns>String representation for history tab</returns>
         public override IEnumerable<string> GetHistoryLines()
         {
             foreach (var item in children)
@@ -75,6 +94,11 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
         }
 
+        /// <summary>
+        /// Checks if the subholder is a child and is selected.
+        /// </summary>
+        /// <param name="child">The child subholder</param>
+        /// <returns>Returns true if the subholder is a child and is selected.</returns>
         public bool IsChildToggled(Subholder child)
         {
             return Selected == child;

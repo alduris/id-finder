@@ -4,10 +4,11 @@ using static FinderMod.Search.Util.ScavUtil;
 using UnityEngine;
 using RWCustom;
 using System.Collections.Generic;
+using Unity.Burst;
 
 namespace FinderMod.Search.Options
 {
-    public class ScavBackPatternOption : Option
+    internal class ScavBackPatternOption : Option
     {
         private readonly EnumInput<ScavBackType> SpineTypeInput;
         private readonly EnumInput<ScavBodyScalePattern> SpinePatternInput;
@@ -45,6 +46,7 @@ namespace FinderMod.Search.Options
             public float generalSpineSize;
         }
 
+        [BurstCompile]
         private Results GetResults(XORShift128 Random)
         {
             var p = new Personality(Random);

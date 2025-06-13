@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class MirosBirdVarsOption : Option
+    internal class MirosBirdVarsOption : Option
     {
         private readonly IntInput PlumageGraphicInput;
         private readonly FloatInput PlumageLengthInput;

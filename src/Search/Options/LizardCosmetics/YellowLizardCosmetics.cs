@@ -5,7 +5,7 @@ using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    public class YellowLizardCosmetics : BaseLizardCosmetics
+    internal class YellowLizardCosmetics : BaseLizardCosmetics
     {
         private readonly AntennaeCosmetic antennaeCosmetic;
 

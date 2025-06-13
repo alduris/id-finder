@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class SlupStatsOption : Option
+    internal class SlupStatsOption : Option
     {
         private readonly FloatInput wgtInp, vz0Inp, vz1Inp, louInp, lngInp, polInp, tunInp, spdInp;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class RatOption : Option
+    internal class RatOption : Option
     {
         private static readonly Color coatStartColor = new(0.29f, 0.31f, 0.33f), coatEndColor = new(0.42f, 0.26f, 0.07f);
 

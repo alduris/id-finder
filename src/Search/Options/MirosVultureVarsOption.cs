@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class MirosVultureVarsOption : Option
+    internal class MirosVultureVarsOption : Option
     {
         private readonly ColorHSLInput ColorAInput;
         private readonly ColorHSLInput ColorBInput;

@@ -14,7 +14,6 @@ namespace FinderMod.Search.Options
     /// <summary>
     /// A search option. Fill out <see cref="elements"/> in the constructor, and keep references so you can use the values in <see cref="Execute"/>.
     /// </summary>
-    /// <param name="key">Serves as both the internal key the option will be identified as</param>
     public abstract partial class Option()
     {
         internal string name = "Search Option";
@@ -27,6 +26,11 @@ namespace FinderMod.Search.Options
         /// </summary>
         protected List<IElement> elements = null!;
 
+        /// <summary>
+        /// Creates the UI elements for the Remix menu. Called internally.
+        /// </summary>
+        /// <param name="y">A variable initialized to the y-value of the top of the option</param>
+        /// <param name="output">The list of UI elements to output to, for adding to the remix menu later.</param>
         public void CreateOptions(ref float y, List<UIelement> output)
         {
             const float MARGIN = 6f;
@@ -69,10 +73,30 @@ namespace FinderMod.Search.Options
         }
 
         /// <summary>
-        /// Execution, assuming an arbitrary given seed.
+        /// Execution, assuming an arbitrary given seed. Returns the distance of the calculated fields for the option from the values in the inputs.
+        /// <para>Things to keep in mind for a good distance calculation:</para>
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// All inputs that should affect the result should be accounted for.
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <description>
+        /// Most common input types are accounted for with the built-in <c>DistanceIf</c> helper methods, which already account for most factors.
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <description>
+        /// If an input does not have a <c>DistanceIf</c> implementation, it is up to you to replace its calculation.
+        /// An ideal distance calculation should be between 0 and 1, then multiplied by the input's bias.
+        /// If the input is disabled, it should contribute 0 distance.
+        /// </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="Random">The random number generator correlating with the seed.</param>
-        /// <returns>The calculated distance</returns>
+        /// <param name="Random">The random number generator correlating with the seed. Use like <see cref="UnityEngine.Random"/>.</param>
+        /// <returns>The calculated distance.</returns>
         public abstract float Execute(XORShift128 Random);
 
         /// <summary>
@@ -89,9 +113,20 @@ namespace FinderMod.Search.Options
                 yield return str;
             }
         }
+
+        /// <summary>
+        /// Returns strings to display in the Values tab for a particular id.
+        /// It is recommended to use <c>yield return</c> when implementing this method.
+        /// <c>null</c> is treated as whitespace, and is a shorter amount than there would be by returning an empty string.
+        /// </summary>
+        /// <param name="Random">An instance of <see cref="XORShift128"/>, initialized to the seed of the creature.</param>
+        /// <returns>A string representation of the traits for an id</returns>
         protected abstract IEnumerable<string> GetValues(XORShift128 Random);
 
-        internal protected static void UpdateQueryBox()
+        /// <summary>
+        /// Force updates the query box in the Search tab.
+        /// </summary>
+        public static void UpdateQueryBox()
         {
             SearchTab.instance?.UpdateQueryBox();
         }
@@ -99,6 +134,11 @@ namespace FinderMod.Search.Options
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Save stuff
+
+        /// <summary>
+        /// Converts the Option to a JSON representation, for saving or sharing.
+        /// </summary>
+        /// <returns>A JSON representation of the Option stored as a <see cref="JObject"/></returns>
         public JObject ToJson()
         {
             var children = new JObject();
@@ -117,10 +157,14 @@ namespace FinderMod.Search.Options
             };
         }
 
+        /// <summary>
+        /// Returns the Option to the state stored in the JSON. Assumes JSON is properly formatted, and may throw an exception otherwise.
+        /// </summary>
+        /// <param name="json">A <see cref="JObject"/> representation containing the JSON of the object</param>
         public void FromJson(JObject json)
         {
             linked = (bool)json["linked"]!;
-            HashSet<ISaveInHistory> saveable = elements.Where(x => x is ISaveInHistory).Cast<ISaveInHistory>().ToHashSet();
+            HashSet<ISaveInHistory> saveable = [.. elements.Where(x => x is ISaveInHistory).Cast<ISaveInHistory>()];
             foreach (var kvp in (JObject)json["children"]!)
             {
                 var child = saveable.FirstOrDefault(x => x.SaveKey == kvp.Key);
@@ -132,6 +176,10 @@ namespace FinderMod.Search.Options
             }
         }
 
+        /// <summary>
+        /// Returns a string representation of the current configuration of inputs in the Option. Used in the history tab.
+        /// </summary>
+        /// <returns>A string representation of the current configuruation of inputs in the Option</returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -141,7 +189,10 @@ namespace FinderMod.Search.Options
                 {
                     foreach (var line in saveable.GetHistoryLines())
                     {
-                        sb.AppendLine(line.ToString());
+                        if (line is null)
+                            sb.AppendLine();
+                        else
+                            sb.AppendLine(line.ToString());
                     }
                 }
             }

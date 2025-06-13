@@ -2,16 +2,28 @@
 using FinderMod.Search.Options;
 using static FinderMod.Search.Util.LizardUtil;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace FinderMod.Inputs.LizardCosmetics
 {
+    /// <summary>
+    /// Input container for lizard cosmetics.
+    /// </summary>
+    /// <param name="cosmeticType">Cosmetic type represented</param>
     public abstract class CosmeticsItem(CosmeticType cosmeticType) : Group([new Label(cosmeticType.ToString())], cosmeticType.ToString())
     {
+        /// <summary>Parent subholder</summary>
         internal protected Subholder parent = null!;
+        /// <summary>Whether the parent is enabled</summary>
         public bool Enabled => parent != null && parent.Enabled;
+        /// <summary>Whether the parent is toggled on</summary>
         public bool Toggled => parent == null || parent.IsToggled;
+        /// <summary>Checks if input is enabled and toggled</summary>
         public bool Active => Enabled && Toggled;
+        /// <summary>Cosmetic type</summary>
         public readonly CosmeticType cosmeticType = cosmeticType;
 
+        /// <summary>Generates history tab representation</summary>
+        /// <returns>String representation for history tab</returns>
         public override IEnumerable<string> GetHistoryLines()
         {
             if (Active)
@@ -490,3 +502,4 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

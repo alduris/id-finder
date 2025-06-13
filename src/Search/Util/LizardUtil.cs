@@ -3,10 +3,17 @@ using FinderMod.Search.Options;
 using MoreSlugcats;
 using UnityEngine;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace FinderMod.Search.Util
 {
+    /// <summary>
+    /// Collection of utilities for lizard searching
+    /// </summary>
     public static class LizardUtil
     {
+        /// <summary>
+        /// Penalty applied to missing results
+        /// </summary>
         public const float MISSING_PENALTY = 1000f; // some really high number that feasibly should get us good results
 
         public enum LizardType
@@ -856,5 +863,11 @@ namespace FinderMod.Search.Util
             public int numScales;
             public float scaleLength;
         }
+
+        public struct Melanistic(bool melanistic)
+        {
+            public bool melanistic = melanistic;
+        }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

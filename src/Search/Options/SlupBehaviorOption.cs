@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FinderMod.Search.Options
 {
-    public class SlupBehaviorOption : Option
+    internal class SlupBehaviorOption : Option
     {
         private readonly GroupWithEnable behaviorGroup, foodGroup;
         private readonly BoolInput doesWiggle, doesNap, doesPlayWithItems, doesLayNearParent;
@@ -61,14 +61,12 @@ namespace FinderMod.Search.Options
                 r += DistanceIf(p.nrg > 0.85f, doesPlayWithItems);
             }
 
-            if (x == 0) Plugin.logger.LogDebug("HIIIIIII :D:D:D:D::DD");
             if (foodGroup.enabled)
             {
                 Random.InitState(x, y, z, w);
                 for (int j = 0; j < SlupFoodOption.foodLength; j++)
                 {
                     float o = SlupFoodOption.GetFoodLike(Random, p, j);
-                    if (x == 0) Plugin.logger.LogDebug(o + " -- " + foodLikes[j].value + " <-> " + DetermineFoodLike(o) + " : " + foodLikes[j].bias + ", " + foodLikes[j].enabled);
                     if (foodLikes[j].enabled && foodLikes[j].value != DetermineFoodLike(o)) r += foodLikes[j].bias;
                 }
             }

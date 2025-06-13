@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class JetfishVarsOption : Option
+    internal class JetfishVarsOption : Option
     {
         // private readonly FloatInput FatnessInput;
         private readonly FloatInput TentacleLengthInput;

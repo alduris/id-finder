@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class TardigradeOption : Option
+    internal class TardigradeOption : Option
     {
         private readonly ColorHSLInput bodyColorInput;
         private readonly ColorHSLInput secondaryColorInput;

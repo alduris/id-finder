@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class VultureWingOption : Option
+    internal class VultureWingOption : Option
     {
         private readonly ColorHSLInput ColorAInput, ColorBInput;
         private readonly IntInput FeathersInput;

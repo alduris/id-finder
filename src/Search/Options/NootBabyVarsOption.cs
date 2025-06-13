@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class NootBabyVarsOption : Option
+    internal class NootBabyVarsOption : Option
     {
         private readonly FloatInput wsInp, lsInp, fatInp, slInp;
         private readonly ColorRGBInput bodyInp, eyeInp;

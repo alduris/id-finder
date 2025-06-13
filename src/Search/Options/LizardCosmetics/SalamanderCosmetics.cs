@@ -7,7 +7,7 @@ using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    public class SalamanderCosmetics : BaseLizardCosmetics
+    internal class SalamanderCosmetics : BaseLizardCosmetics
     {
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
@@ -95,11 +95,6 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 yield return result;
             }
-        }
-
-        internal struct Melanistic(bool melanistic)
-        {
-            public bool melanistic = melanistic;
         }
     }
 }

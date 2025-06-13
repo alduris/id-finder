@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class HazerVarsOption : Option
+    internal class HazerVarsOption : Option
     {
         private readonly Alternatable<HazerColorGroup> ColorInputs;
         private readonly IntInput NumTentaclesInput, NumScalesInput;

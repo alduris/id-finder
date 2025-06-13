@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class EggbugColorsOption : Option
+    internal class EggbugColorsOption : Option
     {
         private readonly bool FireBug;
 

@@ -13,7 +13,7 @@ using FinderMod.Search;
 namespace FinderMod
 {
     [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
-    internal partial class Plugin : BaseUnityPlugin
+    internal sealed class Plugin : BaseUnityPlugin
     {
         private readonly Options Options;
         public static Plugin instance = null!;
@@ -83,7 +83,7 @@ namespace FinderMod
 
         private void ClearMemory()
         {
-            // Options.ClearMemory();
+            Options.ClearMemory();
         }
     }
 }

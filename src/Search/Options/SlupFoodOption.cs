@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class SlupFoodOption : Option
+    internal class SlupFoodOption : Option
     {
         internal static readonly string[] foodList = [
             "Blue fruit", "Water nut", "Jellyfish", "Slime mold", "Eggbug egg", "Fire egg", "Popcorn", "Gooieduck",

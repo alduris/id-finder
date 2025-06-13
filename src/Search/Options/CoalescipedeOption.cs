@@ -3,7 +3,7 @@ using FinderMod.Inputs;
 
 namespace FinderMod.Search.Options
 {
-    public class CoalescipedeOption : Option
+    internal class CoalescipedeOption : Option
     {
         private readonly FloatInput SizeInput = new("Size");
         public CoalescipedeOption()

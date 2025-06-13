@@ -6,7 +6,7 @@ using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options
 {
-    public class LizardVarsOption : Option
+    internal class LizardVarsOption : Option
     {
         private readonly EnumInput<LizardType> TypeInp;
         private readonly FloatInput HeadSizeInput, FatnessInput, TailLengthInput, TailFatnessInput, TailColorInput;

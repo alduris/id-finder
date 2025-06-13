@@ -4,7 +4,7 @@ using Unity.Burst;
 
 namespace FinderMod.Search.Options
 {
-    public class PersonalityOption : Option
+    internal class PersonalityOption : Option
     {
         public PersonalityOption() : base()
         {

@@ -7,7 +7,7 @@ using Color = UnityEngine.Color; // STOP POPPING UP System.Drawing NOBODY LIKES 
 
 namespace FinderMod.Search.Options
 {
-    public class MothVarsOption : Option
+    internal class MothVarsOption : Option
     {
         private readonly bool big;
         private readonly float baseSize;

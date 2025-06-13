@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class ScavSkillsOption : Option
+    internal class ScavSkillsOption : Option
     {
         private readonly FloatInput dgeInp, midInp, mleInp, blkInp, reaInp;
 
