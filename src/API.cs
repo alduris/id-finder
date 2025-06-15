@@ -38,7 +38,7 @@ namespace FinderMod
         /// <param name="elementsFactory">Factory to create new menu elements.</param>
         /// <param name="executeFunc">Method that will return the distance for a particular id. Parameters are: 
         /// </param>
-        [Obsolete()]
+        [Obsolete("Please use OptionBuilder instead")]
         public static void Register(string name, Func<List<IElement>> elementsFactory, APIBasicOption.APIExecute executeFunc)
         {
             if (name is null) throw new ArgumentNullException(nameof(name));
