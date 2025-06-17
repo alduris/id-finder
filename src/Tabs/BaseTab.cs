@@ -7,6 +7,11 @@ namespace FinderMod.Tabs
     {
         public BaseTab(OptionInterface option, string name) : base(option, name) { }
 
+        ~BaseTab()
+        {
+            ClearMemory();
+        }
+
         public abstract void Initialize();
         public abstract void Update();
         public virtual void ClearMemory() { }

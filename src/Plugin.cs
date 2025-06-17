@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security;
 using System.Security.Permissions;
 using BepInEx;
@@ -62,6 +63,9 @@ namespace FinderMod
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
                 Logger.LogInfo("Loaded successfully");
+
+                if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
+                    Commands.Register();
             }
             catch (Exception ex)
             {

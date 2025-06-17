@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DevConsole</name>
+    </assembly>
+    <members>
+        <member name="T:DevConsole.Aliases">
+            <summary>
+            Allows complex commands to be renamed into simple aliases.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Aliases.SetAlias(System.String,System.String)">
+            <summary>
+            Creates or overwrites a command that executes the given commands.
+            </summary>
+            <param name="name">The name of the new command.</param>
+            <param name="command">The list of commands to run.</param>
+        </member>
+        <member name="M:DevConsole.Aliases.RemoveAlias(System.String)">
+            <summary>
+            Removes an existing alias. This only works for aliases, not normal commands.
+            </summary>
+            <param name="name">The name of the aliased command to remove.</param>
+        </member>
+        <member name="M:DevConsole.Aliases.GetAlias(System.String)">
+            <summary>
+            Retrieves a list of commands associated with an alias.
+            </summary>
+            <param name="name">The name of the aliased command.</param>
+            <returns>An array of commands to be executed or <c>null</c> if no such alias exists.</returns>
+        </member>
+        <member name="M:DevConsole.Aliases.RunAlias(System.String[])">
+            <summary>
+            Executes the commands associated with an alias.
+            </summary>
+            <param name="args">The list of arguments input to the command line.</param>
+            <returns><c>true</c> if there was an alias to run, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:DevConsole.Aliases.GetAliases">
+            <summary>
+            Gets all aliases.
+            </summary>
+            <returns>A list of all registered aliases.</returns>
+        </member>
+        <member name="T:DevConsole.BindEvents.IBindEvent">
+            <summary>
+            Polls an event to determine whether a bind will activate this frame.
+            </summary>
+        </member>
+        <member name="M:DevConsole.BindEvents.IBindEvent.Activate">
+            <summary>
+            Determines whether the bind should activate this frame.
+            </summary>
+            <returns><c>true</c> to execute the bind, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:DevConsole.BindEvents.IBindEvent.BindsEqual(DevConsole.BindEvents.IBindEvent)">
+            <summary>
+            Checks if two bind events are equal.
+            </summary>
+            <param name="otherBind">The <see cref="T:DevConsole.BindEvents.IBindEvent"/> to compare to.</param>
+            <returns><c>true</c> if the bind events are the same, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="T:DevConsole.BindEvents.KeyCodeEvent">
+            <summary>
+            Checks if a key code is pressed each frame.
+            </summary>
+        </member>
+        <member name="P:DevConsole.BindEvents.KeyCodeEvent.Key">
+            <summary>
+            The <see cref="T:UnityEngine.KeyCode"/> to check for.
+            </summary>
+        </member>
+        <member name="P:DevConsole.BindEvents.KeyCodeEvent.Mode">
+            <summary>
+            The specific time to activate during the key press.
+            </summary>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyCodeEvent.#ctor(UnityEngine.KeyCode,DevConsole.BindEvents.KeyMode)">
+            <summary>
+            Creates a new event.
+            </summary>
+            <param name="keyCode">The <see cref="T:UnityEngine.KeyCode"/> to check for.</param>
+            <param name="mode">Determines when to trigger the event during each keypress.</param>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyCodeEvent.Activate">
+            <inheritdoc/>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyCodeEvent.BindsEqual(DevConsole.BindEvents.IBindEvent)">
+            <inheritdoc/>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyCodeEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:DevConsole.BindEvents.KeyMode">
+            <summary>
+            Specifies a certain part of a keypress.
+            </summary>
+        </member>
+        <member name="F:DevConsole.BindEvents.KeyMode.Down">
+            <summary>
+            Triggers when the key is first pressed down.
+            </summary>
+        </member>
+        <member name="F:DevConsole.BindEvents.KeyMode.HoldDown">
+            <summary>
+            Triggers each frame that the key is held down.
+            </summary>
+        </member>
+        <member name="F:DevConsole.BindEvents.KeyMode.Up">
+            <summary>
+            Triggers when the key is first released.
+            </summary>
+        </member>
+        <member name="F:DevConsole.BindEvents.KeyMode.HoldUp">
+            <summary>
+            Triggers each frame that the key is not pressed.
+            </summary>
+        </member>
+        <member name="T:DevConsole.BindEvents.KeyNameEvent">
+            <summary>
+            Checks if a key string is pressed each frame.
+            </summary>
+        </member>
+        <member name="P:DevConsole.BindEvents.KeyNameEvent.KeyName">
+            <summary>
+            The key name to check for.
+            </summary>
+        </member>
+        <member name="P:DevConsole.BindEvents.KeyNameEvent.Mode">
+            <summary>
+            The specific time to activate during the key press.
+            </summary>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyNameEvent.#ctor(System.String,DevConsole.BindEvents.KeyMode)">
+            <summary>
+            Creates a new event.
+            </summary>
+            <param name="keyName">The key name to check for.</param>
+            <param name="mode">Determines when to trigger the event during each keypress.</param>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyNameEvent.Activate">
+            <inheritdoc/>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyNameEvent.BindsEqual(DevConsole.BindEvents.IBindEvent)">
+            <inheritdoc/>
+        </member>
+        <member name="M:DevConsole.BindEvents.KeyNameEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:DevConsole.Bindings">
+            <summary>
+            Controls bindings from keys to commands.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Bindings.Bind(DevConsole.BindEvents.IBindEvent,System.String,System.Boolean)">
+            <summary>
+            Schedules a command to run every time an <see cref="T:DevConsole.BindEvents.IBindEvent"/> activates.
+            </summary>
+            <param name="bindEvent">The event to bind to.</param>
+            <param name="command">The command to run.</param>
+            <param name="syncWithUpdate">If true, then this command will only run immediately before fixed-timestep updates.</param>
+        </member>
+        <member name="M:DevConsole.Bindings.Unbind(DevConsole.BindEvents.IBindEvent,System.String,System.Boolean)">
+            <summary>
+            Removes all instances of the given command bound to this <see cref="T:DevConsole.BindEvents.IBindEvent"/>.
+            </summary>
+            <param name="bindEvent">The event to unbind from.</param>
+            <param name="command">The command to search for.</param>
+            <param name="syncWithUpdate">True if the command runs each fixed-step update, false if it runs each frame.</param>
+        </member>
+        <member name="M:DevConsole.Bindings.UnbindAll(DevConsole.BindEvents.IBindEvent,System.Boolean)">
+            <summary>
+            Unbinds all commands bound to an <see cref="T:DevConsole.BindEvents.IBindEvent"/>.
+            </summary>
+            <param name="bindEvent">The event to clear all binds from.</param>
+            <param name="syncWithUpdate">True if the command runs each fixed-step update, false if it runs each frame.</param>
+        </member>
+        <member name="M:DevConsole.Bindings.UnbindAll">
+            <summary>
+            Removes all bindings.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Bindings.GetBoundCommands(DevConsole.BindEvents.IBindEvent,System.Boolean)">
+            <summary>
+            Retrieve an array of all commands bound to this event.
+            </summary>
+            <param name="bindEvent">The event to get binds from.</param>
+            <param name="syncWithUpdate">True if the command runs each fixed-step update, false if it runs each frame.</param>
+            <returns>An array of all commands attached to this <see cref="T:DevConsole.BindEvents.IBindEvent"/>.</returns>
+        </member>
+        <member name="T:DevConsole.Commands.CommandBuilder">
+            <summary>
+            Allows commands to be constructed without inheritance.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.#ctor">
+            <summary>
+            Creates a new command builder.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.#ctor(System.String)">
+            <summary>
+            Creates a new command builder and sets the command's name.
+            </summary>
+            <param name="name">The name of the command.</param>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.Name(System.String)">
+            <summary>
+            Sets the name of the command.
+            </summary>
+            <param name="name">The name of the command.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.Run(System.Action{System.String[]})">
+            <summary>
+            Sets a delegate to be called when the command runs.
+            </summary>
+            <param name="handler">The delegate to call. The command name is omitted from the arguments array.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.RunGame(System.Action{RainWorldGame,System.String[]})">
+            <summary>
+            Sets a delegate to be called when the command runs while in-game, displaying a warning otherwise.
+            </summary>
+            <param name="handler">The delegate to call. The command name is omitted from the arguments array.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.AutoComplete(System.Func{System.String[],System.Collections.Generic.IEnumerable{System.String}})">
+            <summary>
+            Sets a delegate to be called when autocompletion is needed for the command.
+            </summary>
+            <param name="handler">A delegate that returns all available options for the argument when given all completed arguments before it.
+            The command name is omitted.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.AutoComplete(System.String[][])">
+            <summary>
+            Sets an array of options to search when autocompletion is needed for the command.
+            </summary>
+            <param name="options">A list of all available options for each parameter. The command name is omitted.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.Help(System.Func{System.String})">
+            <summary>
+            Sets a delegate to be called when the help text is gotten for the command.
+            </summary>
+            <param name="handler">A delegate that returns help text for the command, including command name and parameters.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.Help(System.String)">
+            <summary>
+            Sets the help text for this command.
+            </summary>
+            <param name="summary">The help text for this command.</param>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.HideHelp">
+            <summary>
+            Hides this command's summary when help is gotten.
+            </summary>
+            <returns>The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.CommandBuilder.Register">
+            <summary>
+            Registers the command. The <see cref="T:DevConsole.Commands.CommandBuilder"/> instance may not be used afterwards.
+            </summary>
+        </member>
+        <member name="T:DevConsole.Commands.ComplexCommand">
+            <summary>
+            A command constructed from a delegate that runs the command and a delegate that gets help text.
+            </summary>
+            <remarks>
+            This may be used instead of implementing the <see cref="T:DevConsole.Commands.ICommandHandler"/> interface so that
+            the mod's types may be loaded without loading DevConsole.
+            If possible, use <see cref="T:DevConsole.Commands.CommandBuilder"/> instead.
+            </remarks>
+        </member>
+        <member name="M:DevConsole.Commands.ComplexCommand.#ctor(System.Func{System.String[],System.String,System.Boolean},System.Func{System.String})">
+            <summary>
+            Creates a new complex command to be registered with <see cref="M:DevConsole.GameConsole.RegisterCommand(DevConsole.Commands.ICommandHandler)"/>.
+            </summary>
+            <param name="run">A delegate to handle running this command.</param>
+            <param name="help">A delegate to produce help text for this command.</param>
+        </member>
+        <member name="M:DevConsole.Commands.ComplexCommand.Help">
+            <inheritdoc/>
+        </member>
+        <member name="M:DevConsole.Commands.ComplexCommand.RunCommand(System.String[],System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:DevConsole.Commands.IAutoCompletable">
+            <summary>
+            Defines how a command should be autocompleted.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Commands.IAutoCompletable.GetArgOptions(System.String[])">
+            <summary>
+            Gets all options for the next argument in the command, returning null if the given arguments aren't valid.
+            </summary>
+            <param name="currentArgs">An array of all arguments that have been completed.</param>
+            <returns>An array of all possible arguments that may follow or null if this command doesn't match.</returns>
+        </member>
+        <member name="T:DevConsole.Commands.ICommandHandler">
+            <summary>
+            Defines a command that may be run through the <see cref="T:DevConsole.GameConsole"/>.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Commands.ICommandHandler.RunCommand(System.String[],System.String)">
+            <summary>
+            Checks command syntax and executes the command.
+            </summary>
+            <param name="args">All user-input command line arguments, including the command name.</param>
+            <param name="rawCommand">The raw string entered by the user into the console.</param>
+            <returns><c>true</c> if the command syntax matches, <c>false</c> otherwise.
+            This should return <c>true</c> even if the command errors.</returns>
+        </member>
+        <member name="M:DevConsole.Commands.ICommandHandler.Help">
+            <summary>
+            Generates a short description of the command's syntax.
+            </summary>
+            <returns>A short description of the command's syntax, including its name and arguments.</returns>
+        </member>
+        <member name="T:DevConsole.GameConsole">
+            <summary>
+            Allows for interaction with and extension of the in-game console.
+            </summary>
+        </member>
+        <member name="M:DevConsole.GameConsole.#cctor">
+            <summary>
+            Registers critical built-in commands.
+            </summary>
+        </member>
+        <member name="E:DevConsole.GameConsole.OnLineWritten">
+            <summary>
+            An event called each time a line is written to the console.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.Initialized">
+            <summary>
+            Whether the in-game console is ready to open.
+            Methods calls in <see cref="T:DevConsole.GameConsole"/>, unless otherwise specified, will wait for the console to be initialized to execute.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.AutoCompletableCommands">
+            <summary>
+            Enumerates all commands that are compatible with autocomplete.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.OutputLines">
+            <summary>
+            The number of lines of console output that fit on the console.
+            If a command outputs lots of lines, consider breaking it up in pages of this size.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.DefaultColor">
+            <summary>
+            The default text color to use for the console.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.BackColor">
+            <summary>
+            The color of the background sprite of the console including transparency.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.TargetPos">
+            <summary>
+            The current default position. This can be set by the default_pos command.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.CurrentFont">
+            <summary>
+            Gets or sets the font used for the console.
+            Changing the font will clear the console.
+            </summary>
+        </member>
+        <member name="M:DevConsole.GameConsole.WriteLine(System.String)">
+            <summary>
+            Writes one or more lines of white text to the console.
+            </summary>
+            <param name="text">The text to write.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.WriteLine(System.String,UnityEngine.Color)">
+            <summary>
+            Writes one or more lines of colored text to the console.
+            </summary>
+            <param name="text">The text to write.</param>
+            <param name="color">The color of the text.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.WriteLineThreaded(System.String)">
+            <summary>
+            <see cref="M:DevConsole.GameConsole.WriteLine(System.String)"/>, but thread safe. Use the other one when possible.
+            </summary>
+            <param name="text">The text to write.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.WriteLineThreaded(System.String,UnityEngine.Color)">
+            <summary>
+            <see cref="M:DevConsole.GameConsole.WriteLine(System.String,UnityEngine.Color)"/>, but thread safe. Use the other one when possible.
+            </summary>
+            <param name="text">The text to write.</param>
+            <param name="color">The color of the text.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.ForceOpen(System.Boolean)">
+            <summary>
+            Force the console to open next frame.
+            </summary>
+            <param name="pause">Whether the game should pause while the console is open.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.RegisterCommand(DevConsole.Commands.ICommandHandler)">
+            <summary>
+            Registers a command to be called when the user enters a line to the console.
+            </summary>
+            <param name="handler">The command handler to register.</param>
+            <seealso cref="M:DevConsole.GameConsole.RemoveCommand(DevConsole.Commands.ICommandHandler)"/>
+        </member>
+        <member name="M:DevConsole.GameConsole.RemoveCommand(DevConsole.Commands.ICommandHandler)">
+            <summary>
+            Unregisters a previously registered command.
+            </summary>
+            <param name="handler">The command handler to unregister.</param>
+            <returns><c>true</c> if a command handler was found to remove, <c>false</c> otherwise.</returns>
+            <seealso cref="M:DevConsole.GameConsole.RegisterCommand(DevConsole.Commands.ICommandHandler)"/>
+        </member>
+        <member name="M:DevConsole.GameConsole.Clear">
+            <summary>
+            Removes all lines of output from the console.
+            </summary>
+        </member>
+        <member name="M:DevConsole.GameConsole.WriteHeader">
+            <summary>
+            Prints the welcome message to the console.
+            </summary>
+        </member>
+        <member name="M:DevConsole.GameConsole.RunCommand(System.String,System.Boolean)">
+            <summary>
+            Runs a console command as if the user had input it.
+            Calling this before the console has initialized may fail silently.
+            </summary>
+            <param name="command">The line of input, including command name and arguments.</param>
+            <param name="echo"><c>true</c> to log this line to the console before running.</param>
+        </member>
+        <member name="M:DevConsole.GameConsole.RunCommandSilent(System.String)">
+            <summary>
+            Like <see cref="M:DevConsole.GameConsole.RunCommand(System.String,System.Boolean)"/>, but all output from the command is suppressed.
+            </summary>
+            <param name="command">The command to run.</param>
+        </member>
+        <member name="T:DevConsole.GameConsole.ConsoleLineEventArgs">
+            <summary>
+            Holds information about a line of console text.
+            This is used with the <see cref="E:DevConsole.GameConsole.OnLineWritten"/> event.
+            </summary>
+        </member>
+        <member name="P:DevConsole.GameConsole.ConsoleLineEventArgs.Text">
+            <summary>
+            The line of text written to the console.
+            </summary>
+            <remarks>
+            One call to <see cref="M:DevConsole.GameConsole.WriteLine(System.String)"/> doesn't necessarily only produce one line of text,
+            since it will be split at line breaks or in very long lines.
+            </remarks>
+        </member>
+        <member name="P:DevConsole.GameConsole.ConsoleLineEventArgs.TextColor">
+            <summary>
+            The color of this line of text.
+            </summary>
+        </member>
+        <member name="T:DevConsole.Positioning">
+            <summary>
+            Contains methods for getting an in-game position from a position string.
+            </summary>
+        </member>
+        <member name="P:DevConsole.Positioning.Autocomplete">
+            <summary>
+            Standard positioning autocompletion.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Positioning.TryGetPosition(RainWorldGame,System.String,DevConsole.RoomPos@)">
+            <summary>
+            Parses <paramref name="arg"/> and returns a position within <paramref name="game"/>.
+            </summary>
+            <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="T:DevConsole.RoomPos">
+            <summary>
+            Represents a position in the game world.
+            </summary>
+        </member>
+        <member name="P:DevConsole.RoomPos.Room">
+            <summary>
+            The room. This may be null.
+            </summary>
+        </member>
+        <member name="P:DevConsole.RoomPos.Pos">
+            <summary>
+            The exact position in the room.
+            </summary>
+        </member>
+        <member name="M:DevConsole.RoomPos.#ctor(AbstractRoom,UnityEngine.Vector2)">
+            <summary>
+            Initializes a new <see cref="T:DevConsole.RoomPos"/>.
+            </summary>
+        </member>
+        <member name="T:DevConsole.Selection">
+            <summary>
+            Contains methods for selecting abstract physical objects from a selector string in-game.
+            </summary>
+        </member>
+        <member name="P:DevConsole.Selection.Autocomplete">
+            <summary>
+            Standard selection autocompletion.
+            </summary>
+        </member>
+        <member name="M:DevConsole.Selection.SelectAbstractObjects(RainWorldGame,System.String)">
+            <summary>
+            Parses <paramref name="arg"/> and selects abstract objects within <paramref name="game"/>.
+            </summary>
+            <returns>The selected objects.</returns>
+        </member>
+        <member name="T:DevConsole.StringEx">
+            <summary>
+            Extension methods on strings.
+            </summary>
+        </member>
+        <member name="M:DevConsole.StringEx.SplitCommandLine(System.String)">
+            <summary>
+            Splits a string into command line arguments.
+            </summary>
+            <param name="commandLine">The line of </param>
+            <returns></returns>
+        </member>
+        <member name="M:DevConsole.StringEx.SplitLines(System.String)">
+            <summary>
+            Splits a string on newlines.
+            </summary>
+            <param name="text">The text to split.</param>
+            <returns>An enumerable of all lines in the string.</returns>
+        </member>
+        <member name="M:DevConsole.StringEx.SplitLongLines(System.String,System.Single,FFont)">
+            <summary>
+            Splits a string so that each segment's width is below <paramref name="maxWidth"/>.
+            </summary>
+            <param name="text">The text to split.</param>
+            <param name="maxWidth">The upper bound for line width.</param>
+            <param name="font">The font used to measure splitting.</param>
+            <returns>String segments that will be under <paramref name="maxWidth"/> when displayed using <paramref name="font"/>.</returns>
+        </member>
+        <member name="M:DevConsole.StringEx.EscapeCommandLine(System.String)">
+            <summary>
+            Escapes all special characters in an input string for use in the command line.
+            Strings that contain whitespace will be surrounded in quotes
+            </summary>
+            <param name="input">The raw string.</param>
+            <returns>A string with special characters escaped.</returns>
+        </member>
+    </members>
+</doc>
