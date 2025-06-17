@@ -101,7 +101,8 @@ namespace FinderMod.Search
                 "Lizard Cosmetics (Train)",
                 "Firebug Colors",
 
-                // Watcher"Lizard Cosmetics (Indigo)",
+                // Watcher
+                "Lizard Cosmetics (Indigo)",
                 "Moth (Big) Variations",
                 "Moth (Small) Variations",
                 "Barnacle Variations",
