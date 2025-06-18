@@ -186,7 +186,7 @@ namespace FinderMod.Search.Options
         /// <param name="target">Input to check</param>
         /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float WrapDistanceIf(float num, Input<float> target)
+        public static float WrapDistanceIf(float num, Input<float>? target)
         {
             if (target != null && target.enabled)
             {

@@ -91,7 +91,7 @@ namespace FinderMod.Search.Options
             LizardType type = typeInp.value;
             var (h, s, l) = GetColor(Random, type);
 
-            return DistanceIf(h, colrInp.HueInput) + DistanceIf(s, colrInp.SatInput) + DistanceIf(l, colrInp.LightInput);
+            return WrapDistanceIf(h, colrInp.HueInput) + DistanceIf(s, colrInp.SatInput) + DistanceIf(l, colrInp.LightInput);
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
