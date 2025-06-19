@@ -45,6 +45,7 @@ namespace FinderMod
 
         public void ClearMemory()
         {
+            if (Tabs == null) return;
             foreach (var tab in Tabs)
             {
                 (tab as BaseTab)!.ClearMemory();

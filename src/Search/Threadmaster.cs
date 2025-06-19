@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using FinderMod.Search.Options;
 
 namespace FinderMod.Search
 {
-    internal class Threadmaster
+    /// <summary>
+    /// Runs ID Finder queries
+    /// </summary>
+    public class Threadmaster
     {
         private readonly List<Option> options;
         private readonly int threads;
@@ -24,10 +26,21 @@ namespace FinderMod.Search
         private bool abort = false;
         private int finished = 0;
 
+        /// <summary>Whether or not the search is running</summary>
         public bool Running => finished != threads && started && !abort;
+        /// <summary>Progress from 0 to 1</summary>
         public float Progress => progress.Min();
+        /// <summary>Reason for an abort, or null if not</summary>
         public string? AbortReason { get; private set; } = null;
 
+        /// <summary>
+        /// Initializes a searcher. Use <see cref="Run"/> to actually run the thing.
+        /// </summary>
+        /// <param name="options">Options to run with</param>
+        /// <param name="threads">Number of threads to use</param>
+        /// <param name="results">Number of results to return</param>
+        /// <param name="range">Min and max, inclusive, as a tuple</param>
+        /// <param name="gpu">Not implemented. Do not use.</param>
         public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)
         {
             var span = PositiveDirGap(range.min, range.max, 1);
@@ -36,6 +49,7 @@ namespace FinderMod.Search
             this.results = results;
             this.range = range;
             this.gpu = gpu;
+            if (gpu) throw new NotImplementedException("GPU is not implemented. Do not use.");
             progress = new float[threads];
             distinctLinks = options.Count - options.Count(x => x.linked);
             output = new Result[threads, distinctLinks, results];
@@ -56,10 +70,14 @@ namespace FinderMod.Search
             }
         }
 
+        /// <summary>Starts a search.</summary>
+        /// <remarks>Does nothing if a search has already been started. Use <see cref="Abort(string)"/> to stop a search.</remarks>
         public void Run()
         {
             abort = false;
+            AbortReason = null!;
             if (Running) return;
+            finished = 0;
             started = true;
             if (gpu) throw new NotImplementedException();
 
@@ -182,6 +200,7 @@ namespace FinderMod.Search
         /// Returns search results such that the first dimension is each query and the second dimension is the results from each query.
         /// </summary>
         /// <returns>Results in a two-dimensional array with queries on the outer and individual results on the inner</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "Readability")]
         public Result[][] GetResults()
         {
             if (Running || !started) throw new InvalidOperationException("Please wait until the operation is complete, or abort first.");
@@ -206,15 +225,24 @@ namespace FinderMod.Search
             return combinedResults.Select(x => x.ToArray()).ToArray(); //wheeee!!!
         }
 
+        /// <summary>
+        /// Aborts an ongoing search
+        /// </summary>
+        /// <param name="reason"></param>
         public void Abort(string reason)
         {
             abort = true;
             AbortReason = reason;
         }
 
+        /// <summary>
+        /// Contains a search result.
+        /// </summary>
         public struct Result
         {
+            /// <summary>The id of the result</summary>
             public int id;
+            /// <summary>The distance of the result from the actual query</summary>
             public float dist;
         }
 

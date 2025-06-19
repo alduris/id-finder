@@ -14,14 +14,21 @@ namespace FinderMod.Inputs
     /// <param name="internalName">Internal name for group. Ideally should be unique. Used for saving in history.</param>
     public class Group(List<IElement> children, string internalName) : IElement, ISaveInHistory
     {
+        /// <summary>Internal margin between elements</summary>
         protected const float MARGIN = 6f;
+        /// <summary>Internal padding between edges</summary>
         protected const float PADDING = 10f;
 
+        /// <summary>Internal name used in save data</summary>
         protected readonly string internalName = internalName;
+        /// <summary>Outer edge. Null if not present.</summary>
         protected OpRect rect = null!;
+        /// <summary>Whether element has an outer edge.</summary>
         public bool hasRect = true;
+        /// <summary>List of children</summary>
         public List<IElement> children = children;
 
+        /// <summary>Total height of the element.</summary>
         public float Height => children.Sum(x => x.Height) + MARGIN * Math.Max(0, children.Count - 1) + 2 * PADDING;
 
         /// <summary>
@@ -85,9 +92,11 @@ namespace FinderMod.Inputs
         }
 
 
-        // Save stuff
+        /// <summary>Save key</summary>
         public string SaveKey => internalName;
 
+        /// <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+        /// <returns>A struct containing the data for easy conversion</returns>
         public virtual JObject ToSaveData()
         {
             var list = new JObject();
@@ -101,6 +110,10 @@ namespace FinderMod.Inputs
             return list;
         }
 
+        /// <summary>
+        /// Returns the element to the state it was given the save state data.
+        /// </summary>
+        /// <param name="data">The save data to restore data to</param>
         public virtual void FromSaveData(JObject data)
         {
             HashSet<ISaveInHistory> saveable = children.Where(x => x is ISaveInHistory).Cast<ISaveInHistory>().ToHashSet();
@@ -115,6 +128,8 @@ namespace FinderMod.Inputs
             }
         }
 
+        /// <summary>Returns the string representation for the group on the history tab.</summary>
+        /// <returns>The strings to represent the group on the history tab.</returns>
         public virtual IEnumerable<string> GetHistoryLines()
         {
             foreach (var child in children)

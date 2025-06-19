@@ -2,12 +2,20 @@
 using FinderMod.Search.Options;
 using MoreSlugcats;
 using UnityEngine;
-using static FinderMod.Search.Util.LizardUtil;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace FinderMod.Search.Util
 {
+    /// <summary>
+    /// Collection of utilities for lizard searching
+    /// </summary>
     public static class LizardUtil
     {
+        /// <summary>
+        /// Penalty applied to missing results
+        /// </summary>
+        public const float MISSING_PENALTY = 1000f; // some really high number that feasibly should get us good results
+
         public enum LizardType
         {
             NONE,
@@ -297,7 +305,7 @@ namespace FinderMod.Search.Util
 
         public struct AxolotlGillsVars
         {
-            public AxolotlGillsVars(XORShift128 Random)
+            public AxolotlGillsVars(XORShift128 Random, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
                 rigor = Random.Value;
 
@@ -308,6 +316,7 @@ namespace FinderMod.Search.Util
                 {
                     graphic = Random.Range(0, 6);
                 }
+                graphicCalculation ??= new(this);
 
                 numGills = Random.Range(2, 8);
 
@@ -460,7 +469,7 @@ namespace FinderMod.Search.Util
 
         public struct LongHeadScalesVars
         {
-            public LongHeadScalesVars(XORShift128 Random, LizardType type)
+            public LongHeadScalesVars(XORShift128 Random, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
                 // Some values
                 rigor = Random.Value;
@@ -471,8 +480,10 @@ namespace FinderMod.Search.Util
                 // Colored?
                 colored = Random.Value < 0.5f && type != LizardType.White;
 
-                Random.Shift();
-                if (size < 0.5f) Random.Shift();
+                graphic = Random.Range(4, 6);
+                if (size < 0.5f && Random.Value < 0.5f) graphic = 6;
+                else if (size > 0.8f) graphic = 5;
+                graphicCalculation ??= new(this);
 
                 if (size < 0.2f && type != LizardType.White)
                 {
@@ -491,6 +502,7 @@ namespace FinderMod.Search.Util
             }
 
             public float rigor;
+            public int graphic;
             public bool colored;
             public float length;
             public float width;
@@ -498,7 +510,7 @@ namespace FinderMod.Search.Util
 
         public struct LongShoulderScalesVars
         {
-            public LongShoulderScalesVars(XORShift128 Random, float tailLength, LizardType type)
+            public LongShoulderScalesVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
                 scaleType = LizardBodyScaleType.Patch;
                 if (type != LizardType.Pink || Random.Value < 0.33333334f)
@@ -556,7 +568,7 @@ namespace FinderMod.Search.Util
                     graphic = Random.Range(3, 6);
                 }
 
-                // Offset for any other code
+                // Specific cases of graphics
                 if (type == LizardType.Pink && Random.Value < 0.25f) graphic = 0;
                 if (type == LizardType.Red)
                 {
@@ -567,6 +579,8 @@ namespace FinderMod.Search.Util
                         Random.Shift();
                     }
                 }
+                graphicCalculation ??= new(this);
+
                 //float sizeSkewExponent = Mathf.Lerp(0.1f, 0.9f, Random.Value);
                 Random.Shift();
             }
@@ -641,7 +655,7 @@ namespace FinderMod.Search.Util
 
         public struct SpineSpikesVars
         {
-            public SpineSpikesVars(XORShift128 Random, float tailLength, LizardType type)
+            public SpineSpikesVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
                 float bodyAndTailLength = GetBodyAndTailLength(type, tailLength);
 
@@ -659,9 +673,10 @@ namespace FinderMod.Search.Util
                 if (graphic == 4) graphic = 3;
                 else if (graphic != 3 || Random.Value >= 0.5f) Random.Shift();
 
-                // Will need to redo this section if need sprite (graphic) because it is a big if-else chain to set graphic depending on lizard type
                 if (type == LizardType.Pink && Random.Value < 0.7f) graphic = 0;
                 else if (type == LizardType.Green && Random.Value < 0.5f) graphic = 3;
+
+                graphicCalculation ??= new(this);
 
                 Random.Shift();
                 if (type == LizardType.Pink) Random.Shift();
@@ -720,15 +735,22 @@ namespace FinderMod.Search.Util
 
         public struct TailGeckoScalesVars
         {
-            public TailGeckoScalesVars(XORShift128 Random, float tailColor)
+            public TailGeckoScalesVars(XORShift128 Random, float tailColor, WingScalesVars? wingScalesVars)
             {
                 // Get rows, lines, and increment picker
                 rows = Random.Range(7, 14);
                 lines = 3;
                 Random.Shift();
 
-                // Pointer offset
-                if (tailColor > 0.1f) Random.Shift();
+                // Big scales
+                if (tailColor > 0.1f && Random.Value < Mathf.Lerp(0.7f, 0.99f, tailColor))
+                {
+                    bigScales = true;
+                    if (wingScalesVars.HasValue && wingScalesVars.Value.scaleLength > 10f)
+                    {
+                        bigScales = false;
+                    }
+                }
 
                 // Extra tidbit thing for rows and lines
                 if (Random.Value < 0.5f)
@@ -740,13 +762,13 @@ namespace FinderMod.Search.Util
 
             public int rows;
             public int lines;
+            public bool bigScales;
         }
 
         public struct TailTuftVars
         {
-            public TailTuftVars(XORShift128 Random, float tailLength, LizardType type)
+            public TailTuftVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftGraphicCalculation? graphicCalculation)
             {
-
                 if (Random.Value < 0.14285715f || Random.Value < 0.9f && type == LizardType.Blue || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     scaleType = LizardBodyScaleType.TwoLines;
@@ -770,8 +792,16 @@ namespace FinderMod.Search.Util
                 }
 
                 // Offset for future endeavors
-                Random.Shift(5);
-                if (Random.Value < 0.033333335f) Random.Shift();
+                Random.Shift(3);
+                colored = Random.Value < 0.8f;
+                graphic = Random.Range(3, 7);
+                if (graphic == 3) graphic = 1;
+                if (Random.Value < 0.033333335f) Random.Range(0, 7);
+                if (Random.Value < 0.8f || type == LizardType.Red || type == LizardType.Zoop)
+                {
+                    if (graphicCalculation.HasValue) graphic = graphicCalculation.Value.graphic;
+                }
+                graphicCalculation ??= new(this);
                 Random.Shift(2);
             }
 
@@ -784,6 +814,19 @@ namespace FinderMod.Search.Util
 
             public LizardBodyScaleType scaleType;
             public int numScales;
+            public int graphic;
+            public bool colored;
+
+            public struct TailTuftGraphicCalculation
+            {
+                public TailTuftGraphicCalculation(AxolotlGillsVars vars) => graphic = vars.graphic;
+                public TailTuftGraphicCalculation(LongHeadScalesVars vars) => graphic = vars.graphic;
+                public TailTuftGraphicCalculation(LongShoulderScalesVars vars) => graphic = vars.graphic;
+                public TailTuftGraphicCalculation(TailTuftVars vars) => graphic = vars.graphic;
+                public TailTuftGraphicCalculation(SpineSpikesVars vars) => graphic = vars.graphic;
+
+                public int graphic;
+            }
         }
 
         public struct WhiskersVars
@@ -820,5 +863,11 @@ namespace FinderMod.Search.Util
             public int numScales;
             public float scaleLength;
         }
+
+        public struct Melanistic(bool melanistic)
+        {
+            public bool melanistic = melanistic;
+        }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

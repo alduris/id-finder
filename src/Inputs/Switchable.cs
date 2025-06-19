@@ -13,12 +13,18 @@ namespace FinderMod.Inputs
     /// <typeparam name="E">The type of element to switch between</typeparam>
     public class Switchable<E> : IElement, ISaveInHistory where E : IElement
     {
+        /// <summary>Label used in switch input</summary>
         protected readonly string name;
+        /// <summary>Input used to switch between elements</summary>
         protected MultiChoiceInput SwitchInput;
+        /// <summary>Possible elements</summary>
         protected List<E> elements;
 
-        /// <param name="name">Name of the switch input</param>
-        /// <param name="options">Elements to switch between, key-element pairs.</param>
+        /// <summary>
+        /// Creates an input holder that switches between elements based on the value of a combo box.
+        /// </summary>
+        /// <param name="name">Name to display on switch input</param>
+        /// <param name="options">List of options using switch input label-resulting element tuples</param>
         public Switchable(string name, List<(string key, E element)> options)
         {
             this.name = name;
@@ -34,23 +40,39 @@ namespace FinderMod.Inputs
             };
         }
 
+        /// <summary>Whether to force the switch input to be force enabled</summary>
         public bool ForceEnabled
         {
+            get => SwitchInput.forceEnabled;
             set => SwitchInput.forceEnabled = value;
         }
+        /// <summary>Whether the switch input itself is enabled</summary>
         public bool Enabled => SwitchInput.enabled;
+        /// <summary>Whether the switch input has bias</summary>
         public bool HasBias
         {
             get => SwitchInput.hasBias;
             set => SwitchInput.hasBias = value;
         }
+        /// <summary>The bias of the switch input</summary>
         public int Bias => SwitchInput.bias;
+        /// <summary>Selected index of the switch input</summary>
         public int Switch => SwitchInput.value;
+        /// <summary>The active element according to the value of <see cref="Switch"/></summary>
         public E Element => Enabled ? elements[SwitchInput.value] : default!;
-        public float Height => SwitchInput.Height;
 
+        /// <summary>Total height of the element.</summary>
+        public float Height => SwitchInput.Height + (Enabled ? Element.Height + 6f : 0f);
+
+        /// <summary>Save Key</summary>
         public string SaveKey => name;
 
+        /// <summary>
+        /// Creates the element
+        /// </summary>
+        /// <param name="x">What x to start from</param>
+        /// <param name="y">What y to start from</param>
+        /// <param name="elements">The list of elements to add to</param>
         public void Create(float x, ref float y, List<UIelement> elements)
         {
             SwitchInput.Create(x, ref y, elements);
@@ -61,6 +83,8 @@ namespace FinderMod.Inputs
             }
         }
 
+        /// <summary>Converts the input into a format convertable to JSON via Newtonsoft.</summary>
+        /// <returns>A struct containing the data for easy conversion</returns>
         public JObject ToSaveData()
         {
             var obj = new JObject()
@@ -79,6 +103,8 @@ namespace FinderMod.Inputs
             return obj;
         }
 
+        /// <summary>Returns the input to the state it was given the save state data.</summary>
+        /// <param name="data">The save data to restore data to</param>
         public void FromSaveData(JObject data)
         {
             SwitchInput.FromSaveData((JObject)data["switch"]!);
@@ -92,6 +118,8 @@ namespace FinderMod.Inputs
             }
         }
 
+        /// <summary>Returns the string representation for the input on the history tab.</summary>
+        /// <returns>The strings to represent the input on the history tab.</returns>
         public IEnumerable<string> GetHistoryLines()
         {
             if (Enabled && Element is ISaveInHistory history)

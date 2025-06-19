@@ -5,7 +5,7 @@ using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    public class ZoopLizardCosmetics : BaseLizardCosmetics
+    internal class ZoopLizardCosmetics : BaseLizardCosmetics
     {
         private readonly WingScalesCosmetic wingScalesCosmetic;
         private readonly SpineSpikesCosmetic mainSpineSpikesCosmetic;
@@ -56,137 +56,106 @@ namespace FinderMod.Search.Options.LizardCosmetics
             bool tail = false;
             bool lhs = false;
 
+            // Tracking variables so we know which inputs to poll for distance if we already encountered them once.
+            // This is necessary because the user does not necessarily know which order they may come in.
+            SpineSpikesCosmetic otherSS = null!;
+            TailTuftCosmetic otherTT = null!;
+
             foreach (var result in GetResults(Random))
             {
                 switch (result)
                 {
                     case WingScalesVars wingScalesVars:
-                        if (wingScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(wingScalesVars.scaleLength, wingScalesCosmetic.LengthInput);
-                            r += DistanceIf(wingScalesVars.numScales, wingScalesCosmetic.NumScalesInput);
-                        }
-                        else if (wingScalesCosmetic.Enabled && !wingScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += wingScalesCosmetic.Distance(wingScalesVars);
                         break;
                     case SpineSpikesVars spineSpikesVars:
                         {
-                            SpineSpikesCosmetic input;
+                            bool tryBoth = true;
                             if (finishedZoopSpecific)
                             {
                                 body = true;
-                                input = spineSpikesCosmetic;
-                            }
-                            else
-                            {
-                                input = mainSpineSpikesCosmetic;
+                                if (otherSS != null)
+                                {
+                                    r += otherSS.Distance(spineSpikesVars);
+                                    tryBoth = false;
+                                }
                             }
 
-                            if (input.Active)
+                            if (tryBoth)
                             {
-                                r += DistanceIf(spineSpikesVars.spineLength, input.LengthInput);
-                                r += DistanceIf(spineSpikesVars.numScales, input.NumScalesInput);
-                                r += DistanceIf(spineSpikesVars.graphic, input.GraphicInput);
-                            }
-                            else if (input.Enabled && !input.Toggled)
-                            {
-                                r += MISSING_PENALTY;
+                                float a = spineSpikesCosmetic.Distance(spineSpikesVars);
+                                float b = mainSpineSpikesCosmetic.Distance(spineSpikesVars);
+
+                                if (a <= b && (spineSpikesCosmetic.Enabled))
+                                {
+                                    otherSS = mainSpineSpikesCosmetic;
+                                    r += a;
+                                }
+                                else
+                                {
+                                    otherSS = spineSpikesCosmetic;
+                                    r += b;
+                                }
                             }
                         }
                         break;
 
                     case TailTuftVars tailTuftVars:
                         {
-                            TailTuftCosmetic input;
-                            if (finishedZoopSpecific)
+                            bool tryBoth = true;
+                            if (!finishedZoopSpecific)
                             {
-                                tail = true;
-                                input = tailTuftCosmetic;
+                                finishedZoopSpecific = true;
                             }
                             else
                             {
-                                finishedZoopSpecific = true;
-                                input = mainTailTuftCosmetic;
+                                tail = true;
+                                if (otherTT != null)
+                                {
+                                    otherTT.Distance(tailTuftVars);
+                                    tryBoth = false;
+                                }
                             }
 
-                            if (input.Active)
+                            if (tryBoth)
                             {
-                                r += DistanceIf(tailTuftVars.numScales, input.NumScalesInput);
-                                r += DistanceIf(tailTuftVars.scaleType, input.ScaleTypeInput);
-                            }
-                            else if (input.Enabled && !input.Toggled)
-                            {
-                                r += MISSING_PENALTY;
+                                float a = tailTuftCosmetic.Distance(tailTuftVars);
+                                float b = mainTailTuftCosmetic.Distance(tailTuftVars);
+
+                                if (a <= b && tailTuftCosmetic.Enabled)
+                                {
+                                    otherTT = mainTailTuftCosmetic;
+                                    r += a;
+                                }
+                                else
+                                {
+                                    otherTT = tailTuftCosmetic;
+                                    r += b;
+                                }
                             }
                         }
                         break;
 
                     case LongShoulderScalesVars longShoulderScalesVars:
                         body = true;
-                        if (longShoulderScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(longShoulderScalesVars.minSize, longShoulderScalesCosmetic.MinSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.maxSize, longShoulderScalesCosmetic.MaxSizeInput);
-                            r += DistanceIf(longShoulderScalesVars.numScales, longShoulderScalesCosmetic.NumScalesInput);
-                            r += DistanceIf(longShoulderScalesVars.graphic, longShoulderScalesCosmetic.GraphicInput);
-                            if (longShoulderScalesCosmetic.ScaleTypeInput.enabled && longShoulderScalesCosmetic.ScaleTypeInput.value != longShoulderScalesVars.scaleType)
-                                r += longShoulderScalesCosmetic.ScaleTypeInput.bias;
-                            r += DistanceIf(longShoulderScalesVars.colored, longShoulderScalesCosmetic.ColoredInput);
-                        }
-                        else if (longShoulderScalesCosmetic.Enabled && !longShoulderScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         body = true;
-                        if (shortBodyScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(shortBodyScalesVars.numScales, shortBodyScalesCosmetic.NumScalesInput);
-                            if (shortBodyScalesCosmetic.ScaleTypeInput.enabled && shortBodyScalesCosmetic.ScaleTypeInput.value != shortBodyScalesVars.scaleType)
-                                r += shortBodyScalesCosmetic.ScaleTypeInput.bias;
-                        }
-                        else if (shortBodyScalesCosmetic.Enabled && !shortBodyScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                         break;
                     case BumpHawkVars bumpHawkVars:
                         body = true;
-                        if (bumpHawkCosmetic.Active)
-                        {
-                            // len num col
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
-                        }
-                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += bumpHawkCosmetic.Distance(bumpHawkVars);
                         break;
 
                     case LongHeadScalesVars longHeadScalesVars:
                         lhs = true;
-                        if (longHeadScalesCosmetic.Active)
-                        {
-                            r += DistanceIf(longHeadScalesVars.length, longHeadScalesCosmetic.LengthInput);
-                            r += DistanceIf(longHeadScalesVars.width, longHeadScalesCosmetic.WidthInput);
-                            r += DistanceIf(longHeadScalesVars.rigor, longHeadScalesCosmetic.RigorInput);
-                            r += DistanceIf(longHeadScalesVars.colored, longHeadScalesCosmetic.ColoredInput);
-                        }
-                        else if (longHeadScalesCosmetic.Enabled && !longHeadScalesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += longHeadScalesCosmetic.Distance(longHeadScalesVars);
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        r += lizardRotCosmetic.Distance(lizardRotVars);
                         break;
 
                     case SnowAccumulationVars: break;

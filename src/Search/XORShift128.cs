@@ -2,10 +2,17 @@
 
 namespace FinderMod.Search
 {
+    /// <summary>
+    /// Version of <see cref="UnityEngine.Random"/> able to be created individually, which is useful for multithreading purposes.
+    /// </summary>
     public class XORShift128
     {
+        /// <summary>State variable</summary>
         public uint x = 0, y = 0, z = 0, w = 0;
         const uint MT19937 = 0x6c078965u;
+
+        /// <summary>Initializes with a seed.</summary>
+        /// <param name="seed">Seed to initialize with</param>
         public void InitState(int seed)
         {
             x = (uint)seed;
@@ -14,6 +21,8 @@ namespace FinderMod.Search
             w = (uint)(MT19937 * z + 1);
         }
 
+        /// <summary>Initializes with a seed.</summary>
+        /// <param name="seed">Seed to initialize with</param>
         public void InitState(uint seed)
         {
             x = seed;
@@ -22,6 +31,11 @@ namespace FinderMod.Search
             w = MT19937 * z + 1;
         }
 
+        /// <summary>Initializes with a state</summary>
+        /// <param name="x"><see cref="x"/></param>
+        /// <param name="y"><see cref="y"/></param>
+        /// <param name="z"><see cref="z"/></param>
+        /// <param name="w"><see cref="w"/></param>
         public void InitState(uint x, uint y, uint z, uint w)
         {
             this.x = x;
@@ -38,8 +52,12 @@ namespace FinderMod.Search
             return w = w ^ (w >> 19) ^ t ^ (t >> 8);
         }
 
+        /// <summary>Advances the random state without returning a number.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Shift() => NextU32();
+
+        /// <summary>Advances the random state n times without returning a number.</summary>
+        /// <param name="n">The amount of times to shift</param>
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Shift(int n)
@@ -47,6 +65,10 @@ namespace FinderMod.Search
             for (int i = 0; i < n; i++) NextU32();
         }
 
+        /// <summary>Equivalent to <see cref="UnityEngine.Random.Range(int, int)"/></summary>
+        /// <param name="min">Minimum, inclusive.</param>
+        /// <param name="max">Maximum, exclusive.</param>
+        /// <returns>Random value between min (inclusive) and max (exclusive).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Range(int min, int max)
         {
@@ -65,8 +87,13 @@ namespace FinderMod.Search
             }
         }
 
+        /// <summary>Equivalent to <see cref="UnityEngine.Random.value"/>. Returns a random value between 0 and 1, inclusive.</summary>
         public float Value => (NextU32() & 0x7FFFFF) * 1.192093E-07f;
 
+        /// <summary>Equivalent to <see cref="UnityEngine.Random.Range(float, float)"/></summary>
+        /// <param name="min">Minimum, inclusive.</param>
+        /// <param name="max">Maximum, inclusive.</param>
+        /// <returns>Random value between min and max, inclusive.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Range(float min, float max)
         {

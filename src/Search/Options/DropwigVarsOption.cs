@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class DropwigVarsOption : Option
+    internal class DropwigVarsOption : Option
     {
         private readonly FloatInput BodyThicknessInput;
         private readonly FloatInput LegsThicknessInput;

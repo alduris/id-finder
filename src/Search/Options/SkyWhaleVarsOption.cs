@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using FinderMod.Inputs;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class SkyWhaleVarsOption : Option
+    internal class SkyWhaleVarsOption : Option
     {
         private readonly FloatInput SizeMultiplierInput;
         private readonly FloatInput FinSharpnessInput;

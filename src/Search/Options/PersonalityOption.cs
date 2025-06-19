@@ -4,7 +4,7 @@ using Unity.Burst;
 
 namespace FinderMod.Search.Options
 {
-    public class PersonalityOption : Option
+    internal class PersonalityOption : Option
     {
         public PersonalityOption() : base()
         {
@@ -28,7 +28,7 @@ namespace FinderMod.Search.Options
             float r = 0f;
             for (int i = 0; i < 6; i++)
             {
-                var inp = elements[i] as Input<float>;
+                var inp = elements[i] as RangedInput<float>;
                 r += DistanceIf(p[i], inp);
             }
             return r;

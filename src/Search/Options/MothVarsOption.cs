@@ -7,7 +7,7 @@ using Color = UnityEngine.Color; // STOP POPPING UP System.Drawing NOBODY LIKES 
 
 namespace FinderMod.Search.Options
 {
-    public class MothVarsOption : Option
+    internal class MothVarsOption : Option
     {
         private readonly bool big;
         private readonly float baseSize;
@@ -29,17 +29,14 @@ namespace FinderMod.Search.Options
                 ScaleInput = new FloatInput("Size", baseSize * 0.78f, baseSize * 1.1f),
                 ChubInput = new FloatInput("Chub"),
                 LegPuffInput = new FloatInput("Leg puff"),
-                AntennaLength = big ? new IntInput("Antenna length", Mathf.Max(3, Mathf.RoundToInt(4 * 0.78f * baseSize)), Mathf.Max(3, Mathf.RoundToInt(6 * 1.1f * baseSize))) : null!,
-                AntennaWidth = new FloatInput("Antenna width", 2f * 0.78f * baseSize, 7f * 1.1f * baseSize),
-
-                // TODO: include colors somehow. It's so strict I almost want to make a custom color input for it.
-                // It doesn't use HSL so can't use that and strict enough that the generic RGB input won't do due to its limited axes.
-                // Would have to create some multidimensional color picker (by which I mean multiple sliders with a preview)
-                // but the issue with that is how do we allow enabling/disabling of it because body and secondary colors are inherantly tied to one another
-
-                //new Whitespace(),
-                //new Label("Note: moth colors are heavily affected by room palette, results may not appear to be accurate to input"),
                 ];
+            if (big) elements.Add(AntennaLength = new IntInput("Antenna length", Mathf.Max(3, Mathf.RoundToInt(4 * 0.78f * baseSize)), Mathf.Max(3, Mathf.RoundToInt(6 * 1.1f * baseSize))));
+            elements.Add(AntennaWidth = new FloatInput("Antenna width", 2f * 0.78f * baseSize, 7f * 1.1f * baseSize));
+
+            // TODO: include colors somehow. It's so strict I almost want to make a custom color input for it.
+            // It doesn't use HSL so can't use that and strict enough that the generic RGB input won't do due to its limited axes.
+            // Would have to create some multidimensional color picker (by which I mean multiple sliders with a preview)
+            // but the issue with that is how do we allow enabling/disabling of it because body and secondary colors are inherantly tied to one another
 
             // Tag if small
             if (!big)

@@ -5,21 +5,27 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class KingVultureWingOption : Option
+    internal class KingVultureWingOption : Option
     {
-        private readonly ColorHSLInput colorA, colorB;
-        private readonly IntInput countInp;
+        private readonly ColorHSLInput ColorAInput, ColorBInput;
+        private readonly IntInput FeathersInput;
 
         public KingVultureWingOption() : base()
         {
             elements = [
-                colorA = new ColorHSLInput("Color A"),
-                colorB = new ColorHSLInput("Color B"),
-                countInp = new IntInput("Feather count", 15, 24)
+                ColorAInput = new ColorHSLInput("Color A"),
+                ColorBInput = new ColorHSLInput("Color B"),
+                FeathersInput = new IntInput("Feather count", 15, 24)
             ];
         }
 
-        public override float Execute(XORShift128 Random)
+        private struct Results
+        {
+            public HSLColor a, b;
+            public int feathers;
+        }
+
+        private Results GetResults(XORShift128 Random)
         {
             // Color variables
             float kha, ksa, kla, khb, ksb, klb;
@@ -36,40 +42,35 @@ namespace FinderMod.Search.Options
             // Wing feather count
             int nf = Random.Range(15, 25);
 
+            return new Results
+            {
+                a = new HSLColor(kha, ksa, kla),
+                b = new HSLColor(khb, ksb, klb),
+                feathers = nf,
+            };
+        }
+
+        public override float Execute(XORShift128 Random)
+        {
+            var results = GetResults(Random);
+
             // Return result
             float r = 0f;
-            r += DistanceIf(kha, colorA.HueInput);
-            r += DistanceIf(ksa, colorA.SatInput);
-            r += DistanceIf(kla, colorA.LightInput);
-            r += DistanceIf(khb, colorB.HueInput);
-            r += DistanceIf(ksb, colorB.SatInput);
-            r += DistanceIf(klb, colorB.LightInput);
-            if (countInp.enabled) r += Math.Abs(nf - countInp.value);
+            r += DistanceIf(results.a, ColorAInput);
+            r += DistanceIf(results.b, ColorBInput);
+            r += DistanceIf(results.feathers, FeathersInput);
 
             return r;
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
         {
-            // Color variables
-            float kha, ksa, kla, khb, ksb, klb;
-
-            khb = Mathf.Lerp(0.93f, 1.07f, Random.Value);
-            ksb = Mathf.Lerp(0.8f, 1f, 1f - Random.Value * Random.Value);
-            klb = Mathf.Lerp(0.45f, 1f, Random.Value * Random.Value);
-            kha = khb + Mathf.Lerp(-0.25f, 0.25f, Random.Value);
-            ksa = Mathf.Lerp(0.5f, 0.7f, Random.Value);
-            kla = Mathf.Lerp(0.7f, 0.8f, Random.Value);
-
-            kha %= 1f; khb %= 1f;
-
-            // Wing feather count
-            int nf = Random.Range(15, 25);
+            var results = GetResults(Random);
 
             // Relay results
-            yield return $"Color A: hsl({kha}, {ksa}, {kla})";
-            yield return $"Color B: hsl({khb}, {ksb}, {klb})";
-            yield return $"Feather count: {nf}";
+            yield return $"Color A: hsl({results.a.hue}, {results.a.saturation}, {results.a.lightness})";
+            yield return $"Color A: hsl({results.b.hue}, {results.b.saturation}, {results.b.lightness})";
+            yield return $"Feather count: {results.feathers}";
         }
     }
 }

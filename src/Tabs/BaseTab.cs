@@ -3,9 +3,14 @@ using RWCustom;
 
 namespace FinderMod.Tabs
 {
-    public abstract class BaseTab : OpTab
+    internal abstract class BaseTab : OpTab
     {
         public BaseTab(OptionInterface option, string name) : base(option, name) { }
+
+        ~BaseTab()
+        {
+            ClearMemory();
+        }
 
         public abstract void Initialize();
         public abstract void Update();

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
+using Unity.Burst;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class ScavVarsOption : Option
+    internal class ScavVarsOption : Option
     {
         private readonly FloatInput hsInp, etInp, esInp, enInp, eaInp, fatInp, wnInp, ntInp, psInp, hcbInp, lsInp, atInp, twInp;
         private readonly BoolInput dpInp, cetInp;
@@ -58,6 +59,7 @@ namespace FinderMod.Search.Options
             public int tailSegments;
         }
 
+        [BurstCompile]
         private Results GetResults(XORShift128 Random)
         {
             Personality p = new(Random);

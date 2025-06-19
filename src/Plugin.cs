@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security;
 using System.Security.Permissions;
 using BepInEx;
@@ -13,12 +14,12 @@ using FinderMod.Search;
 namespace FinderMod
 {
     [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
-    internal partial class Plugin : BaseUnityPlugin
+    internal sealed class Plugin : BaseUnityPlugin
     {
         private readonly Options Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
-        public const string VERSION = "2.1";
+        public const string VERSION = "2.2";
         public static readonly Version CurrentVersion = new(VERSION);
 
         public Plugin()
@@ -62,6 +63,9 @@ namespace FinderMod
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
                 Logger.LogInfo("Loaded successfully");
+
+                if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
+                    Commands.Register();
             }
             catch (Exception ex)
             {
@@ -83,7 +87,7 @@ namespace FinderMod
 
         private void ClearMemory()
         {
-            // Options.ClearMemory();
+            Options.ClearMemory();
         }
     }
 }

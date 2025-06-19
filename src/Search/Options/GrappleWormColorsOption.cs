@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class GrappleWormColorsOption : Option
+    internal class GrappleWormColorsOption : Option
     {
         private readonly ColorHSLInput ColorInput = new("Color", 0.52f, 0.68f, 0.4f, 0.9f, 0.15f, 0.3f);
 

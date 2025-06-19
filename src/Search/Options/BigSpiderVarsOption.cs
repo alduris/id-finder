@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class BigSpiderVarsOption : Option
+    internal class BigSpiderVarsOption : Option
     {
         public enum SpiderType
         {

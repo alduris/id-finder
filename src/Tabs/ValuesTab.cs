@@ -17,12 +17,10 @@ namespace FinderMod.Tabs
         {
             searchItems = new OpComboBox2(
                 CosmeticBind(""), new(10f, 520f), 250f,
-                new List<ListItem>(
-                    OptionRegistry.ListOptions()
-                    .Select(s => new ListItem(s))
-                )
+                [.. OptionRegistry.ListOptions()
+                    .Select(s => new ListItem(s))]
             )
-            { listHeight = 20 };
+            { listHeight = 24 };
             inputId = new OpTextBox(CosmeticBind(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f) { allowSpace = true };
             outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
 
@@ -49,8 +47,16 @@ namespace FinderMod.Tabs
             const float LINE_HEIGHT = 15f; // line height of OpLabelLong when bigText is false
             const float WHITESPACE_HEIGHT = 10f;
 
-            RemoveItems([.. outputBox.items]);
+            // Remove old
+            foreach (UIelement element in outputBox.items)
+            {
+                element.Deactivate();
+                _RemoveItem(element);
+            }
+            outputBox.items.Clear();
+            outputBox.SetContentSize(0);
 
+            // Add new
             var name = searchItems.value;
             if (OptionRegistry.TryGetOption(name, out var option))
             {

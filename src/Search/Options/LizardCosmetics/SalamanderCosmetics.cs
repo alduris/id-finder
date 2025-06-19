@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    public class SalamanderCosmetics : BaseLizardCosmetics
+    internal class SalamanderCosmetics : BaseLizardCosmetics
     {
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
         private readonly AxolotlGillsCosmetic axolotlGillsCosmetic;
         private readonly TailFinCosmetic tailFinCosmetic;
+
+        private readonly BoolInput melanisticInput;
 
         public SalamanderCosmetics() : base(LizardType.Salamander)
         {
@@ -22,6 +26,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 bumpHawkCosmetic = new BumpHawkCosmetic(type),
                 None()
                 ));
+
+            elements.Add(melanisticInput = new BoolInput("Is melanistic") {
+                description = "Regions are able to change the chance of this happening, so for some mod regions this may not be accurate."
+            });
         }
 
         public override float Execute(XORShift128 Random)
@@ -33,51 +41,28 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 switch (result)
                 {
+                    case Melanistic melanistic:
+                        r += DistanceIf(melanistic.melanistic, melanisticInput);
+                        break;
+
                     case SpineSpikesVars spineSpikesVars:
                         body = true;
-                        if (spineSpikesCosmetic.Active)
-                        {
-                            r += DistanceIf(spineSpikesVars.spineLength, spineSpikesCosmetic.LengthInput);
-                            r += DistanceIf(spineSpikesVars.numScales, spineSpikesCosmetic.NumScalesInput);
-                            r += DistanceIf(spineSpikesVars.graphic, spineSpikesCosmetic.GraphicInput);
-                        }
-                        else if (spineSpikesCosmetic.Enabled && !spineSpikesCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += spineSpikesCosmetic.Distance(spineSpikesVars);
                         break;
                     case BumpHawkVars bumpHawkVars:
                         body = true;
-                        if (bumpHawkCosmetic.Active)
-                        {
-                            r += DistanceIf(bumpHawkVars.spineLength, bumpHawkCosmetic.SpineLenInput);
-                            r += DistanceIf(bumpHawkVars.numBumps, bumpHawkCosmetic.NumBumpsInput);
-                            r += DistanceIf(bumpHawkVars.colored, bumpHawkCosmetic.ColoredInput);
-                        }
-                        else if (bumpHawkCosmetic.Enabled && !bumpHawkCosmetic.Toggled)
-                        {
-                            r += MISSING_PENALTY;
-                        }
+                        r += bumpHawkCosmetic.Distance(bumpHawkVars);
                         break;
                     case AxolotlGillsVars axolotlGillsVars:
-                        r += DistanceIf(axolotlGillsVars.rigor, axolotlGillsCosmetic.RigorInput);
-                        r += DistanceIf(axolotlGillsVars.numGills, axolotlGillsCosmetic.NumGillsInput);
-                        r += DistanceIf(axolotlGillsVars.graphic, axolotlGillsCosmetic.GraphicInput);
+                        r += axolotlGillsCosmetic.Distance(axolotlGillsVars);
                         break;
 
                     case TailFinVars tailFinVars:
-                        r += DistanceIf(tailFinVars.spineLength, tailFinCosmetic.LengthInput);
-                        r += DistanceIf(tailFinVars.undersideSize, tailFinCosmetic.UndersideSizeInput);
-                        r += DistanceIf(tailFinVars.spineScaleX, tailFinCosmetic.ScaleXInput);
-                        r += DistanceIf(tailFinVars.numScales, tailFinCosmetic.NumScalesInput);
-                        r += DistanceIf(tailFinVars.graphic, tailFinCosmetic.GraphicInput);
-                        r += DistanceIf(tailFinVars.colored, tailFinCosmetic.ColoredInput);
+                        r += tailFinCosmetic.Distance(tailFinVars);
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                        r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                        r += lizardRotCosmetic.Distance(lizardRotVars);
                         break;
 
                     default:
@@ -91,6 +76,25 @@ namespace FinderMod.Search.Options.LizardCosmetics
             }
 
             return r;
+        }
+
+        protected override IEnumerable<string> GetValues(XORShift128 Random)
+        {
+            var (x, y, z, w) = (Random.x, Random.y, Random.z, Random.w);
+            foreach (var result in GetResults(Random))
+            {
+                if (result is Melanistic melanistic)
+                {
+                    yield return $"Is melanistic: {(melanistic.melanistic ? "Yes" : "No")}";
+                    break;
+                }
+            }
+
+            Random.InitState(x, y, z, w);
+            foreach (var result in base.GetValues(Random))
+            {
+                yield return result;
+            }
         }
     }
 }

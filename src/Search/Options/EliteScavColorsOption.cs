@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class EliteScavColorsOption : Option
+    internal class EliteScavColorsOption : Option
     {
         private readonly ColorHSLInput body, head, deco;
 

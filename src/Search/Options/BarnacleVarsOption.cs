@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class BarnacleVarsOption : Option
+    internal class BarnacleVarsOption : Option
     {
         private readonly FloatInput BodySizeInput;
         private readonly FloatInput EyeSizeInput;

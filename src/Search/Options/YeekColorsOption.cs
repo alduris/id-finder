@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class YeekColorsOption : Option
+    internal class YeekColorsOption : Option
     {
         private readonly ColorRGBInput FeatherColorInput = new("Feather color", new Color(0.9f, 0f, 0f)) { forceEnabled = true };
 

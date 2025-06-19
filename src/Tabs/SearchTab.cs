@@ -7,6 +7,7 @@ using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using Newtonsoft.Json;
+using UnityEngine;
 using static FinderMod.OpUtil;
 using static FinderMod.Search.HistoryManager;
 
@@ -39,10 +40,8 @@ namespace FinderMod.Tabs
             // Initialize elements we need
             var combo_allOpts = new OpComboBox2(
                 CosmeticBind(""), new(10f, 520f), 250f,
-                new List<ListItem>(
-                    OptionRegistry.ListOptions()
-                    .Select(s => new ListItem(s))
-                )
+                [.. OptionRegistry.ListOptions()
+                    .Select(s => new ListItem(s))]
             )
             { listHeight = 24 };
             var button_add = new OpSimpleButton(new(266f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
@@ -64,7 +63,7 @@ namespace FinderMod.Tabs
             // button_save.OnClick += (_) => HistoryManager.SaveHistory(options, [], (input_min.valueInt, input_max.valueInt));
             button_copy.OnClick += (_) =>
             {
-                UniClipboard.SetText(HistoryManager.CreateStringNoResults(options, (input_min.valueInt, input_max.valueInt)));
+                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
                 ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "search"));
             };
             button_paste.OnClick += (_) =>
@@ -263,7 +262,7 @@ namespace FinderMod.Tabs
                     if (threadmaster.AbortReason == null)
                     {
                         bool saved = false;
-                        var optionsLocalClone = options.Select(x => x).ToList();
+                        var optionsLocalClone = options.ToList();
                         var range = (input_min.valueInt, input_max.valueInt);
                         var button_save = new OpSimpleButton(new(64f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "SAVE") { description = "Save results to history" };
                         button_save.OnClick += (_) =>
@@ -275,6 +274,14 @@ namespace FinderMod.Tabs
                             RemoveItems(button_save);
                         };
                         cont_results.AddItems(button_save);
+
+                        // Temporary history gets removed after it is actually saved, or when the game closes
+                        HistoryManager.SaveTemporaryHistory(options, results, range);
+
+                        // Also print to dev console
+                        Commands.TryPrint("ID FINDER RESULTS", Color.white);
+                        Commands.TryPrint(string.Join(", ", [.. options]), Color.white);
+                        Commands.TryPrintResults(results);
                     }
 
                     // Reupdate query box to reenable everything

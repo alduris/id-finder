@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class FrogVarsOption : Option
+    internal class FrogVarsOption : Option
     {
         private readonly IntInput HornCountInput;
         private readonly FloatInput HornScaleInput;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    public class DrillCrabVarsOption : Option
+    internal class DrillCrabVarsOption : Option
     {
         private readonly FloatInput LegThicknessInput;
         private readonly FloatInput LegLengthInput;

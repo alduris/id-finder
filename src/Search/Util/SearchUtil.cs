@@ -9,11 +9,16 @@ namespace FinderMod.Search.Options
     public partial class Option
     {
         /// <summary>
-        /// <para>Personality struct. When used with the <see cref="XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.</para>
+        /// <para>
+        /// Personality struct. When used with the <see cref="XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.
+        /// Field names are based on shortenings by the mod Visible ID.
+        /// </para>
         /// <para>When using, ensure that it is created first or immediately after initializing a state so that it may make use of the seed properly.</para>
         /// </summary>
         public struct Personality
         {
+            /// <summary>Do not use parameterless constructor.</summary>
+            /// <exception cref="InvalidOperationException"></exception>
             public Personality() => throw new InvalidOperationException("Please use XORShift128 argument");
 
             /// <summary>
@@ -38,20 +43,44 @@ namespace FinderMod.Search.Options
                 Random.InitState(x, y, z, w);
             }
 
+            /// <summary>Aggression</summary>
             public float agg;
+            /// <summary>Bravery</summary>
             public float brv;
+            /// <summary>Dominance</summary>
             public float dom;
+            /// <summary>Energy</summary>
             public float nrg;
+            /// <summary>Nervous</summary>
             public float nrv;
+            /// <summary>Sympathy</summary>
             public float sym;
         }
 
+        /// <summary>
+        /// Simulates <see cref="Custom.ClampedRandomVariation(float, float, float)"/> using <see cref="XORShift128"/>.
+        /// Creates an S-curve centered at <c>baseValue</c> and clamps between 0 and 1.
+        /// </summary>
+        /// <param name="baseValue">Median value</param>
+        /// <param name="maxDeviation">Max value</param>
+        /// <param name="k"></param>
+        /// <param name="Random">Current state of random number generator</param>
+        /// <returns>Value clamped between 0 and 1</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ClampedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
             return Mathf.Clamp(baseValue + Custom.SCurve(Random.Value * 0.5f, k) * 2f * ((Random.Value < 0.5f) ? 1f : -1f) * maxDeviation, 0f, 1f);
         }
 
+        /// <summary>
+        /// Simulates <see cref="Custom.ClampedRandomVariation(float, float, float)"/> using <see cref="XORShift128"/>.
+        /// Creates an S-curve centered at <c>baseValue</c> and wraps between 0 and 1.
+        /// </summary>
+        /// <param name="baseValue">Median value</param>
+        /// <param name="maxDeviation">Max value</param>
+        /// <param name="k"></param>
+        /// <param name="Random">Current state of random number generator</param>
+        /// <returns>Value wrapped between 0 and 1</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float WrappedRandomVariation(float baseValue, float maxDeviation, float k, XORShift128 Random)
         {
@@ -59,33 +88,32 @@ namespace FinderMod.Search.Options
             return num - Mathf.Floor(num);
         }
 
-
+        /// <summary>Determines the distance for a ranged float input.</summary>
+        /// <param name="num">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Distance(float num, Input<float> target)
+        public static float DistanceIf(float num, RangedInput<float>? target)
         {
-            return Mathf.Abs(num - target.value) * target.bias;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Distance(float num, Input<int> target)
-        {
-            return Math.Abs(num - target.value) * target.bias;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DistanceIf(float num, Input<float>? target)
-        {
-            if (target != null && target.enabled) return Mathf.Abs(num - target.value) * target.bias;
+            if (target != null && target.enabled) return Mathf.Abs(num - target.value) / (target.max - target.min) * target.bias;
             return 0f;
         }
 
+        /// <summary>Determines the distance for a ranged int input.</summary>
+        /// <param name="num">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DistanceIf(float num, Input<int>? target)
+        public static float DistanceIf(int num, RangedInput<int>? target)
         {
-            if (target != null && target.enabled) return Math.Abs(num - target.value) * target.bias;
+            if (target != null && target.enabled) return Math.Abs(num - target.value) / (float)(target.max - target.min) * target.bias;
             return 0f;
         }
 
+        /// <summary>Determines the distance for an RGB color input.</summary>
+        /// <param name="col">Color to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(Color col, Input<Color>? target)
         {
@@ -96,6 +124,10 @@ namespace FinderMod.Search.Options
             return 0f;
         }
 
+        /// <summary>Determines the distance for an HSL color input.</summary>
+        /// <param name="col">Color to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(HSLColor col, ColorHSLInput? target)
         {
@@ -103,6 +135,10 @@ namespace FinderMod.Search.Options
             return WrapDistanceIf(col.hue, target.HueInput) + DistanceIf(col.saturation, target.SatInput) + DistanceIf(col.lightness, target.LightInput);
         }
 
+        /// <summary>Determines the distance for a boolean input.</summary>
+        /// <param name="b">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(bool b, Input<bool>? target)
         {
@@ -113,6 +149,10 @@ namespace FinderMod.Search.Options
             return 0f;
         }
 
+        /// <summary>Determines the distance for a toggleable ranged int input.</summary>
+        /// <param name="val">Value to compare. Use <c>null</c> to also check against toggle.</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(int? val, Toggleable<IntInput>? target)
         {
@@ -120,11 +160,15 @@ namespace FinderMod.Search.Options
             float r = DistanceIf(val.HasValue, target.ToggleInput);
             if (target.Toggled && val.HasValue)
             {
-                return Math.Abs(target.Element.value - val.Value) * target.Element.bias;
+                return Math.Abs(target.Element.value - val.Value) / (float)(target.Element.max - target.Element.min) * target.Element.bias;
             }
             return r;
         }
 
+        /// <summary>Determines the distance for a toggleable ranged float input.</summary>
+        /// <param name="val">Value to compare. Use <c>null</c> to also check against toggle.</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceIf(float? val, Toggleable<FloatInput>? target)
         {
@@ -132,13 +176,17 @@ namespace FinderMod.Search.Options
             float r = DistanceIf(val.HasValue, target.ToggleInput);
             if (target.Toggled && val.HasValue)
             {
-                return Mathf.Abs(target.Element.value - val.Value) * target.Element.bias;
+                return Mathf.Abs(target.Element.value - val.Value) / (target.Element.max - target.Element.min) * target.Element.bias;
             }
             return r;
         }
 
+        /// <summary>Determines the distance for a ranged float input, wrapped between 0 and 1. Useful for <see cref="HueInput"/>.</summary>
+        /// <param name="num">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float WrapDistanceIf(float num, Input<float> target)
+        public static float WrapDistanceIf(float num, Input<float>? target)
         {
             if (target != null && target.enabled)
             {

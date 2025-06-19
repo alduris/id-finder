@@ -10,13 +10,11 @@ namespace FinderMod.Inputs
     /// </summary>
     public interface IElement
     {
-        /// <summary>
-        /// Total height of the element.
-        /// </summary>
+        /// <summary>Total height of the element.</summary>
         public float Height { get; }
 
         /// <summary>
-        /// Should create the element.
+        /// Creates the element.
         /// </summary>
         /// <param name="x">What x to start from</param>
         /// <param name="y">What y to start from</param>

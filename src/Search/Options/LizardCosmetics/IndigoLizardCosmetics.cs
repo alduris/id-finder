@@ -5,7 +5,7 @@ using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    public class IndigoLizardCosmetics : BaseLizardCosmetics
+    internal class IndigoLizardCosmetics : BaseLizardCosmetics
     {
         private readonly SkinkSpecklesCosmetic skinkSpecklesCosmetic;
 
@@ -21,17 +21,15 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 if (result is SkinkSpecklesVars skinkSpecklesVars)
                 {
-                    r += DistanceIf(skinkSpecklesVars.spots, skinkSpecklesCosmetic.NumSpotsInput);
+                    r += skinkSpecklesCosmetic.Distance(skinkSpecklesVars);
                 }
                 else if (result is LizardRotVars lizardRotVars)
                 {
-                    r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
-                    r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
-                    r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
+                    r += lizardRotCosmetic.Distance(lizardRotVars);
                 }
                 else
                 {
-                    throw new InvalidOperationException("Result was not SkinkSpeckles! " + result.GetType().Name);
+                    throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
             }
             return r;

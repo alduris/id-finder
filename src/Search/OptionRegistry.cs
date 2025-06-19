@@ -9,7 +9,6 @@ namespace FinderMod.Search
     internal static class OptionRegistry
     {
         private readonly static Dictionary<string, Func<Option>> Options;
-        private static bool InitDLC = false;
 
         static OptionRegistry()
         {
@@ -81,8 +80,43 @@ namespace FinderMod.Search
 
         public static void InitializeDLC()
         {
-            if (InitDLC) return;
-            InitDLC = true;
+            string[] DLCOptions = [
+                // DLC Shared
+                "Lizard Cosmetics (Caramel)",
+                "Lizard Cosmetics (Eel)",
+                "Lizard Cosmetics (Zoop)",
+                "Big Spider Variations (Mother)",
+                "Centipede Variations (Aqua)",
+                "Miros Vulture Variations",
+                "Yeek Color",
+
+                // MSC
+                "Elite Scavenger Skills",
+                "Elite Scavenger Colors",
+                "Elite Scavenger Back Patterns",
+                "Slugpup Variations",
+                "Slugpup Stats",
+                "Slugpup Food",
+                "Slugpup Behaviors",
+                "Lizard Cosmetics (Train)",
+                "Firebug Colors",
+
+                // Watcher
+                "Lizard Cosmetics (Indigo)",
+                "Moth (Big) Variations",
+                "Moth (Small) Variations",
+                "Barnacle Variations",
+                "Box Worm Variations",
+                "Drill Crab Variations",
+                "Frog Variations",
+                "Rat Variations",
+                "Sky Whale Variations",
+                "Tardigrade Variations",
+            ];
+            foreach (var option in DLCOptions)
+            {
+                Options.Remove(option);
+            }
 
             if (ModManager.DLCShared)
             {
@@ -113,6 +147,7 @@ namespace FinderMod.Search
                 Options["Slugpup Variations"] = () => new SlupVarsOption();
                 Options["Slugpup Stats"] = () => new SlupStatsOption();
                 Options["Slugpup Food"] = () => new SlupFoodOption();
+                Options["Slugpup Behaviors"] = () => new SlupBehaviorOption();
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Train)", () => new TrainLizardCosmetics());

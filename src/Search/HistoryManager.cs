@@ -49,13 +49,13 @@ namespace FinderMod.Search
                     tab.UpdateQueryBox();
                     tab.input_min.valueInt = min;
                     tab.input_max.valueInt = max;
-                    if (results.Length > 0 && results[0] != null) tab.input_find.SetValueInt(results[0].Length);
+                    if (results != null && results.Length > 0 && results[0] != null) tab.input_find.SetValueInt(results[0].Length);
                 }
             }
 
             public readonly override bool Equals(object obj)
             {
-                if (obj is HistoryItem other) return options.SequenceEqual(other.options);
+                if (obj is HistoryItem other) return (other.name == name && other.date == date) || options.SequenceEqual(other.options);
                 return false;
             }
 
@@ -76,6 +76,7 @@ namespace FinderMod.Search
 
         private static string SaveFile => Path.Combine(Application.persistentDataPath, "idfinder.txt");
         private static readonly List<HistoryItem> historyItems = [];
+        private static readonly List<HistoryItem> temporaryHistory = [];
         private static bool loadedHistory = false;
 
         public static event Action? UpdateHistory;
@@ -109,35 +110,17 @@ namespace FinderMod.Search
             File.WriteAllLines(SaveFile, historyItems.Select(x => JsonConvert.SerializeObject(x)));
         }
 
-        public static string CreateStringNoResults(List<Option> options, (int min, int max) range)
+        public static string CreateCopyString(List<Option> options, (int min, int max) range, Result[][] results = null!)
         {
-            var array = new JArray();
-            foreach (var item in options)
-            {
-                array.Add(item.ToJson());
-            }
-
-            var name = string.Join(", ", options.Select(x => x.name));
-            if (name.Trim().Length == 0) name = "Search";
-            var history = new HistoryItem()
-            {
-                name = name,
-                min = range.min,
-                max = range.max,
-                options = array,
-                results = [],
-                date = DateTime.Now,
-                version = Plugin.VERSION
-            };
-
+            var history = GetAsHistoryItem(options, results, range);
             return JsonConvert.SerializeObject(history);
         }
 
-        public static void SaveHistory(List<Option> options, Result[][] results, (int min, int max) range)
-        {
-            LoadHistory();
 
-            // Create
+        private static HistoryItem GetAsHistoryItem(List<Option> options, Result[][] results, (int min, int max) range)
+        {
+            results ??= [];
+
             var array = new JArray();
             foreach (var item in options)
             {
@@ -156,7 +139,27 @@ namespace FinderMod.Search
                 date = DateTime.UtcNow,
                 version = Plugin.VERSION
             };
+
+            return history;
+        }
+
+        public static void SaveTemporaryHistory(List<Option> options, Result[][] results, (int min, int max) range)
+        {
+            temporaryHistory.Add(GetAsHistoryItem(options, results, range));
+        }
+
+        public static void SaveHistory(List<Option> options, Result[][] results, (int min, int max) range)
+        {
+            LoadHistory();
+
+            // Create
+            var history = GetAsHistoryItem(options, results, range);
             historyItems.Add(history);
+
+            // Remove from temporary history
+            temporaryHistory.Remove(history);
+
+            // Save
             WriteToFile();
             UpdateHistory?.Invoke();
         }
@@ -202,6 +205,10 @@ namespace FinderMod.Search
         {
             LoadHistory();
             return [.. historyItems];
+        }
+        public static List<HistoryItem> GetTempHistory()
+        {
+            return [.. temporaryHistory];
         }
     }
 }
