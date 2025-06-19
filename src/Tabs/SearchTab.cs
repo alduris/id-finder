@@ -281,7 +281,7 @@ namespace FinderMod.Tabs
                         // Also print to dev console
                         Commands.TryPrint("ID FINDER RESULTS", Color.white);
                         Commands.TryPrint(string.Join(", ", [.. options]), Color.white);
-                        Commands.TryPrint(label.text);
+                        Commands.TryPrintResults(results);
                     }
 
                     // Reupdate query box to reenable everything

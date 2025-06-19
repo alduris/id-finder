@@ -7,6 +7,7 @@ using DevConsole;
 using DevConsole.Commands;
 using FinderMod.Search;
 using FinderMod.Search.Options;
+using Menu.Remix.MixedUI;
 using UnityEngine;
 
 namespace FinderMod
@@ -24,8 +25,6 @@ namespace FinderMod
                 .Run(FinderRun)
                 .Register();
         }
-
-        //
 
         private static IEnumerable<string> FinderAutocomplete(string[] args)
         {
@@ -49,7 +48,7 @@ namespace FinderMod
                         {
                             foreach (string option in OptionRegistry.ListOptions())
                             {
-                                yield return $"{option}";
+                                yield return $"\"{option}\"";
                             }
                         }
                         else if (args.Length == 2)
@@ -78,7 +77,7 @@ namespace FinderMod
                         if (args.Length < 2)
                         {
                             int counter = 0;
-                            int counterMaxLen = (history.Count + tempHistory.Count).ToString().Length;
+                            int counterMaxLen = NumDigits(history.Count + tempHistory.Count);
                             int nameMaxLen = NameLengthSafe();
                             int resultsMaxLen = ResultsLengthSafe();
 
@@ -122,7 +121,7 @@ namespace FinderMod
                             {
                                 int histLen = history.Count > 0 ? history.Max(x => x.results?.Length > 0 ? x.results[0].Length : 0) : 0;
                                 int tempLen = tempHistory.Count > 0 ? tempHistory.Max(x => x.results?.Length > 0 ? x.results[0].Length : 0) : 0;
-                                return Math.Max(histLen.ToString().Length, tempLen.ToString().Length);
+                                return Math.Max(NumDigits(histLen), NumDigits(tempLen));
                             }
                             string HistoryItemPreview(HistoryManager.HistoryItem item)
                             {
@@ -149,23 +148,8 @@ namespace FinderMod
                                 // Use temporary history
                                 historyItem = tempHistory[index - history.Count];
                             }
-                            
-                            for (int i = 0; i < historyItem.results.Length; i++)
-                            {
-                                if (historyItem.results.Length == 1)
-                                    GameConsole.WriteLine("RESULTS", Color.white);
-                                else
-                                    GameConsole.WriteLine("RESULT " + i, Color.white);
 
-                                int padLength = historyItem.results[i].Max(x => x.id.ToString().Length);
-
-                                // Auto space them so we take up as little space as possible
-                                List<string> outputs = [];
-                                for (int j = 0; j < historyItem.results[i].Length; j++)
-                                {
-                                    outputs.Add($"{historyItem.results[i][j].id.ToString().PadLeft(padLength)}  (distance: {historyItem.results[i][j].dist})");
-                                }
-                            }
+                            ActuallyPrintResults(historyItem.results);
                         }
                         else
                         {
@@ -211,18 +195,89 @@ namespace FinderMod
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helper methods for places not in this class where we can guarantee if the assembly is loaded
         
-        public static void TryPrint(string message)
+        internal static void TryPrint(string message)
         {
             if (registered) ActuallyPrint(message);
         }
-        public static void TryPrint(string message, Color color)
+        internal static void TryPrint(string message, Color color)
         {
             if (registered) ActuallyPrint(message, color);
         }
+
         private static void ActuallyPrint(string message, Color? color = null)
         {
             if (color.HasValue) GameConsole.WriteLine(message, color.Value);
             else GameConsole.WriteLine(message);
+        }
+
+        internal static void TryPrintResults(Threadmaster.Result[][] results)
+        {
+            if (registered) ActuallyPrintResults(results);
+        }
+        private static void ActuallyPrintResults(Threadmaster.Result[][] results)
+        {
+            const float maxWidth = 980f; // based on constants defined in https://github.com/SlimeCubed/DevConsole/blob/remix/DevConsole/GameConsole.cs
+            FFont font = Futile.atlasManager.GetFontWithName(GameConsole.CurrentFont); // assumed to be a monospace font but we want to check width for wrapping anyways
+            StringBuilder sb = new();
+            for (int i = 0; i < results.Length; i++)
+            {
+                if (results.Length > 1) sb.AppendLine($"RESULT {i}");
+
+                int maxIDLength = NumDigits(results[i].Max(x => x.id));
+                List<string> toPrint = [.. results[i].Select(x => {
+                    return string.Format("{0} (distance: {1})",
+                        x.id.ToString().PadLeft(maxIDLength),
+                        x.dist);
+                })];
+
+                int maxColLength = toPrint.Max(x => x.Length);
+
+                float doubleSpaceLength = WidthOf("  ", font);
+                float width = 0f;
+                foreach (string s in toPrint)
+                {
+                    string realStr = s.PadRight(maxColLength);
+                    float strWidth = WidthOf(realStr, font);
+                    if (width + doubleSpaceLength + strWidth > maxWidth)
+                    {
+                        sb.AppendLine();
+                        width = 0f;
+                    }
+                    sb.Append("  ");
+                    sb.Append(realStr);
+                    width += doubleSpaceLength + strWidth;
+                }
+            }
+
+            GameConsole.WriteLine(sb.ToString());
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // General misc helper methods
+
+        private static float WidthOf(string text, FFont font)
+        {
+            if (string.IsNullOrEmpty(text)) return 0f;
+
+            float width = 0f;
+            foreach (FLetterQuadLine fletterQuadLine in font.GetQuadInfoForText(text, new FTextParams()))
+            {
+                float oldWidth = width;
+                Rect bounds = fletterQuadLine.bounds;
+                width = Mathf.Max(oldWidth, bounds.width);
+            }
+            return width;
+        }
+
+        private static int NumDigits(int i)
+        {
+            return i switch
+            {
+                -2147483648 => 11,
+                < 0 => (int)Math.Log10(-i) + 2,
+                0 => 1,
+                > 0 => (int)Math.Log10(i) + 1
+            };
         }
     }
 }
