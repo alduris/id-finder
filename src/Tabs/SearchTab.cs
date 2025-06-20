@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FinderMod.Search;
 using FinderMod.Search.Options;
+using Menu;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -23,6 +24,8 @@ namespace FinderMod.Tabs
         internal OpTextBox input_min = null!;
         internal OpTextBox input_max = null!;
         internal OpDragger input_find = null!;
+        internal OpDragger input_threads = null!;
+        internal OpCheckBox input_gpu = null!;
         internal readonly List<Option> options = [];
         internal Threadmaster? threadmaster = null;
         private DateTime startTime;
@@ -34,33 +37,44 @@ namespace FinderMod.Tabs
             instance = this;
             options.Clear();
 
-            // Get max number of threads we can use
-            var maxThreads = Environment.ProcessorCount * 2;
+            // Get system information
+            int maxThreads = Environment.ProcessorCount;
+            bool canUseGPU = SystemInfo.supportsComputeShaders; // I am 99% sure all machines should use it so this might be replaced with a different check for strength later
 
             // Initialize elements we need
+            float comboOffset = LabelTest.GetWidth("SEARCH", true) + 10f;
             var combo_allOpts = new OpComboBox2(
-                CosmeticBind(""), new(10f, 520f), 250f,
+                CosmeticBind(""), new(10f + comboOffset, 574f), 250f,
                 [.. OptionRegistry.ListOptions()
                     .Select(s => new ListItem(s))]
             )
             { listHeight = 24 };
-            var button_add = new OpSimpleButton(new(266f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
-            var button_copy = new OpSimpleButton(new(464f, 520f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
-            var button_paste = new OpSimpleButton(new(530f, 520f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
+            float addBttnX = combo_allOpts.PosX + combo_allOpts.size.x + 10f;
+            var button_add = new OpSimpleButton(new(addBttnX, 574f), new(60f, 24f), "ADD") { description = "Add an item to search for", colorEdge = GreenColor };
+            var button_copy = new OpSimpleButton(new(464f, 574f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
+            var button_paste = new OpSimpleButton(new(530f, 574f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
             
-            cont_queries = new OpScrollBox(new(10f, 240f), new(580f, 270f), 0f, false, true, true);
+            cont_queries = new OpScrollBox(new(10f, 270f), new(580f, 290f), 0f, false, true, true);
 
-            input_min = new OpTextBox(CosmeticBind(0), new(50f, 206f), 100f) { description = "Start of search range", allowSpace = true };
-            input_max = new OpTextBox(CosmeticBind(100000), new(185f, 206f), 100f) { description = "End of search range", allowSpace = true };
-            input_find = new OpDragger(CosmeticRange(6, 1, 100), 360f, 206f) { description = "Number of ids to find per result (1-100)" };
-            var input_threads = new OpDragger(CosmeticRange(maxThreads / 4, 1, maxThreads), 455f, 206f) { description = "Number of threads to use" };
+            input_min = new OpTextBox(CosmeticBind(0),      new(50f, 236f), 100f) { description = "Start of search range", allowSpace = true };
+            input_max = new OpTextBox(CosmeticBind(100000), new(50f, 206f), 100f) { description = "End of search range", allowSpace = true };
 
-            var button_run = new OpSimpleButton(new(510f, 206f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
+            input_find    = new OpDragger(CosmeticRange(6, 1, 100),                     210f, 236f) { description = "Number of ids to find per result (1-100)" };
+            input_threads = new OpDragger(CosmeticRange(maxThreads / 2, 1, maxThreads), 210f, 206f) { description = "Number of threads to use" };
 
-            cont_results = new OpScrollBox(new(10f, 10f), new(580f, 160f), 0f, false, true, true);
+            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(290f, 221f));
+            if (!canUseGPU)
+            {
+                input_gpu.colorEdge = RedColor;
+                input_gpu.greyedOut = true;
+                input_gpu.description = "Your hardware does not support compute shaders! Unable to use GPU to search.";
+            }
+
+            var button_run = new OpSimpleButton(new(510f, 221f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
+
+            cont_results = new OpScrollBox(new(10f, 10f), new(580f, 176f), 0f, false, true, true);
 
             // Set up event listeners
-            // button_save.OnClick += (_) => HistoryManager.SaveHistory(options, [], (input_min.valueInt, input_max.valueInt));
             button_copy.OnClick += (_) =>
             {
                 UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
@@ -133,31 +147,43 @@ namespace FinderMod.Tabs
                 cont_results.SetContentSize(80f, true);
 
                 startTime = DateTime.Now;
-                threadmaster = new Threadmaster(options, threads, resultsPer, range, false);
+                threadmaster = new Threadmaster(options, threads, resultsPer, range, canUseGPU && input_gpu.GetValueBool());
                 threadmaster.Run();
             };
 
             // Add stuff to tab
             var UIArrPlayerOptions = new UIelement[]
             {
-                new OpLabel(10f, 570f, "Input", true),
-                new OpLabel(10f, 550f, "WARNING: do not leave this tab while searching for ids.", false) { color = YellowColor },
+                // Top
+                new OpLabel(new Vector2(10f, 574f), new Vector2(0f, 24f), "SEARCH", FLabelAlignment.Left, true) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 combo_allOpts, button_add,
                 button_copy, button_paste,
+                // Input box
                 cont_queries,
-                new OpLabel(10f, 206f, "From:"),
+                // Further search options
+                new OpLabel(new Vector2(10f, 236f), new Vector2(34f, 24f), "From:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 input_min,
-                new OpLabel(160f, 206f, "To:"),
+                new OpLabel(new Vector2(10f, 206f), new Vector2(34f, 24f), "To:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 input_max,
-                new OpLabel(310f, 206f, "Results:"),
+
+                new OpLabel(new Vector2(160f, 236f), new Vector2(44f, 24f), "Results:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 input_find,
-                new OpLabel(400f, 206f, "Threads:"),
+                new OpLabel(new Vector2(160f, 206f), new Vector2(44f, 24f), "Threads:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 input_threads,
+
+                new OpLabel(new Vector2(250f, 221f), new Vector2(34f, 24f), "GPU:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                input_gpu,
+
                 button_run,
-                new OpLabel(10f, 176f, "Output", true),
+                // Output box
+                new OpImage(new Vector2(0f, 195f), "pixel") { scale = new Vector2(600f, 2f), color = MenuColorEffect.rgbMediumGrey },
                 cont_results,
             };
             AddItems(UIArrPlayerOptions);
+
+            // Dummy labels
+            cont_queries.AddItems(new OpLabel(10f, cont_queries.size.y - 4f - LabelTest.LineHeight(true), "Input", true));
+            cont_results.AddItems(new OpLabel(10f, cont_results.size.y - 4f - LabelTest.LineHeight(true), "Output", true));
         }
 
         internal void AddOption(Option option, bool update)
