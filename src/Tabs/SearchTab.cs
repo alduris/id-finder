@@ -305,7 +305,7 @@ namespace FinderMod.Tabs
         {
             options.Clear();
             waitingForResults = false;
-            instance = null!;
+            if (instance == this) instance = null!;
             threadmaster?.Abort("clearing memory");
         }
     }

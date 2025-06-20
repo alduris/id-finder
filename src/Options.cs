@@ -22,7 +22,6 @@ namespace FinderMod
                 new SearchTab(this),
                 new ValuesTab(this),
                 new HistoryTab(this)
-                // new HelpTab(this)
             ];
             
             foreach (var tab in Tabs)
@@ -48,7 +47,7 @@ namespace FinderMod
             if (Tabs == null) return;
             foreach (var tab in Tabs)
             {
-                (tab as BaseTab)!.ClearMemory();
+                (tab as BaseTab)?.ClearMemory();
             }
         }
 

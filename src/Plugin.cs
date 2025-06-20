@@ -57,8 +57,7 @@ namespace FinderMod
             {
                 if (IsInit) return;
 
-                On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
-                On.GameSession.ctor += GameSessionOnctor;
+                On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
 
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
@@ -74,14 +73,9 @@ namespace FinderMod
             }
         }
 
-        private void RainWorldGameOnShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
+        private void ProcessManager_ActualProcessSwitch(On.ProcessManager.orig_ActualProcessSwitch orig, ProcessManager self, ProcessManager.ProcessID ID, float fadeOutSeconds)
         {
-            orig(self);
-            ClearMemory();
-        }
-        private void GameSessionOnctor(On.GameSession.orig_ctor orig, GameSession self, RainWorldGame game)
-        {
-            orig(self, game);
+            orig(self, ID, fadeOutSeconds);
             ClearMemory();
         }
 
