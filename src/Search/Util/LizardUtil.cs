@@ -664,9 +664,7 @@ namespace FinderMod.Search.Util
                 numScales = (int)(spineLength / bumpDiv);
 
                 Random.Shift(4);
-                if (type != LizardType.Blue) Random.Shift();
-                // Random.value in the else-if chain is guaranteed to be called exactly once if it's not a blue lizor
-                // if it's not a green lizor, it might fail the random value check, but then it's still not a green lizor in the next else if
+                if (type != LizardType.Blue) Random.Shift(); // this is a heavily reduced if-else statement but has the same outcome
 
                 graphic = Random.Range(0, 5);
                 if (graphic == 1) graphic = 0;
@@ -678,9 +676,11 @@ namespace FinderMod.Search.Util
 
                 graphicCalculation ??= new(this);
 
-                Random.Shift();
-                if (type == LizardType.Pink) Random.Shift();
-                else if (type == LizardType.Green && Random.Value >= 0.5f) Random.Shift();
+                colorMode = (ColorMode)Random.Range(0, 3);
+                if (type == LizardType.Pink && Random.Value < 0.5f) colorMode = ColorMode.None;
+                else if (type == LizardType.Green && Random.Value < 0.5f) colorMode = ColorMode.Gradient;
+                else if (type == LizardType.Green && Random.Value < 0.5f) colorMode = ColorMode.Full;
+                if (type == LizardType.Train) colorMode = ColorMode.Full;
             }
 
             public static float MinSpineLength(LizardType type) => 0.2f * GetMinBodyAndTailLength(type);
@@ -691,6 +691,14 @@ namespace FinderMod.Search.Util
             public float spineLength;
             public int numScales;
             public int graphic;
+            public ColorMode colorMode;
+
+            public enum ColorMode
+            {
+                None = 0,
+                Full = 1,
+                Gradient = 2
+            }
         }
 
         public struct TailFinVars

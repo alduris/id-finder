@@ -445,6 +445,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Spine length: {spineSpikes.spineLength}";
                         yield return $"  Graphic: {spineSpikes.graphic}";
                         yield return $"  Number of spines: {spineSpikes.numScales}";
+                        yield return $"  Color mode: {spineSpikes.colorMode}";
                         break;
                     case TailFinVars tailFin:
                         yield return "Has TailFin:";
