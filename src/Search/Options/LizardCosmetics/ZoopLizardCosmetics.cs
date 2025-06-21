@@ -86,7 +86,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = spineSpikesCosmetic.Distance(spineSpikesVars);
                                 float b = mainSpineSpikesCosmetic.Distance(spineSpikesVars);
 
-                                if (a <= b && (spineSpikesCosmetic.Enabled))
+                                if ((a <= b && spineSpikesCosmetic.Enabled) || !mainSpineSpikesCosmetic.Enabled)
                                 {
                                     otherSS = mainSpineSpikesCosmetic;
                                     r += a;
@@ -122,7 +122,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = tailTuftCosmetic.Distance(tailTuftVars);
                                 float b = mainTailTuftCosmetic.Distance(tailTuftVars);
 
-                                if (a <= b && tailTuftCosmetic.Enabled)
+                                if ((a <= b && tailTuftCosmetic.Enabled) || !mainTailTuftCosmetic.Enabled)
                                 {
                                     otherTT = mainTailTuftCosmetic;
                                     r += a;

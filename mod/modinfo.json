@@ -1,7 +1,7 @@
 ﻿{
     "id": "alduris.finder",
     "name": "ID Finder",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "authors": "Alduris",
     "description": "Find the creature you want out of the 4 billion possible ids.",
     "requirements": [],
