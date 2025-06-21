@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FinderMod.Search;
 using Menu.Remix.MixedUI;
+using UnityEngine;
 using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
@@ -34,7 +35,7 @@ namespace FinderMod.Tabs
             outputBox.AddItems(new OpLabel(10f, outputBox.size.y - 30f, "Select an item from the dropdown"));
 
             searchItems.OnValueChanged += UpdateValues;
-            inputId.OnValueUpdate += UpdateValues;
+            inputId.OnKeyDown += UpdateValues;
         }
 
         private void UpdateValues(UIconfig _, string value, string oldValue)
@@ -42,10 +43,17 @@ namespace FinderMod.Tabs
             if (value != oldValue) UpdateOutputBox();
         }
 
+        private void UpdateValues(char value)
+        {
+            UpdateOutputBox();
+        }
+
         private void UpdateOutputBox()
         {
             const float LINE_HEIGHT = 15f; // line height of OpLabelLong when bigText is false
             const float WHITESPACE_HEIGHT = 10f;
+            float oldHeight = outputBox.contentSize;
+            float oldScroll = outputBox.scrollOffset;
 
             // Remove old
             foreach (UIelement element in outputBox.items)
@@ -58,10 +66,10 @@ namespace FinderMod.Tabs
 
             // Add new
             var name = searchItems.value;
+            float y = outputBox.size.y - 10f;
             if (OptionRegistry.TryGetOption(name, out var option))
             {
                 int seed = inputId.valueInt;
-                float y = outputBox.size.y - 10f;
                 foreach (var str in option.GetValues(seed))
                 {
                     if (str != null)
@@ -69,14 +77,21 @@ namespace FinderMod.Tabs
                         y -= LINE_HEIGHT;
                         var label = new OpLabel(10f, y, str);
                         outputBox.AddItems(label);
-                        label.lastScreenPos = label.pos;
                     }
                     else
                     {
                         y -= WHITESPACE_HEIGHT;
                     }
                 }
-                outputBox.SetContentSize(outputBox.size.y - y + 10f, true);
+            }
+            outputBox.SetContentSize(outputBox.size.y - y + 10f, true);
+
+            // Reset scroll
+            outputBox.SetContentSize(outputBox.size.y - y + 20f, true);
+            outputBox.ScrollOffset = oldScroll + (oldHeight - outputBox.contentSize);
+            foreach (UIelement element in outputBox.items)
+            {
+                element.lastScreenPos = element.pos;
             }
         }
 
