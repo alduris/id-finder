@@ -212,7 +212,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     yield return new BodyStripesVars(Random, tailLength, type);
                     backDecals++;
                 }
-                else if (Random.Value < 0.06666667f || Random.Value < 0.8f && type == LizardType.Green || Random.Value < 0.7f && type == LizardType.Black)
+                else if (Random.Value < 0.06666667f || (Random.Value < 0.8f && type == LizardType.Green) || (Random.Value < 0.7f && type == LizardType.Black))
                 {
                     yield return new SpineSpikesVars(Random, tailLength, type, ref tailTuftGraphic);
                     backDecals++;
@@ -222,13 +222,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     yield return new BumpHawkVars(Random, tailLength, type);
                     backDecals++;
                 }
-                else if ((Random.Value < 0.04761905f || type == LizardType.Pink && Random.Value < 0.5f || type == LizardType.Red && Random.Value < 0.9f) && type != LizardType.Salamander)
+                else if ((Random.Value < 0.04761905f || (type == LizardType.Pink && Random.Value < 0.5f) || (type == LizardType.Red && Random.Value < 0.9f)) && type != LizardType.Salamander)
                 {
                     yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
                     longShoulderScales = true;
                     backDecals++;
                 }
-                else if ((Random.Value < 0.0625f || type == LizardType.Blue && Random.Value < 0.5f) && type != LizardType.Salamander)
+                else if ((Random.Value < 0.0625f || (type == LizardType.Blue && Random.Value < 0.5f)) && type != LizardType.Salamander)
                 {
                     yield return new ShortBodyScalesVars(Random, tailLength, type);
                     shortBodyScales = true;
@@ -247,7 +247,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     {
                         yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
                     }
-                    else if (Random.Value < 0.11111111f || backDecals == 0 && Random.Value < 0.7f || type == LizardType.Pink && Random.Value < 0.6f || type == LizardType.Blue && Random.Value < 0.96f)
+                    else if (Random.Value < 0.11111111f || (backDecals == 0 && Random.Value < 0.7f) || (type == LizardType.Pink && Random.Value < 0.6f)  || (type == LizardType.Blue && Random.Value < 0.96f))
                     {
                         yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
                     }

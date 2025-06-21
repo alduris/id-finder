@@ -43,10 +43,10 @@ namespace FinderMod.Search
         /// <param name="gpu">Not implemented. Do not use.</param>
         public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)
         {
-            var span = PositiveDirGap(range.min, range.max, 1);
+            uint span = PositiveDirGap(range.min, range.max, 1);
             this.options = options;
-            this.threads = threads;
-            this.results = results;
+            this.threads = (int)Math.Min(threads, span);
+            this.results = (int)Math.Min(results, span);
             this.range = range;
             this.gpu = gpu;
             if (gpu) throw new NotImplementedException("GPU is not implemented. Do not use.");
@@ -60,7 +60,9 @@ namespace FinderMod.Search
         {
             unchecked
             {
-                if (i - 1 == j) return 0xffffffffu / (uint)div; // edge case fix thingy
+                // edge case fix thingies
+                if (i - 1 == j) return 0xffffffffu / (uint)div;
+                if (i == j) return 1;
 
                 // Unchecked type cast because we want the negative bit to count as a 2**31 bit without throwing errors (it does otherwise for some reason)
                 uint a = (uint)i;

@@ -48,7 +48,7 @@ namespace FinderMod
                         {
                             foreach (string option in OptionRegistry.ListOptions())
                             {
-                                yield return $"\"{option}\"";
+                                yield return $"{option}";
                             }
                         }
                         else if (args.Length == 2)

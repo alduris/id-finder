@@ -72,7 +72,7 @@ namespace FinderMod.Search
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Range(int min, int max)
         {
-            if (max - min == 0) return min;
+            if (max == min) return min;
 
             unchecked
             {

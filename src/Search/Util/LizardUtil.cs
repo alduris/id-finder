@@ -769,7 +769,7 @@ namespace FinderMod.Search.Util
         {
             public TailTuftVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftGraphicCalculation? graphicCalculation)
             {
-                if (Random.Value < 0.14285715f || Random.Value < 0.9f && type == LizardType.Blue || type == LizardType.Red || type == LizardType.Zoop)
+                if (Random.Value < 0.14285715f || (Random.Value < 0.9f && type == LizardType.Blue) || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     scaleType = LizardBodyScaleType.TwoLines;
 
@@ -791,18 +791,20 @@ namespace FinderMod.Search.Util
                     GeneratePatchPattern(Random, numScales);
                 }
 
-                // Offset for future endeavors
+                // Offset
                 Random.Shift(3);
+
+                // More calculations
                 colored = Random.Value < 0.8f;
                 graphic = Random.Range(3, 7);
                 if (graphic == 3) graphic = 1;
-                if (Random.Value < 0.033333335f) Random.Range(0, 7);
+                if (Random.Value < 0.033333335f) graphic = Random.Range(0, 7);
                 if (Random.Value < 0.8f || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     if (graphicCalculation.HasValue) graphic = graphicCalculation.Value.graphic;
                 }
                 graphicCalculation ??= new(this);
-                Random.Shift(2);
+                Random.Shift();
             }
 
             public static int MinNumScales(LizardType type) =>
