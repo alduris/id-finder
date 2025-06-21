@@ -666,10 +666,12 @@ namespace FinderMod.Search.Util
                 Random.Shift(4);
                 if (type != LizardType.Blue) Random.Shift(); // this is a heavily reduced if-else statement but has the same outcome
 
+                spinesFlipped = false;
                 graphic = Random.Range(0, 5);
                 if (graphic == 1) graphic = 0;
                 if (graphic == 4) graphic = 3;
-                else if (graphic != 3 || Random.Value >= 0.5f) Random.Shift();
+                else if (graphic == 3 && Random.Value < 0.5f) spinesFlipped = true;
+                else if (Random.Value < 0.06666667f) spinesFlipped = true;
 
                 if (type == LizardType.Pink && Random.Value < 0.7f) graphic = 0;
                 else if (type == LizardType.Green && Random.Value < 0.5f) graphic = 3;
@@ -689,6 +691,7 @@ namespace FinderMod.Search.Util
             public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 5f);
 
             public float spineLength;
+            public bool spinesFlipped;
             public int numScales;
             public int graphic;
             public ColorMode colorMode;

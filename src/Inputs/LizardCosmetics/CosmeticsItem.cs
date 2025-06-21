@@ -320,6 +320,7 @@ namespace FinderMod.Inputs.LizardCosmetics
     public class SpineSpikesCosmetic : CosmeticsItem
     {
         public FloatInput LengthInput;
+        public BoolInput FlippedInput;
         public IntInput NumScalesInput;
         public IntInput GraphicInput;
         public EnumInput<SpineSpikesVars.ColorMode> ColoredInput = null!;
@@ -327,6 +328,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         private SpineSpikesCosmetic(LizardType type, float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.SpineSpikes)
         {
             children.Add(LengthInput = new("Length", minLen, maxLen) { enabled = false });
+            children.Add(FlippedInput = new("Spines flipped", false) { enabled = false });
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
 
@@ -349,6 +351,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             if (Active)
             {
                 return Option.DistanceIf(vars.spineLength, LengthInput)
+                    + Option.DistanceIf(vars.spinesFlipped, FlippedInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
                     + (ColoredInput.enabled && ColoredInput.value != vars.colorMode ? ColoredInput.bias : 0f);
