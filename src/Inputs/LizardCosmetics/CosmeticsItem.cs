@@ -323,7 +323,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         public BoolInput FlippedInput;
         public IntInput NumScalesInput;
         public IntInput GraphicInput;
-        public EnumInput<SpineSpikesVars.ColorMode> ColoredInput = null!;
+        public EnumInput<SpineSpikesVars.ColorMode>? ColoredInput = null;
 
         private SpineSpikesCosmetic(LizardType type, float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.SpineSpikes)
         {
@@ -354,7 +354,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.spinesFlipped, FlippedInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
-                    + (ColoredInput.enabled && ColoredInput.value != vars.colorMode ? ColoredInput.bias : 0f);
+                    + (ColoredInput != null && ColoredInput.enabled && ColoredInput.value != vars.colorMode ? ColoredInput.bias : 0f);
             }
             else if (Enabled && !Toggled)
             {
