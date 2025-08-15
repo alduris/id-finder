@@ -13,8 +13,8 @@ namespace FinderMod.Search.Options
         public VultureWingOption() : base()
         {
             elements = [
-                ColorAInput = new ColorHSLInput("Color A"),
-                ColorBInput = new ColorHSLInput("Color B"),
+                ColorAInput = new ColorHSLInput("Color A", 0.9f, 1.6f, 0.5f, 0.7f, 0.7f, 0.8f) { fixColors = true },
+                ColorBInput = new ColorHSLInput("Color B", 0.65f, 1.85f, 0.8f, 1f, 0.45f, 1f) { fixColors = true },
                 FeathersInput = new IntInput("Feather count", 13, 19)
             ];
         }
