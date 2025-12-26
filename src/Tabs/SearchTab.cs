@@ -14,28 +14,33 @@ using static FinderMod.Search.HistoryManager;
 
 namespace FinderMod.Tabs
 {
-    internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
+    internal class SearchTab : BaseTab
     {
         internal static SearchTab instance = null!;
         
-        private OpScrollBox cont_queries = null!;
-        private OpScrollBox cont_results = null!;
+        private OpScrollBox cont_queries;
+        private OpScrollBox cont_results;
         private OpLabel label_progress = null!;
-        internal OpTextBox input_min = null!;
-        internal OpTextBox input_max = null!;
-        internal OpDragger input_find = null!;
-        internal OpDragger input_threads = null!;
-        internal OpCheckBox input_gpu = null!;
+        internal OpTextBox input_min;
+        internal OpTextBox input_max;
+        internal OpDragger input_find;
+        internal OpDragger input_threads;
+        internal OpCheckBox input_gpu;
         internal readonly List<Option> options = [];
         internal Threadmaster? threadmaster = null;
         private DateTime startTime;
 
         private bool waitingForResults = false;
 
-        public override void Initialize()
+        public SearchTab(FinderProcess owner, int pageIndex) : base(owner, "SEARCH", pageIndex)
         {
             instance = this;
-            options.Clear();
+            
+            // Background rect
+            subObjects.Add(new RoundedRect(owner, this, basePos, baseSize, true)
+            {
+                borderColor = Menu.Menu.MenuColor(Menu.Menu.MenuColors.MediumGrey)
+            });
 
             // Get system information
             int maxThreads = Environment.ProcessorCount;
@@ -46,9 +51,8 @@ namespace FinderMod.Tabs
             var combo_allOpts = new OpComboBox2(
                 CosmeticBind(""), new(10f + comboOffset, 574f), 250f,
                 [.. OptionRegistry.ListOptions()
-                    .Select(s => new ListItem(s))]
-            )
-            { listHeight = 24 };
+                    .Select(s => new ListItem(s))])
+                { listHeight = 24 };
             float addBttnX = combo_allOpts.PosX + combo_allOpts.size.x + 10f;
             var button_add = new OpSimpleButton(new(addBttnX, 574f), new(60f, 24f), "ADD") { description = "Add an item to search for", colorEdge = GreenColor };
             var button_copy = new OpSimpleButton(new(464f, 574f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
@@ -78,7 +82,6 @@ namespace FinderMod.Tabs
             button_copy.OnClick += (_) =>
             {
                 UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
-                ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "search"));
             };
             button_paste.OnClick += (_) =>
             {
@@ -90,7 +93,6 @@ namespace FinderMod.Tabs
                 catch (Exception ex)
                 {
                     button_paste.PlaySound(SoundID.MENU_Error_Ping);
-                    ConfigContainer.instance.CfgMenu.ShowAlert("Clipboard does not contain valid search!");
                     Plugin.logger.LogError(ex);
                 }
             };
@@ -130,7 +132,7 @@ namespace FinderMod.Tabs
                 foreach (UIelement element in cont_results.items)
                 {
                     element.Deactivate();
-                    _RemoveItem(element);
+                    RemoveItems(element);
                 }
                 cont_results.items.Clear();
                 cont_results.SetContentSize(0f, true);
@@ -208,7 +210,7 @@ namespace FinderMod.Tabs
             foreach (UIelement element in cont_queries.items)
             {
                 element.Deactivate();
-                _RemoveItem(element);
+                RemoveItems(element);
             }
             cont_queries.items.Clear();
             cont_queries.SetContentSize(0);
@@ -231,7 +233,7 @@ namespace FinderMod.Tabs
             cont_queries.ScrollOffset = oldScroll + (oldHeight - cont_queries.contentSize);
         }
 
-        public override void Update()
+        protected override void InternalUpdate()
         {
             if (threadmaster != null && waitingForResults)
             {
@@ -243,7 +245,7 @@ namespace FinderMod.Tabs
                     foreach (UIelement element in cont_results.items)
                     {
                         element.Deactivate();
-                        _RemoveItem(element);
+                        RemoveItems(element);
                     }
                     cont_results.items.Clear();
                     cont_results.SetContentSize(0f, true);
@@ -277,7 +279,6 @@ namespace FinderMod.Tabs
                     button_copy.OnClick += (_) =>
                     {
                         UniClipboard.SetText(label.text);
-                        ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "results"));
                     };
 
                     // Set the scroll box size

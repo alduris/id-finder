@@ -14,13 +14,18 @@ namespace FinderMod.Tabs
     internal class HistoryTab : BaseTab
     {
         private bool dirty;
-        private OpScrollBox box = null!;
+        private readonly OpScrollBox box;
         private HistoryItem? activeItem = null;
-        private bool shownTooLargeWarning = false;
 
-        public HistoryTab(Options options) : base(options, Translate("History"))
+        public HistoryTab(FinderProcess owner, int pageIndex) : base(owner, "HISTORY", pageIndex)
         {
             HistoryManager.UpdateHistory += MarkDirty;
+            
+            dirty = true;
+            box = new OpScrollBox(basePos, baseSize, 0f, false, true);
+            AddItems(box);
+
+            defaultSelectable = WrapperFor(box);
         }
 
         private void MarkDirty()
@@ -28,41 +33,37 @@ namespace FinderMod.Tabs
             dirty = true;
         }
 
-        public override void Initialize()
+        protected override void InternalUpdate()
         {
-            dirty = true;
-            box = new OpScrollBox(this, 0f, false, true);
-        }
-
-        public override void Update()
-        {
-            if (dirty && box != null)
+            if (dirty)
             {
                 dirty = false;
-                var oldScrollOffset = box.scrollOffset;
+                float oldScrollOffset = box.scrollOffset;
 
                 // Remove old elements
                 foreach (UIelement element in box.items)
                 {
                     element.Deactivate();
-                    _RemoveItem(element);
+                    RemoveItems(element);
                 }
                 box.items.Clear();
                 box.SetContentSize(0f, true);
 
                 // Header
                 OpHoldButton deleteAllButton;
+                float rightX = box.size.x - 20f;
+                float width = box.size.x - 30f;
+                float y = box.size.y - 40f;
                 box.AddItems(
-                    new OpLabel(10f, 560f, Translate("HISTORY"), true),
-                    new OpLabel(10f, 530f, Translate("Manage past searches here. Hover over a button to see its description at the bottom."), false),
-                    deleteAllButton = new OpHoldButton(new Vector2(510f, 560f), new Vector2(80f, 30f), "DELETE ALL", 80) { colorEdge = OpUtil.RedColor },
-                    new OpImage(new Vector2(10f, 522f), "pixel") { scale = new Vector2(580f, 2f), color = MenuRGB(MenuColors.MediumGrey) } // 6px margin surrounding
-                );
+                    new OpLabel(new Vector2(10f, y), new Vector2(width, 30f), Translate("Manage past searches here. Hover over a button to see its description at the bottom."), FLabelAlignment.Left)
+                        { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                    deleteAllButton = new OpHoldButton(new Vector2(rightX - 80f, y), new Vector2(80f, 30f), "DELETE ALL", 80) { colorEdge = OpUtil.RedColor });
                 deleteAllButton.OnPressDone += DeleteAllButton_OnPressDone;
-
+                y -= 8f;
+                box.AddItems(new OpImage(new Vector2(10f, y), "pixel") { scale = new Vector2(rightX - 10f, 2f), color = MenuRGB(MenuColors.MediumGrey) }); // 6px margin surrounding
+                y -= 6f;
+                
                 // Items
-                float y = 518f;
-
                 var history = HistoryManager.GetHistory();
                 if (history.Count > 0)
                 {
@@ -73,18 +74,18 @@ namespace FinderMod.Tabs
                         // Normal UI stuff
                         y -= 30f;
                         var detailsButton = new OpSimpleImageButton(new Vector2(10f, y), new Vector2(24, 24f), "Menu_Symbol_Show_List") { description = Translate(!active ? "Expand results" : "Retract results") };
-                        var nameInput = new OpTextBox2(OpUtil.CosmeticBind(item.name), new Vector2(40f, y), 450f) { description = Translate("Rename search") };
-                        var copyButton = new OpSimpleImageButton(new Vector2(496f, y), new Vector2(24f, 24f), "keyShiftB") { description = Translate("Copy") };
-                        var restoreButton = new OpSimpleImageButton(new Vector2(526f, y), new Vector2(24f, 24f), "Menu_Symbol_Repeats") { description = Translate("Restore") };
-                        var deleteButtom = new OpSimpleImageButton(new Vector2(556f, y), new Vector2(24f, 24f), "Menu_Symbol_Clear_All") { description = Translate("Delete"), colorEdge = OpUtil.RedColor };
+                        var nameInput = new OpTextBox2(OpUtil.CosmeticBind(item.name), new Vector2(40f, y), width - 130f) { description = Translate("Rename search") };
+                        var copyButton = new OpSimpleImageButton(new Vector2(rightX - 94f, y), new Vector2(24f, 24f), "keyShiftB") { description = Translate("Copy") };
+                        var restoreButton = new OpSimpleImageButton(new Vector2(rightX - 64f, y), new Vector2(24f, 24f), "Menu_Symbol_Repeats") { description = Translate("Restore") };
+                        var deleteButton = new OpSimpleImageButton(new Vector2(rightX - 34f, y), new Vector2(24f, 24f), "Menu_Symbol_Clear_All") { description = Translate("Delete"), colorEdge = OpUtil.RedColor };
 
-                        box.AddItems(detailsButton, nameInput, copyButton, restoreButton, deleteButtom);
+                        box.AddItems(detailsButton, nameInput, copyButton, restoreButton, deleteButton);
 
                         detailsButton.OnClick += (_) => DetailsButton_OnClick(item);
                         nameInput.OnValueChangedFix += (_, _, old) => NameInput_OnValueChanged(nameInput, old, item);
                         copyButton.OnClick += (_) => CopyButton_OnClick(item);
                         restoreButton.OnClick += (_) => RestoreButton_OnClick(item);
-                        deleteButtom.OnClick += (_) => DeleteButtom_OnClick(item);
+                        deleteButton.OnClick += (_) => DeleteButton_OnClick(item);
 
                         // Values if active
                         if (active)
@@ -157,13 +158,8 @@ namespace FinderMod.Tabs
                 }
 
                 // Resize yippee
-                box.SetContentSize(600f - y, true);
-
-                if (600f - y > 10000f && !shownTooLargeWarning)
-                {
-                    shownTooLargeWarning = true;
-                    ConfigContainer.instance.CfgMenu.ShowAlert(Translate("Scroll box exceeded size limit! Content may be cut off."));
-                }
+                float height = box.size.y;
+                box.SetContentSize(height - y, true);
 
                 // Also prevent flickering issue and scrolling weirdly
                 foreach (var item in box.items)
@@ -171,6 +167,8 @@ namespace FinderMod.Tabs
                     item.lastScreenPos = box.pos;
                 }
                 box.scrollOffset = oldScrollOffset; // and scroll back to where we were
+                
+                AddItems(box.items.ToArray());
             }
         }
 
@@ -202,7 +200,6 @@ namespace FinderMod.Tabs
         private void CopyButton_OnClick(HistoryItem item)
         {
             UniClipboard.SetText(JsonConvert.SerializeObject(item));
-            ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "history item"));
         }
 
         private void RestoreButton_OnClick(HistoryItem item)
@@ -211,7 +208,7 @@ namespace FinderMod.Tabs
             ConfigContainer._ChangeActiveTab(0); // index of SearchTab
         }
 
-        private void DeleteButtom_OnClick(HistoryItem item)
+        private void DeleteButton_OnClick(HistoryItem item)
         {
             HistoryManager.RemoveHistoryItem(item);
             MarkDirty();

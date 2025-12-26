@@ -16,11 +16,12 @@ namespace FinderMod
     [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
     internal sealed class Plugin : BaseUnityPlugin
     {
-        private readonly Options Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
         public const string VERSION = "2.3";
         public static readonly Version CurrentVersion = new(VERSION);
+
+        public static readonly ProcessManager.ProcessID FinderProcess = new("IDFinder", true);
 
         public Plugin()
         {
@@ -28,7 +29,6 @@ namespace FinderMod
             {
                 instance = this;
                 logger = base.Logger;
-                Options = new Options(this, base.Logger);
             }
             catch (Exception ex)
             {
@@ -41,6 +41,8 @@ namespace FinderMod
         {
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+
+            MenuHooks.Apply();
         }
 
         private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
@@ -56,12 +58,7 @@ namespace FinderMod
             try
             {
                 if (IsInit) return;
-
-                On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
-
-                MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
-                Logger.LogInfo("Loaded successfully");
 
                 if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
                     Commands.Register();
@@ -71,17 +68,6 @@ namespace FinderMod
                 Logger.LogError(ex);
                 throw;
             }
-        }
-
-        private void ProcessManager_ActualProcessSwitch(On.ProcessManager.orig_ActualProcessSwitch orig, ProcessManager self, ProcessManager.ProcessID ID, float fadeOutSeconds)
-        {
-            orig(self, ID, fadeOutSeconds);
-            ClearMemory();
-        }
-
-        private void ClearMemory()
-        {
-            Options.ClearMemory();
         }
     }
 }

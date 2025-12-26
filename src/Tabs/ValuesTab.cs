@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FinderMod.Search;
+using Menu;
 using Menu.Remix.MixedUI;
+using UnityEngine;
 using static FinderMod.OpUtil;
 
 namespace FinderMod.Tabs
 {
-    internal class ValuesTab(OptionInterface option) : BaseTab(option, "Values")
+    internal class ValuesTab : BaseTab
     {
-        private OpComboBox2 searchItems = null!;
-        private OpTextBox inputId = null!;
-        private OpScrollBox outputBox = null!;
+        private readonly OpComboBox2 searchItems;
+        private readonly OpTextBox inputId;
+        private readonly OpScrollBox outputBox;
 
-        public override void Initialize()
+        public ValuesTab(FinderProcess owner, int pageIndex) : base(owner, "VALUES", pageIndex)
         {
+            // Background rect
+            subObjects.Add(new RoundedRect(owner, this, basePos, baseSize, true)
+            {
+                borderColor = Menu.Menu.MenuColor(Menu.Menu.MenuColors.MediumGrey)
+            });
+            
+            // Normal items
             searchItems = new OpComboBox2(
-                CosmeticBind(""), new(10f, 520f), 250f,
-                [.. OptionRegistry.ListOptions()
-                    .Select(s => new ListItem(s))]
-            )
-            { listHeight = 24 };
-            inputId = new OpTextBox(CosmeticBind(0), new(10f + searchItems.size.x + 40f, searchItems.pos.y), 100f) { allowSpace = true };
-            outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
+                    CosmeticBind(""), new(basePos.x + 10f, basePos.y + baseSize.y - 37f), 400f,
+                    [.. OptionRegistry.ListOptions().Select(s => new ListItem(s))])
+                { listHeight = 24 };
+            inputId = new OpTextBox(CosmeticBind(0), new(searchItems.pos.x + searchItems.size.x + 40f, searchItems.pos.y), 100f) { allowSpace = true };
+            outputBox = new OpScrollBox(basePos + new Vector2(10f, 10f), baseSize - new Vector2(20f, 60f), 30f, false, true);
 
             AddItems(
-                new OpLabel(10f, 560f, "Values", true),
-                new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:"),
+                new OpLabel(searchItems.pos.x + searchItems.size.x + 20f, searchItems.pos.y, "ID:"),
                 inputId,
                 outputBox,
                 searchItems
@@ -35,6 +39,9 @@ namespace FinderMod.Tabs
 
             searchItems.OnValueChanged += UpdateValues;
             inputId.OnValueUpdate += UpdateValues;
+            
+            // Default selectable
+            defaultSelectable = WrapperFor(inputId);
         }
 
         private void UpdateValues(UIconfig _, string value, string oldValue)
@@ -51,14 +58,14 @@ namespace FinderMod.Tabs
             foreach (UIelement element in outputBox.items)
             {
                 element.Deactivate();
-                _RemoveItem(element);
+                RemoveItems(element);
             }
             outputBox.items.Clear();
             outputBox.SetContentSize(0);
 
             // Add new
-            var name = searchItems.value;
-            if (OptionRegistry.TryGetOption(name, out var option))
+            string optionName = searchItems.value;
+            if (OptionRegistry.TryGetOption(optionName, out var option))
             {
                 int seed = inputId.valueInt;
                 float y = outputBox.size.y - 10f;
@@ -80,7 +87,7 @@ namespace FinderMod.Tabs
             }
         }
 
-        public override void Update()
+        protected override void InternalUpdate()
         {
         }
     }
