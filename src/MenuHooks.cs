@@ -23,13 +23,6 @@ namespace FinderMod
                 IL.Menu.Remix.MixedUI.OpScrollBox.ctor_Vector2_Vector2_float_bool_bool_bool +=
                     OpScrollBox_UnhardcodeWidth;
                 IL.Menu.Remix.MixedUI.OpScrollBox.Change += OpScrollBox_UnhardcodeWidth;
-                
-                // Debug stuff
-                On.Menu.Remix.MixedUI.OpComboBox._CloseList += (orig, self) =>
-                {
-                    orig(self);
-                    Plugin.logger.LogDebug(Environment.StackTrace);
-                };
             }
             catch (Exception e)
             {
