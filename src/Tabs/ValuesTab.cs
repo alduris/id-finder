@@ -25,7 +25,7 @@ namespace FinderMod.Tabs
             outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
 
             AddItems(
-                new OpLabel(10f, 560f, "Values", true),
+                new OpLabel(10f, 560f, "VALUES", true),
                 new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:"),
                 inputId,
                 outputBox,
