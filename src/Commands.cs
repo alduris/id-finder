@@ -65,6 +65,7 @@ namespace FinderMod
                         }
                         else if (args.Length == 2)
                         {
+                            yield return "null";
                             foreach (var creature in CreatureTemplate.Type.values.entries)
                             {
                                 yield return creature;
