@@ -549,11 +549,17 @@ namespace FinderMod.Inputs.LizardCosmetics
     {
         public FloatInput LengthInput;
         public IntInput NumScalesInput;
+        public FloatInput FrontDirInput;
+        public FloatInput BackDirInput;
+        public IntInput GraphicInput;
 
         public WingScalesCosmetic() : base(CosmeticType.WingScales)
         {
             children.Add(LengthInput = new("Length", 5f, 40f) { enabled = false });
             children.Add(NumScalesInput = new("Scales per side", 2, 3) { enabled = false });
+            children.Add(FrontDirInput = new("Front direction", -0.1f, 0.2f) { enabled = false });
+            children.Add(BackDirInput = new("Back direction", 0f, 0.8f) { enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 4) { enabled = false });
         }
 
         public float Distance(WingScalesVars vars)
@@ -561,7 +567,10 @@ namespace FinderMod.Inputs.LizardCosmetics
             if (Active)
             {
                 return Option.DistanceIf(vars.scaleLength, LengthInput)
-                    + Option.DistanceIf(vars.numScales, NumScalesInput);
+                    + Option.DistanceIf(vars.numScales, NumScalesInput)
+                    + Option.DistanceIf(vars.frontDir, FrontDirInput)
+                    + Option.DistanceIf(vars.backDir, BackDirInput)
+                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
             }
             else if (Enabled && !Toggled)
             {

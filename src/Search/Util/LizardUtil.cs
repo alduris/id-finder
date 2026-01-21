@@ -1089,29 +1089,38 @@ namespace FinderMod.Search.Util
 
         public struct WingScalesVars : ILizardCosmeticVars
         {
+            public int numScales;
+            public float scaleLength;
+            public float frontDir;
+            public float backDir;
+            public int graphic;
+
             public WingScalesVars(XORShift128 Random)
             {
                 numScales = Random.Value < 0.2f ? 3 : 2;
 
-                if (Random.Value >= 0.4f) Random.Shift();
+                graphic = 0;
+                if (Random.Value >= 0.4f) graphic = Random.Range(0, 5);
 
                 float sturdy = Random.Value;
                 Random.Shift();
                 scaleLength = Mathf.Lerp(5f, 40f, Mathf.Pow(Random.Value, 0.75f + 1.25f * sturdy));
 
+                frontDir = Mathf.Lerp(-0.1f, 0.2f, Random.Value);
+                backDir = Mathf.Lerp(Mathf.Max(0f, frontDir), frontDir + numScales * 0.2f, Random.Value);
+
                 // More offsetting
-                Random.Shift(2);
                 Random.Shift(2 * numScales);
             }
-
-            public int numScales;
-            public float scaleLength;
 
             public readonly IEnumerable<string> GetValues()
             {
                 yield return "Has WingScales:";
                 yield return $"  Scale length: {scaleLength}";
                 yield return $"  Number of scales: {numScales}";
+                yield return $"  Front direction: {frontDir}";
+                yield return $"  Back direction: {backDir}";
+                yield return $"  Graphic: {graphic}";
             }
         }
 
