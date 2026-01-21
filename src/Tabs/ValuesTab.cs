@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using static FinderMod.OpUtil;
@@ -26,7 +24,7 @@ namespace FinderMod.Tabs
 
             AddItems(
                 new OpLabel(10f, 560f, "VALUES", true),
-                new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:"),
+                new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:") { bumpBehav = inputId.bumpBehav },
                 inputId,
                 outputBox,
                 searchItems

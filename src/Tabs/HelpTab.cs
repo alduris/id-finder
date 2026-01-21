@@ -58,7 +58,7 @@ namespace FinderMod.Tabs
         {
             float lineHeight = LabelTest.LineHeight(false);
             float bigLineHeight = LabelTest.LineHeight(true);
-            float y = 600f;
+            float y = 590f;
 
             // Scrollbox
             var box = new OpScrollBox(this, 0f);
@@ -81,7 +81,7 @@ namespace FinderMod.Tabs
             const float topButtonWidth = 120f;
             box.AddItems(
                 workshopButton = new OpSimpleButton(new Vector2(300f - topButtonWidth - 5f, y), new Vector2(topButtonWidth, 30f), "WORKSHOP PAGE"),
-                issueButton = new OpSimpleButton(new Vector2(300f + 5f, y), new Vector2(topButtonWidth, 30f), "REPORT ISSUE")
+                issueButton = new OpSimpleButton(new Vector2(300f + 5f, y), new Vector2(topButtonWidth, 30f), "REPORT ISSUES")
                 );
             workshopButton.OnClick += WorkshopButton_OnClick;
             issueButton.OnClick += IssueButton_OnClick;

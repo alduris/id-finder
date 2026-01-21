@@ -31,6 +31,7 @@ namespace FinderMod.Tabs
         private DateTime startTime;
 
         private bool waitingForResults = false;
+        private bool canUseGPU;
 
         public override void Initialize()
         {
@@ -39,7 +40,7 @@ namespace FinderMod.Tabs
 
             // Get system information
             int maxThreads = Environment.ProcessorCount;
-            bool canUseGPU = SystemInfo.supportsComputeShaders; // I am 99% sure all machines should use it so this might be replaced with a different check for strength later
+            canUseGPU = SystemInfo.supportsComputeShaders; // I am 99% sure all machines should use it so this might be replaced with a different check for strength later
 
             // Initialize elements we need
             float comboOffset = LabelTest.GetWidth("SEARCH", true) + 10f;
@@ -161,17 +162,37 @@ namespace FinderMod.Tabs
                 // Input box
                 cont_queries,
                 // Further search options
-                new OpLabel(new Vector2(10f, 236f), new Vector2(34f, 24f), "From:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                new OpLabel(new Vector2(10f, 236f), new Vector2(34f, 24f), "From:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_min.bumpBehav
+                },
                 input_min,
-                new OpLabel(new Vector2(10f, 206f), new Vector2(34f, 24f), "To:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                new OpLabel(new Vector2(10f, 206f), new Vector2(34f, 24f), "To:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_max.bumpBehav
+                },
                 input_max,
 
-                new OpLabel(new Vector2(160f, 236f), new Vector2(44f, 24f), "Results:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                new OpLabel(new Vector2(160f, 236f), new Vector2(44f, 24f), "Results:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_find.bumpBehav
+                },
                 input_find,
-                new OpLabel(new Vector2(160f, 206f), new Vector2(44f, 24f), "Threads:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                new OpLabel(new Vector2(160f, 206f), new Vector2(44f, 24f), "Threads:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_threads.bumpBehav
+                },
                 input_threads,
 
-                new OpLabel(new Vector2(250f, 221f), new Vector2(34f, 24f), "GPU:", FLabelAlignment.Right) { verticalAlignment = OpLabel.LabelVAlignment.Center },
+                new OpLabel(new Vector2(250f, 221f), new Vector2(34f, 24f), "GPU:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpu.bumpBehav
+                },
                 input_gpu,
 
                 button_run,
