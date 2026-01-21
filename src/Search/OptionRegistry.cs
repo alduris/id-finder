@@ -103,8 +103,10 @@ namespace FinderMod.Search
 
                 // Watcher
                 "Lizard Cosmetics (Indigo)",
+                "Lizard Cosmetics (Peach)",
                 "Moth (Big) Variations",
                 "Moth (Small) Variations",
+                "Angler Variations",
                 "Barnacle Variations",
                 "Box Worm Variations",
                 "Drill Crab Variations",
@@ -162,6 +164,7 @@ namespace FinderMod.Search
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Peach)", () => new PeachLizardCosmetics());
                 // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
 
                 // Moths!
@@ -169,6 +172,7 @@ namespace FinderMod.Search
                 Options.Add("Moth (Small) Variations", () => new MothVarsOption(false));
 
                 // Misc
+                Options.Add("Angler Variations", () => new AnglerVarsOption());
                 Options.Add("Barnacle Variations", () => new BarnacleVarsOption());
                 Options.Add("Box Worm Variations", () => new BoxWormVarsOption());
                 Options.Add("Drill Crab Variations", () => new DrillCrabVarsOption());

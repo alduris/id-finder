@@ -34,7 +34,8 @@ namespace FinderMod.Search.Util
             Eel,
             Blizzard,
             Basilisk,
-            Indigo
+            Indigo,
+            Peach
         }
         public enum LizardBodyScaleType
         {
@@ -62,6 +63,8 @@ namespace FinderMod.Search.Util
             LizardRot,
             SkinkSpeckles,
             SkinkStripes, // no vars
+            PeachBackFin,
+            PeachHeadStripes
         }
         public enum RotType
         {
@@ -161,6 +164,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 6,
                 LizardType.Basilisk => 5,
                 LizardType.Indigo => 7,
+                LizardType.Peach => 5,
                 _ => throw new NotImplementedException()
             };
         }
@@ -177,6 +181,7 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 10,
                 LizardType.Train => 10,
                 LizardType.Indigo => 7,
+                LizardType.Peach => 7,
                 _ => 0
             };
         }
@@ -219,6 +224,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 1.4f,
                 LizardType.Basilisk => 1.1f,
                 LizardType.Indigo => 1.2f,
+                LizardType.Peach => 0.65f,
                 _ => throw new NotImplementedException()
             };
             float bodyStiffnessParam = type switch
@@ -239,6 +245,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 0.55f,
                 LizardType.Basilisk => 0.2f,
                 LizardType.Indigo => 0.5f,
+                LizardType.Peach => 0.8f,
                 _ => throw new NotImplementedException()
             };
             float tailLengthFactorParam = type switch
@@ -259,6 +266,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 0.3f,
                 LizardType.Basilisk => 0.6f,
                 LizardType.Indigo => 0.9f,
+                LizardType.Peach => 1.44f,
                 _ => throw new NotImplementedException(),
             };
 
@@ -594,6 +602,36 @@ namespace FinderMod.Search.Util
             public float minSize;
             public float maxSize;
             public int graphic;
+        }
+
+        public struct PeachBackFinVars
+        {
+            public float minSize;
+            public float maxSize;
+            public float sizeSkewExponent;
+            public int graphic;
+            public int bumps;
+            public float scaleX;
+
+            public PeachBackFinVars(XORShift128 Random)
+            {
+                minSize = Mathf.Lerp(0.27f, 0.35f, Mathf.Pow(Random.Value, 2f));
+                maxSize = Mathf.Lerp(minSize, 0.7f, Random.Value);
+                sizeSkewExponent = Mathf.Lerp(0.5f, 1.5f, Random.Value);
+                graphic = (Random.Value < 0.5f) ? 4 : 5;
+                bumps = (Random.Value < 0.5f) ? 3 : 4;
+                scaleX = Mathf.Lerp(1.5f, 2.5f, Random.Value);
+            }
+        }
+
+        public struct PeachHeadStripesVars
+        {
+            public float alpha;
+
+            public PeachHeadStripesVars(XORShift128 Random)
+            {
+                alpha = Random.Value;
+            }
         }
 
         public struct ShortBodyScalesVars

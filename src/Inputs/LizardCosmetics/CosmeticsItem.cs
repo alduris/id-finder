@@ -259,6 +259,69 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
     }
 
+    public class PeachBodyFinCosmetic : CosmeticsItem
+    {
+        public FloatInput MinSizeInput;
+        public FloatInput MaxSizeInput;
+        public FloatInput SizeSkewExponentInput;
+        public IntInput GraphicInput;
+        public IntInput BumpsInput;
+        public FloatInput ScaleXInput;
+
+        public PeachBodyFinCosmetic() : base(CosmeticType.PeachBackFin)
+        {
+            children.AddRange([
+                MinSizeInput = new FloatInput("Min size", 0.27f, 0.35f) { enabled = false },
+                MaxSizeInput = new FloatInput("Max size", 0.27f, 0.7f) { enabled = false },
+                SizeSkewExponentInput = new FloatInput("Size skew exponent", 0.5f, 1.5f) { enabled = false },
+                GraphicInput = new IntInput("Graphc", 4, 5) { enabled = false },
+                BumpsInput = new IntInput("Number of bumps", 3, 4) { enabled = false },
+                ScaleXInput = new FloatInput("Scale x", 1.5f, 2.5f) { enabled = false }
+                ]);
+        }
+
+        public float Distance(PeachBackFinVars vars)
+        {
+            if (Active)
+            {
+                return Option.DistanceIf(vars.minSize, MinSizeInput)
+                    + Option.DistanceIf(vars.maxSize, MaxSizeInput)
+                    + Option.DistanceIf(vars.sizeSkewExponent, SizeSkewExponentInput)
+                    + Option.DistanceIf(vars.bumps, BumpsInput)
+                    + Option.DistanceIf(vars.scaleX, ScaleXInput)
+                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
+            }
+            else if (Enabled && !Toggled)
+            {
+                return MISSING_PENALTY;
+            }
+            return 0f;
+        }
+    }
+
+    public class PeachHeadStripesCosmetic : CosmeticsItem
+    {
+        public FloatInput AlphaInput;
+
+        public PeachHeadStripesCosmetic() : base(CosmeticType.PeachHeadStripes)
+        {
+            children.Add(AlphaInput = new FloatInput("Alpha") { enabled = false });
+        }
+
+        public float Distance(PeachHeadStripesVars vars)
+        {
+            if (Active)
+            {
+                return Option.DistanceIf(vars.alpha, AlphaInput);
+            }
+            else if (Enabled && !Toggled)
+            {
+                return MISSING_PENALTY;
+            }
+            return 0f;
+        }
+    }
+
     public class ShortBodyScalesCosmetic : CosmeticsItem
     {
         public IntInput NumScalesInput;

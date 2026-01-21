@@ -359,6 +359,12 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     // BlizzardBeam
                     // BlizzardSteam
                 }
+                else if (type == LizardType.Peach)
+                {
+                    yield return new PeachHeadStripesVars(Random);
+                    yield return new TailFinVars(Random, tailLength, type);
+                    yield return new PeachBackFinVars(Random);
+                }
 
                 if (backDecals == 0 && type == LizardType.Caramel)
                 {
@@ -432,10 +438,27 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         yield return $"  Number of scales: {longShoulderScales.numScales}";
                         yield return $"  Is colored: {(longShoulderScales.colored ? "Yes" : "No")}";
                         break;
+                    case PeachBackFinVars peachBackFin:
+                        yield return "Has PeachBackFin:";
+                        yield return $"  Min size: {peachBackFin.minSize}";
+                        yield return $"  Max size: {peachBackFin.maxSize}";
+                        yield return $"  Size skew exponent: {peachBackFin.sizeSkewExponent}";
+                        yield return $"  Graphic: {peachBackFin.graphic}";
+                        yield return $"  Number of bumps: {peachBackFin.bumps}";
+                        yield return $"  Scale x: {peachBackFin.scaleX}";
+                        break;
+                    case PeachHeadStripesVars peachHeadStripes:
+                        yield return "Has PeachHeadStripes:";
+                        yield return $"  Alpha: {peachHeadStripes.alpha}";
+                        break;
                     case ShortBodyScalesVars shortBodyScales:
-                        yield return "Has ShortBodyScaleVars:";
+                        yield return "Has ShortBodyScale:";
                         yield return $"  Scale type: {shortBodyScales.scaleType}";
                         yield return $"  Number of scales: {shortBodyScales.numScales}";
+                        break;
+                    case SkinkSpecklesVars skinkSpeckles:
+                        yield return $"Has SkinkSpeckles:";
+                        yield return $"  Number of spots: {skinkSpeckles.spots}";
                         break;
                     case SnowAccumulationVars:
                         yield return "Has SnowAccumulation";
