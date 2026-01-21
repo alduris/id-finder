@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
@@ -23,6 +23,21 @@ namespace FinderMod.Search.Options
         private readonly FloatInput LegThicknessInput;
         private readonly FloatInput BodyThicknessInput;
         private readonly BigSpiderColorInput SpineColorInput;
+
+        public override CreatureTemplate.Type? RepresentedCreature
+        {
+            get
+            {
+                return type switch
+                {
+                    SpiderType.Big => CreatureTemplate.Type.BigSpider,
+                    SpiderType.Spitter => CreatureTemplate.Type.SpitterSpider,
+                    SpiderType.Mother when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.MotherSpider,
+                    _ => null
+                };
+            }
+            protected set => throw new NotImplementedException();
+        }
 
         public BigSpiderVarsOption(SpiderType type)
         {
@@ -114,7 +129,7 @@ namespace FinderMod.Search.Options
         private class BigSpiderColorInput(SpiderType type) : IElement, ISaveInHistory
         {
             private readonly FloatInput BlendInput = new("Spine color", 0f, 0.2f);
-            private Color selectedColor = new(Random.value, Random.value, Random.value);
+            private Color selectedColor = new(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
             private OpColorPicker.PickerMode pickerMode = OpColorPicker.PickerMode.HSL;
 
             public Color BlendedColor

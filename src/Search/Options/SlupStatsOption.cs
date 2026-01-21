@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using MoreSlugcats;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -10,6 +11,7 @@ namespace FinderMod.Search.Options
 
         public SlupStatsOption() : base()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             elements = [
                 wgtInp = new FloatInput("Body weight", 0.5525f, 0.715f),
                 vz0Inp = new FloatInput("Visibility (standing)", -0.24f, -0.16f),

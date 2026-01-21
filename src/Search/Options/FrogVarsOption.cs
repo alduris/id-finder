@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -15,6 +16,7 @@ namespace FinderMod.Search.Options
 
         public FrogVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Frog;
             elements = [
                 HornCountInput = new IntInput("Number of horns", 0, 3),
                 HornScaleInput = new FloatInput("Horn scale", 0.8f, 1.2f),

@@ -11,6 +11,7 @@ namespace FinderMod.Search.Options
 
         public YeekColorsOption()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.Yeek;
             elements = [
                 new Label("All other colors are based on the feather color. Cannot be yellow or green."),
                 FeatherColorInput

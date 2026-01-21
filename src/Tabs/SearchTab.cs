@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using FinderMod.Search;
 using FinderMod.Search.Options;
 using Menu;
@@ -294,7 +295,7 @@ namespace FinderMod.Tabs
                     label.PosY -= labelSize;
 
                     // Copy results button
-                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "COPY") { description = "Copy results" };
+                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 40f), new(80f, 24f), "COPY RESULTS") { description = "Copy results to clipboard" };
                     button_copy.OnClick += (_) =>
                     {
                         UniClipboard.SetText(label.text);
@@ -311,7 +312,7 @@ namespace FinderMod.Tabs
                         bool saved = false;
                         var optionsLocalClone = options.ToList();
                         var range = (input_min.valueInt, input_max.valueInt);
-                        var button_save = new OpSimpleButton(new(64f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "SAVE") { description = "Save results to history" };
+                        var button_save = new OpSimpleButton(new(button_copy.PosX + button_copy.size.x + 10f, cont_results.size.y - labelSize - 40f), new(80f, 24f), "SAVE RESULTS") { description = "Save results to history" };
                         button_save.OnClick += (_) =>
                         {
                             if (saved) return;

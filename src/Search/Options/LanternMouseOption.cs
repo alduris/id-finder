@@ -8,6 +8,7 @@ namespace FinderMod.Search.Options
     {
         public LanternMouseOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.LanternMouse;
             elements = [new HueInput("Hue"), new FloatInput("Dominance")];
         }
 

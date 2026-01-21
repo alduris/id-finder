@@ -11,6 +11,7 @@ namespace FinderMod.Search.Options
 
         public ScavSkillsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 dgeInp = new FloatInput("Dodge"),
                 midInp = new FloatInput("Mid-range"),

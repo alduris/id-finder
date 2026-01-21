@@ -18,6 +18,7 @@ namespace FinderMod.Search.Options
 
         public ScavBackPatternOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 new Label("See hover descriptions at bottom for some inputs"),
                 new Whitespace(),

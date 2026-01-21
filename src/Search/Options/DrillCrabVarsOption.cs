@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -16,6 +17,7 @@ namespace FinderMod.Search.Options
 
         public DrillCrabVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.DrillCrab;
             elements = [
                 LegThicknessInput = new FloatInput("Leg thickness"),
                 LegLengthInput = new FloatInput("Leg length"),

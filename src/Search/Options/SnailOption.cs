@@ -14,6 +14,7 @@ namespace FinderMod.Search.Options
 
         public SnailOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.Snail;
             elements = [
                 sizeInput = new FloatInput("Size", 0.6f, 1.4f),
                 colorAInput = new ColorRGBInput("Color A") { description = "Head side" },

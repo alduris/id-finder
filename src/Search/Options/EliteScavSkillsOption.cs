@@ -11,6 +11,7 @@ namespace FinderMod.Search.Options
 
         public EliteScavSkillsOption() : base()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.ScavengerElite;
             elements = [
                 dgeInp = new FloatInput("Dodge"),
                 midInp = new FloatInput("Mid-range"),

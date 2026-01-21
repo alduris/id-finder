@@ -12,6 +12,7 @@ namespace FinderMod.Search.Options
 
         public NootAdultVarsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.BigNeedleWorm;
             elements = [
                 wsInp = new FloatInput("Wing size", 0.8f, 1.2f),
                 lsInp = new FloatInput("Leg size", 0.6f, 1.4f),

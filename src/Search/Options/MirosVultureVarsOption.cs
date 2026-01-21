@@ -17,6 +17,7 @@ namespace FinderMod.Search.Options
 
         public MirosVultureVarsOption()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.MirosVulture;
             elements = [
                 ColorAInput = new ColorHSLInput("Wing color A", true, 0.0025f - 0.02f, 0.0025f + 0.02f, false, 1f, 1f, true, 0.35f, 0.65f) { fixColors = true },
                 ColorBInput = new ColorHSLInput("Wing color B", true, 0.0025f - 0.02f - 0.25f, 0.0025f + 0.02f + 0.25f, true, 0.8f, 1f, true, 0.45f, 1f) { fixColors = true },

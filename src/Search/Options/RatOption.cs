@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -16,6 +17,7 @@ namespace FinderMod.Search.Options
 
         public RatOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Rat;
             elements = [
                 bigEyesInput = new BoolInput("Has big eyes", false) {hasBias = true},
                 whiskerLengthInput = new FloatInput("Whisker length", 20f, 35f),

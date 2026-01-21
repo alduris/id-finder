@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -23,6 +24,7 @@ namespace FinderMod.Search.Options
 
         public BarnacleVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Barnacle;
             elements = [
                 BodySizeInput = new FloatInput("Body size", 0.6f, 1f),
                 EyeSizeInput = new FloatInput("Eye size", 0.7f, 1f),

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Inputs;
+using FinderMod.Search.Util;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -10,6 +11,8 @@ namespace FinderMod.Search.Options
     {
         private readonly EnumInput<LizardType> TypeInp;
         private readonly FloatInput HeadSizeInput, FatnessInput, TailLengthInput, TailFatnessInput, TailColorInput;
+
+        public override CreatureTemplate.Type? RepresentedCreature => LizardUtil.LizardTypeToTemplateType(TypeInp.value);
 
         public LizardVarsOption() : base()
         {

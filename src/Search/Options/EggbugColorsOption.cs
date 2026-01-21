@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Inputs;
+using MoreSlugcats;
 using RWCustom;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace FinderMod.Search.Options
 
         public EggbugColorsOption(bool firebug)
         {
+            RepresentedCreature = firebug ? MoreSlugcatsEnums.CreatureTemplateType.FireBug : CreatureTemplate.Type.EggBug;
             FireBug = firebug;
             elements = [
                 // BodyHueInput = new HueInput("Body hue", FireBug ? 0.35f : -0.15f, FireBug ? 0.6f : 0.1f),

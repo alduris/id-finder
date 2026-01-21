@@ -12,6 +12,7 @@ namespace FinderMod.Search.Options
 
         public KingVultureWingOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.KingVulture;
             elements = [
                 ColorAInput = new ColorHSLInput("Color A"),
                 ColorBInput = new ColorHSLInput("Color B"),

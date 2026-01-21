@@ -12,6 +12,7 @@ namespace FinderMod.Search.Options
 
         public VultureWingOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Vulture;
             elements = [
                 ColorAInput = new ColorHSLInput("Color A"),
                 ColorBInput = new ColorHSLInput("Color B"),

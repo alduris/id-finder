@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -27,6 +28,7 @@ namespace FinderMod.Search.Options
 
         public AnglerVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Angler;
             elements = [
                 NumOfPropellersInput = new IntInput("Number of propellers", 3, 6),
                 new Whitespace(),

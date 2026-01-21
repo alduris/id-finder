@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Inputs;
+using MoreSlugcats;
 using RWCustom;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace FinderMod.Search.Options
         private readonly FloatInput[] inputs;
         public SlupFoodOption() : base()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             inputs = new FloatInput[foodLength];
             for (int i = 0; i < foodLength; i++)
             {

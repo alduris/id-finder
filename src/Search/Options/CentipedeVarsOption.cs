@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
 
@@ -19,6 +20,22 @@ namespace FinderMod.Search.Options
         private readonly HueInput HueInput = null!;
         private readonly ColorHSLInput ColorInput = null!;
         private readonly FloatInput SizeInput = null!;
+
+        public override CreatureTemplate.Type? RepresentedCreature
+        {
+            get
+            {
+                return type switch
+                {
+                    CentipedeType.Normal => CreatureTemplate.Type.Centipede,
+                    CentipedeType.Red => CreatureTemplate.Type.RedCentipede,
+                    CentipedeType.Centiwing => CreatureTemplate.Type.Centiwing,
+                    CentipedeType.Aquapede when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.AquaCenti,
+                    _ => null,
+                };
+            }
+            protected set => throw new NotImplementedException();
+        }
 
         public CentipedeVarsOption(CentipedeType type)
         {

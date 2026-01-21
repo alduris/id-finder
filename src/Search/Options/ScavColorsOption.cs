@@ -12,6 +12,7 @@ namespace FinderMod.Search.Options
 
         public ScavColorsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 body = new ColorHSLInput("Body color"),
                 head = new ColorHSLInput("Head color"),

@@ -10,6 +10,7 @@ namespace FinderMod.Search.Options
 
         public GrappleWormColorsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.TubeWorm;
             elements = [ColorInput];
         }
 

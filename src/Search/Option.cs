@@ -22,6 +22,11 @@ namespace FinderMod.Search.Options
         internal bool linked = false;
 
         /// <summary>
+        /// Creature type represented by this search option. Leave as null (default) if it does not represent a singular creature.
+        /// </summary>
+        public virtual CreatureTemplate.Type? RepresentedCreature { get; protected set; } = null;
+
+        /// <summary>
         /// The elements to show in the space. Must be added to in the constructor.
         /// </summary>
         protected List<IElement> elements = null!;

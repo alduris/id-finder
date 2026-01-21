@@ -14,6 +14,7 @@ namespace FinderMod.Search.Options
         private readonly IntInput tsInp;
         public ScavVarsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 hsInp = new FloatInput("Head size"),
                 etInp = new FloatInput("Eartler thickness"),

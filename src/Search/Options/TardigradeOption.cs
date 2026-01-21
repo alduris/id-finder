@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -21,6 +22,7 @@ namespace FinderMod.Search.Options
 
         public TardigradeOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Tardigrade;
             elements = [
                 bodyColorInput = new ColorHSLInput("Body color", true, 0.3f, 0.9f ,true, 0.3f, 0.47f, true, 0.5f, 0.8f),
                 secondaryColorInput = new ColorHSLInput("Secondary color", true, 0f, 1f ,true, 0.75f, 1f, true, 0.5f, 0.7f),

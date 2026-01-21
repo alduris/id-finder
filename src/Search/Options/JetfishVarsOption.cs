@@ -15,6 +15,7 @@ namespace FinderMod.Search.Options
 
         public JetfishVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.JetFish;
             elements = [
                 // FatnessInput = new FloatInput("Fatness", 0.8f, 1.2f),
                 TentacleLengthInput = new FloatInput("Tentacle length"),

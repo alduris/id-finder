@@ -13,6 +13,7 @@ namespace FinderMod.Search.Options
 
         public HazerVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.Hazer;
             HazerColorGroup a, b;
             elements = [
                 ColorInputs = new Alternatable<HazerColorGroup>(

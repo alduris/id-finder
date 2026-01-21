@@ -6,6 +6,9 @@ namespace FinderMod.Search.Options
 {
     internal class TestOption : Option
     {
+        public override CreatureTemplate.Type? RepresentedCreature =>
+            new CreatureTemplate.Type(CreatureTemplate.Type.values.GetEntry(Random.Range(0, CreatureTemplate.Type.values.Count)), false);
+
         public TestOption()
         {
             elements = [

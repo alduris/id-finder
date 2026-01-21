@@ -8,6 +8,7 @@ namespace FinderMod.Search.Options
         private readonly FloatInput SizeInput = new("Size");
         public CoalescipedeOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.Spider;
             elements = [SizeInput];
         }
 

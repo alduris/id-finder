@@ -16,6 +16,7 @@ namespace FinderMod
         private OptionElements elementsFunc = () => [];
         private OptionExecute executeFunc = null!;
         private OptionValues valuesFunc = null!;
+        private CreatureTemplate.Type? representedCreature = null!;
 
         /// <summary>
         /// Sets a delegate to create the user interface. Run once at option creation when selected, and then cached for later reuse.
@@ -55,11 +56,22 @@ namespace FinderMod
         }
 
         /// <summary>
+        /// Assigns the represented creature template type. If null or not specified, will not represent any singular creature. Optional.
+        /// </summary>
+        /// <param name="representedCreature">The creature template type this option represents.</param>
+        /// <returns>The <see cref="OptionBuilder"/> instance for chaining.</returns>
+        public OptionBuilder RepresentedCreature(CreatureTemplate.Type? representedCreature)
+        {
+            this.representedCreature = representedCreature;
+            return this;
+        }
+
+        /// <summary>
         /// Registers the created option. <see cref="Execute(OptionExecute)"/> is required to have been called.
         /// </summary>
         public void Register()
         {
-            API.Register(name, () => new APIBuilderOption(elementsFunc, executeFunc, valuesFunc));
+            API.Register(name, () => new APIBuilderOption(elementsFunc, executeFunc, valuesFunc, representedCreature));
         }
 
         /// <summary>Delegate definition for creating the user interface for an option.</summary>

@@ -17,6 +17,7 @@ namespace FinderMod.Search.Options
 
         public EliteScavBackPatternOption() : base()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.ScavengerElite;
             elements = [
                 new Label("See hover descriptions at bottom for some inputs"),
                 new Whitespace(),

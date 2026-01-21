@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Inputs;
+using FinderMod.Search.Util;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using RWCustom;
@@ -13,6 +14,8 @@ namespace FinderMod.Search.Options
     {
         private readonly LizardInput typeInp;
         private readonly LizardColor colrInp;
+
+        public override CreatureTemplate.Type? RepresentedCreature => LizardUtil.LizardTypeToTemplateType(typeInp.value);
 
         public LizardColorsOption() : base()
         {

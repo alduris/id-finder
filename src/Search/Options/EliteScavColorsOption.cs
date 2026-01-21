@@ -11,6 +11,7 @@ namespace FinderMod.Search.Options
 
         public EliteScavColorsOption() : base()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.ScavengerElite;
             elements = [
                 body = new ColorHSLInput("Body color"),
                 head = new ColorHSLInput("Head color"),

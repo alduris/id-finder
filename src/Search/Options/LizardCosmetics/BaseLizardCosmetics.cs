@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
+using FinderMod.Search.Util;
 using Unity.Burst;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -30,6 +31,16 @@ namespace FinderMod.Search.Options.LizardCosmetics
         /// </summary>
         protected LizardRotCosmetic lizardRotCosmetic = null!;
         private readonly EnumInput<RotType> rotTypeInput = null!;
+
+        /// <summary>
+        /// The <see cref="CreatureTemplate.Type"/> of the represented lizard. Overrideable in the event of a modded lizard.
+        /// </summary>
+        public override CreatureTemplate.Type? RepresentedCreature
+        {
+            get => overrideCreature ?? LizardUtil.LizardTypeToTemplateType(type);
+            protected set => overrideCreature = value;
+        }
+        private CreatureTemplate.Type? overrideCreature = null;
 
         /// <summary>
         /// Initializes with a <see cref="CosmeticsItemContainer"/> containing a <see cref="LizardRotSubholder"/> if Watcher is enabled.

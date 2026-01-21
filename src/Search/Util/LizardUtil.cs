@@ -2,6 +2,7 @@
 using FinderMod.Search.Options;
 using MoreSlugcats;
 using UnityEngine;
+using Watcher;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace FinderMod.Search.Util
@@ -37,6 +38,32 @@ namespace FinderMod.Search.Util
             Indigo,
             Peach
         }
+
+        public static CreatureTemplate.Type? LizardTypeToTemplateType(LizardType type)
+        {
+            return type switch
+            {
+                LizardType.Pink => CreatureTemplate.Type.PinkLizard,
+                LizardType.Green => CreatureTemplate.Type.GreenLizard,
+                LizardType.Blue => CreatureTemplate.Type.BlueLizard,
+                LizardType.Yellow => CreatureTemplate.Type.YellowLizard,
+                LizardType.White => CreatureTemplate.Type.WhiteLizard,
+                LizardType.Red => CreatureTemplate.Type.RedLizard,
+                LizardType.Black => CreatureTemplate.Type.BlackLizard,
+                LizardType.Salamander => CreatureTemplate.Type.Salamander,
+                LizardType.Cyan => CreatureTemplate.Type.CyanLizard,
+                LizardType.Caramel when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.SpitLizard,
+                LizardType.Zoop when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.ZoopLizard,
+                LizardType.Eel when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.EelLizard,
+                LizardType.Train when ModManager.MSC => MoreSlugcatsEnums.CreatureTemplateType.TrainLizard,
+                LizardType.Blizzard when ModManager.Watcher => WatcherEnums.CreatureTemplateType.BlizzardLizard,
+                LizardType.Basilisk when ModManager.Watcher => WatcherEnums.CreatureTemplateType.BasiliskLizard,
+                LizardType.Indigo when ModManager.Watcher => WatcherEnums.CreatureTemplateType.IndigoLizard,
+                LizardType.Peach when ModManager.Watcher => WatcherEnums.CreatureTemplateType.PeachLizard,
+                _ => null,
+            };
+        }
+
         public enum LizardBodyScaleType
         {
             Patch = 0,

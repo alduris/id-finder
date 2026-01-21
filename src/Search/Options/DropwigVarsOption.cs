@@ -16,6 +16,7 @@ namespace FinderMod.Search.Options
 
         public DropwigVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.DropBug;
             elements = [
                 BodyThicknessInput = new FloatInput("Body thickness", 0.6f, 1.4f),
                 LegsThicknessInput = new FloatInput("Legs thickness", 0.6f, 1.4f),

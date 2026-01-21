@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
+using MoreSlugcats;
 using Newtonsoft.Json.Linq;
 
 namespace FinderMod.Search.Options
@@ -15,6 +16,7 @@ namespace FinderMod.Search.Options
 
         public SlupBehaviorOption()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             // Initialize food like inputs
             foodLikes = new EnumInput<FoodLike>[SlupFoodOption.foodLength];
             for (int i = 0; i < foodLikes.Length; i++)

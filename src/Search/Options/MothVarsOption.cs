@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 using Color = UnityEngine.Color; // STOP POPPING UP System.Drawing NOBODY LIKES YOU
 
 namespace FinderMod.Search.Options
@@ -23,6 +22,7 @@ namespace FinderMod.Search.Options
 
         public MothVarsOption(bool big)
         {
+            RepresentedCreature = big ? WatcherEnums.CreatureTemplateType.BigMoth : WatcherEnums.CreatureTemplateType.SmallMoth;
             this.big = big;
             baseSize = big ? 1f : 0.3f;
             elements = [
