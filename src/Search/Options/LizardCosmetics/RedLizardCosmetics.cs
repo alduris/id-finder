@@ -107,7 +107,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         {
                             var cosmetic = foundLSS ? mainTailTuftCosmetic : tailTuftCosmetic;
                             if (!foundLSS) tail = true;
-                            cosmetic.Distance(tailTuftVars);
+                            r += cosmetic.Distance(tailTuftVars);
                         }
                         break;
 
