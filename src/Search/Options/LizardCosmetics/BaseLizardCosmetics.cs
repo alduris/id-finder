@@ -216,6 +216,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
                 if (type == LizardType.Indigo)
                 {
+                    yield return new SkinkStripesVars();
                     yield return new SkinkSpecklesVars(Random);
                 }
                 else if (type == LizardType.Caramel && Random.Value < 0.6f)
@@ -406,115 +407,12 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
             foreach (var value in GetResults(Random, RotType.None))
             {
-                switch (value)
+                if (value is ILizardCosmeticVars vars)
                 {
-                    case AntennaeVars antennae:
-                        yield return "Has Antennae:";
-                        yield return $"  Length: {antennae.length}";
-                        yield return $"  Alpha: {antennae.alpha}";
-                        break;
-                    case AxolotlGillsVars axolotlGills:
-                        yield return "Has AxolotlGills:";
-                        yield return $"  Graphic: {axolotlGills.graphic}";
-                        yield return $"  Rigor: {axolotlGills.rigor}";
-                        yield return $"  Number of gills: {axolotlGills.numGills}";
-                        break;
-                    case BodyStripesVars bodyStripes:
-                        yield return "Has BodyStripes:";
-                        yield return $"  Number of scales: {bodyStripes.numScales}";
-                        break;
-                    case BumpHawkVars bumpHawk:
-                        yield return "Has BumpHawk:";
-                        yield return $"  Number of bumps: {bumpHawk.numBumps}";
-                        yield return $"  Spine length: {bumpHawk.spineLength}";
-                        yield return $"  Is colored: {(bumpHawk.colored ? "Yes" : "No")}";
-                        break;
-                    case JumpRingsVars:
-                        yield return "Has JumpRings";
-                        break;
-                    case LongHeadScalesVars longHeadScales:
-                        yield return "Has LongHeadScales:";
-                        yield return $"  Length: {longHeadScales.length}";
-                        yield return $"  Width: {longHeadScales.width}";
-                        yield return $"  Rigor: {longHeadScales.rigor}";
-                        yield return $"  Graphic: {longHeadScales.graphic}";
-                        yield return $"  Is colored: {(longHeadScales.colored ? "Yes" : "No")}";
-                        break;
-                    case LongShoulderScalesVars longShoulderScales:
-                        yield return "Has LongShoulderScales:";
-                        yield return $"  Min size: {longShoulderScales.minSize}";
-                        yield return $"  Max size: {longShoulderScales.maxSize}";
-                        yield return $"  Graphic: {longShoulderScales.graphic}";
-                        yield return $"  Scale type: {longShoulderScales.scaleType}";
-                        yield return $"  Number of scales: {longShoulderScales.numScales}";
-                        yield return $"  Is colored: {(longShoulderScales.colored ? "Yes" : "No")}";
-                        break;
-                    case PeachBackFinVars peachBackFin:
-                        yield return "Has PeachBackFin:";
-                        yield return $"  Min size: {peachBackFin.minSize}";
-                        yield return $"  Max size: {peachBackFin.maxSize}";
-                        yield return $"  Size skew exponent: {peachBackFin.sizeSkewExponent}";
-                        yield return $"  Graphic: {peachBackFin.graphic}";
-                        yield return $"  Number of bumps: {peachBackFin.bumps}";
-                        yield return $"  Scale x: {peachBackFin.scaleX}";
-                        break;
-                    case PeachHeadStripesVars peachHeadStripes:
-                        yield return "Has PeachHeadStripes:";
-                        yield return $"  Alpha: {peachHeadStripes.alpha}";
-                        break;
-                    case ShortBodyScalesVars shortBodyScales:
-                        yield return "Has ShortBodyScale:";
-                        yield return $"  Scale type: {shortBodyScales.scaleType}";
-                        yield return $"  Number of scales: {shortBodyScales.numScales}";
-                        break;
-                    case SkinkSpecklesVars skinkSpeckles:
-                        yield return $"Has SkinkSpeckles:";
-                        yield return $"  Number of spots: {skinkSpeckles.spots}";
-                        break;
-                    case SnowAccumulationVars:
-                        yield return "Has SnowAccumulation";
-                        break;
-                    case SpineSpikesVars spineSpikes:
-                        yield return "Has SpineSpikes:";
-                        yield return $"  Spine length: {spineSpikes.spineLength}";
-                        yield return $"  Graphic: {spineSpikes.graphic}";
-                        yield return $"  Number of spines: {spineSpikes.numScales}";
-                        break;
-                    case TailFinVars tailFin:
-                        yield return "Has TailFin:";
-                        yield return $"  Spine length: {tailFin.spineLength}";
-                        yield return $"  Spine scale X: {tailFin.spineScaleX}";
-                        yield return $"  Underside size: {tailFin.undersideSize}";
-                        yield return $"  Graphic: {tailFin.graphic}";
-                        yield return $"  Number of spines: {tailFin.numScales}";
-                        yield return $"  Is colored: {(tailFin.colored ? "Yes" : "No")}";
-                        break;
-                    case TailGeckoScalesVars tailGeckoScales:
-                        yield return "Has TailGeckoScales:";
-                        yield return $"  Rows: {tailGeckoScales.rows}";
-                        yield return $"  Lines: {tailGeckoScales.lines}";
-                        yield return $"  Big scales: {(tailGeckoScales.bigScales ? "Yes" : "No")}";
-                        break;
-                    case TailTuftVars tailTuft:
-                        yield return "Has TailTuft:";
-                        yield return $"  Scale type: {tailTuft.scaleType}";
-                        yield return $"  Number of scales: {tailTuft.numScales}";
-                        yield return $"  Graphic: {tailTuft.graphic}";
-                        yield return $"  Is colored: {(tailTuft.colored ? "Yes" : "No")}";
-                        break;
-                    case WhiskersVars whiskers:
-                        yield return "Has Whiskers:";
-                        yield return $"  Number of whiskers: {whiskers.numWhiskers}";
-                        break;
-                    case WingScalesVars wingScales:
-                        yield return "Has WingScales:";
-                        yield return $"  Scale length: {wingScales.scaleLength}";
-                        yield return $"  Number of scales: {wingScales.numScales}";
-                        break;
-                    case Melanistic melanistic:
-                        yield return $"Is melanistic: {melanistic.melanistic}";
-                        break;
-                    default: break;
+                    foreach (var text in vars.GetValues())
+                    {
+                        yield return text;
+                    }
                 }
             }
 
@@ -529,10 +427,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     {
                         if (result is LizardRotVars rotVars)
                         {
-                            yield return $"LizardRotGraphics ({rotType}):";
-                            yield return $"  Number of alive tentacles: {rotVars.numLegs}";
-                            yield return $"  Number of dead tentacles: {rotVars.numDeadLegs}";
-                            yield return $"  Number of eyes: {rotVars.numEyes}";
+                            foreach (var value in rotVars.GetValues())
+                            {
+                                yield return value;
+                            }
                         }
                     }
                 }

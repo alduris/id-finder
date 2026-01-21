@@ -67,12 +67,18 @@ namespace FinderMod.Inputs.LizardCosmetics
     public class AxolotlGillsCosmetic : CosmeticsItem
     {
         public FloatInput RigorInput;
+        public FloatInput SizeFacInput;
+        public FloatInput WidthFacInput;
+        public FloatInput BackwardsFacInput;
         public IntInput NumGillsInput;
         public IntInput GraphicInput;
 
         public AxolotlGillsCosmetic() : base(CosmeticType.AxolotlGills)
         {
             children.Add(RigorInput = new("Rigor") { enabled = false });
+            children.Add(SizeFacInput = new("Size factor") { enabled = false });
+            children.Add(WidthFacInput = new("Width factor") { enabled = false });
+            children.Add(BackwardsFacInput = new("Backwards factor", 0.1f, 0.9f) { enabled = false });
             children.Add(NumGillsInput = new("Number of gills", 2, 7) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
         }

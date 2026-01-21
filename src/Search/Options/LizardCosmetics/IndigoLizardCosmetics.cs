@@ -27,7 +27,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 {
                     r += lizardRotCosmetic.Distance(lizardRotVars);
                 }
-                else
+                else if (result is not SkinkStripesVars)
                 {
                     throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
