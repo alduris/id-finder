@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FinderMod.Search.Util;
-using static FinderMod.Search.Util.LizardUtil;
-using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using FinderMod.Inputs.LizardCosmetics;
+using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
@@ -38,9 +33,12 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
             cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
-            cosmetics.Add(tailFinCosmetic = new TailFinCosmetic(LizardType.Peach));
-            cosmetics.Add(peachBodyFinCosmetic = new PeachBodyFinCosmetic());
-            cosmetics.Add(peachHeadStripesCosmetic = new PeachHeadStripesCosmetic());
+            cosmetics.Add(
+                Group("Peach-specific cosmetics",
+                    tailFinCosmetic = new TailFinCosmetic(LizardType.Peach),
+                    peachBodyFinCosmetic = new PeachBodyFinCosmetic(),
+                    peachHeadStripesCosmetic = new PeachHeadStripesCosmetic()
+                    ));
         }
 
         public override float Execute(XORShift128 Random)

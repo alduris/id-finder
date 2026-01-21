@@ -402,7 +402,7 @@ namespace FinderMod.Search.Util
                 float bodyRange = Mathf.Lerp(0.4f, 0.8f, Random.Value) * bodyAndTailLength;
                 float num4 = Mathf.Lerp(5f, 12f, Random.Value) * 1.5f;
                 numScales = (int)(bodyRange / num4);
-                if (numScales > 3) numScales = 3;
+                if (numScales < 3) numScales = 3;
             }
 
             public int numScales;
