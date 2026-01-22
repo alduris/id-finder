@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices;
+using UnityEngine;
 
-namespace FinderMod.Search.Options
+namespace FinderMod.Search
 {
     /// <summary>
     /// Interface for search options that can use the GPU
@@ -22,6 +23,7 @@ namespace FinderMod.Search.Options
         /// <summary>
         /// Struct representing a single input. Transferred to the GPU.
         /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct GPUInput
         {
             /// <summary>
@@ -33,6 +35,11 @@ namespace FinderMod.Search.Options
             /// The value of the input.
             /// </summary>
             public float value;
+
+            /// <summary>
+            /// The range of the input.
+            /// </summary>
+            public float range;
 
             /// <summary>
             /// The bias of the input.
