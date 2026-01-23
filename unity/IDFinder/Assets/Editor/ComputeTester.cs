@@ -169,14 +169,12 @@ public class ComputeTester : EditorWindow
             // Load shader buffers and values
             ComputeBuffer inputBuffer = new ComputeBuffer(inputs.Count, 16);
             ComputeBuffer resultsBuffer = new ComputeBuffer(total, sizeof(float));
-            ComputeBuffer outputIDBuffer = new ComputeBuffer(total, sizeof(int));
 
             var gpuInputs = inputs.Select(x => x.AsGPUInput()).ToArray();
             inputBuffer.SetData(gpuInputs);
 
             selectedShader.SetBuffer(kernel, "_IDFinderInputs", inputBuffer);
             selectedShader.SetBuffer(kernel, "_IDFinderResults", resultsBuffer);
-            selectedShader.SetBuffer(kernel, "_IDFinderIDs", outputIDBuffer);
             selectedShader.SetInt("_IDFinderStart", startingId);
 
             // Dispatch and request
@@ -194,20 +192,17 @@ public class ComputeTester : EditorWindow
                     outputPane.Add(new Label("Successfully dispatched without errors! Done: " + request.done));
                     // Retrieve results
                     float[] results = new float[total];
-                    int[] resultIDs = new int[total];
                     resultsBuffer.GetData(results);
-                    outputIDBuffer.GetData(resultIDs);
 
                     for (int i = 0; i < total; i++)
                     {
-                        outputPane.Add(new Label($"Result: {resultIDs[i]} (dist: {results[i]})"));
+                        outputPane.Add(new Label($"Result: {startingId + i} (dist: {results[i]})"));
                     }
                 }
 
                 // Free resources
                 inputBuffer.Release();
                 resultsBuffer.Release();
-                outputIDBuffer.Release();
             });
         }
         else

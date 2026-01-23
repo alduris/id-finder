@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // XORShift128
 
-const uint MT19937 = 0x6c078965u;
+#define MT19937 0x6c078965u
 
 inline uint4 InitState(uint seed)
 {
@@ -30,7 +30,7 @@ inline uint NextU32(inout uint4 state)
 
 inline float RandomValue(inout uint4 state)
 {
-    return (NextU32(state) & 0x7FFFFFu) * 1.192093E-07f;
+    return (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
 }
 
 inline int RandomRange(int a, int b, inout uint4 state)
@@ -46,7 +46,7 @@ inline int RandomRange(int a, int b, inout uint4 state)
 
 inline float RandomRange(float a, float b, inout uint4 state)
 {
-    float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07f;
+    float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
     return ((1.0f - f) * b) + (f * a);
 }
 
