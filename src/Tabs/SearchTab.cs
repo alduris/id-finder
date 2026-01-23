@@ -17,6 +17,8 @@ namespace FinderMod.Tabs
 {
     internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
+        private const string GPU_INPUT_DESCRIPTION = "Toggles whether or not to use GPU searching.";
+
         internal static SearchTab instance = null!;
         
         private OpScrollBox cont_queries = null!;
@@ -64,7 +66,10 @@ namespace FinderMod.Tabs
             input_find    = new OpDragger(CosmeticRange(6, 1, 100),                     210f, 236f) { description = "Number of ids to find per result (1-100)" };
             input_threads = new OpDragger(CosmeticRange(maxThreads / 2, 1, maxThreads), 210f, 206f) { description = "Number of threads to use" };
 
-            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(290f, 221f));
+            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(290f, 221f))
+            {
+                description = GPU_INPUT_DESCRIPTION
+            };
             if (!canUseGPU)
             {
                 input_gpu.colorEdge = RedColor;
@@ -251,6 +256,12 @@ namespace FinderMod.Tabs
 
             cont_queries.SetContentSize(cont_queries.size.y - y + PADDING, true);
             cont_queries.ScrollOffset = oldScroll + (oldHeight - cont_queries.contentSize);
+
+            if (canUseGPU)
+            {
+                input_gpu.greyedOut = options.All(x => x is ICanGPU);
+                input_gpu.description = input_gpu.greyedOut ? "Not all search items support GPU searching!" : GPU_INPUT_DESCRIPTION;
+            }
         }
 
         public override void Update()

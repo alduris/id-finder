@@ -403,3 +403,4 @@ todo.txt
 mod/workshopdata.json
 mod/newest/plugins/*
 !mod/newest/plugins/Newtonsoft.Json.dll
+mod/shaders

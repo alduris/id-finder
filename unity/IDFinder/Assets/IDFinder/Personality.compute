@@ -6,6 +6,7 @@
 
 StructuredBuffer<Input> _IDFinderInputs;
 RWStructuredBuffer<float> _IDFinderResults;
+RWStructuredBuffer<int> _IDFinderIDs;
 int _IDFinderStart;
 
 [numthreads(64,1,1)]
@@ -24,4 +25,5 @@ void CSMain (uint3 thread : SV_DispatchThreadID)
     d += Distance(p.sympathy, _IDFinderInputs[5]);
 
     _IDFinderResults[thread.x] = d;
+    _IDFinderIDs[thread.x] = _IDFinderStart + thread.x;
 }

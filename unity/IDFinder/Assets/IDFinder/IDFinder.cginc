@@ -55,21 +55,15 @@ inline float RandomRange(float a, float b, inout uint4 state)
 
 struct Input
 {
-    bool enabled;
     float value;
+    float start;
     float range;
     int bias;
 };
 
-/*struct Result
-{
-    int id;
-    float dist;
-};*/
-
 inline float Distance(float value, Input input)
 {
-    return lerp(0, abs(value - input.value) / input.range * input.bias, input.enabled);
+    return abs(value - input.value - input.start) / input.range * input.bias;
 }
 
 inline float Distance(int value, Input input)
@@ -84,7 +78,7 @@ inline float WrapDistance(float value, Input input)
 
 inline float MatchDistance(int value, Input input)
 {
-    return lerp(0, input.bias, input.enabled * (input.value == value));
+    return lerp(0, input.bias, input.value == value);
 }
 
 #endif

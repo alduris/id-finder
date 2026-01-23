@@ -5,6 +5,7 @@ using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Logging;
 using FinderMod.Search;
+using UnityEngine;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -41,6 +42,7 @@ namespace FinderMod
         {
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+            On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
         }
 
         private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
@@ -57,14 +59,16 @@ namespace FinderMod
             {
                 if (IsInit) return;
 
-                On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
-
+                // Register UI
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
-                Logger.LogInfo("Loaded successfully");
 
+                // Register Dev Console interactions
                 if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
                     Commands.Register();
+
+                // Import built-in compute shaders
+                InternalShaders.LoadShaders();
             }
             catch (Exception ex)
             {
