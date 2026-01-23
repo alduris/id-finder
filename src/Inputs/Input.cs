@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FinderMod.Search;
 using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -206,7 +207,7 @@ namespace FinderMod.Inputs
     /// <see cref="Input{T}"/> type with an explicit minimum and maximum value
     /// </summary>
     /// <typeparam name="T">The value type. Must be a comparable type.</typeparam>
-    public abstract class RangedInput<T> : Input<T> where T : IComparable
+    public abstract class RangedInput<T> : Input<T>, IGPUInput where T : IComparable
     {
         /// <summary>Range minimum</summary>
         public T min;
@@ -226,6 +227,9 @@ namespace FinderMod.Inputs
             this.min = min;
             this.max = max;
         }
+
+        /// <inheritdoc/>
+        public abstract ICanGPU.GPUInput AsGPUInput();
 
         /// <summary>Helper method. Creates a <see cref="Configurable{T}"/> with a <see cref="ConfigAcceptableRange{T}"/></summary>
         /// <returns></returns>

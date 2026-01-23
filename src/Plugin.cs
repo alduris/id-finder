@@ -73,7 +73,6 @@ namespace FinderMod
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                throw;
             }
         }
 

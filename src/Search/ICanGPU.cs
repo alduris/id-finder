@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using FinderMod.Inputs;
 using UnityEngine;
 
 namespace FinderMod.Search
@@ -18,23 +19,23 @@ namespace FinderMod.Search
         /// 
         /// </summary>
         /// <returns></returns>
-        public ComputeShader CreateShader();
+        public ComputeShader Shader { get; }
 
         /// <summary>
         /// Struct representing a single input. Transferred to the GPU.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
         public struct GPUInput
         {
-            /// <summary>
-            /// Whether the input is enabled. In the GPU, treated like an integer.
-            /// </summary>
-            public bool enabled;
-
             /// <summary>
             /// The value of the input.
             /// </summary>
             public float value;
+
+            /// <summary>
+            /// The start of the range of the input.
+            /// </summary>
+            public float start;
 
             /// <summary>
             /// The range of the input.
@@ -42,9 +43,18 @@ namespace FinderMod.Search
             public float range;
 
             /// <summary>
-            /// The bias of the input.
+            /// The bias of the input. Setting to 0 disables the input.
             /// </summary>
             public int bias;
+
+            /// <summary>
+            /// Returns information about this GPUInput
+            /// </summary>
+            /// <returns>Information</returns>
+            public readonly override string ToString()
+            {
+                return $"GPU Input (value: {value}, range: {range}, start: {start}, bias: {bias})";
+            }
         }
     }
 }

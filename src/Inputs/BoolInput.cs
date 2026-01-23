@@ -1,4 +1,5 @@
-﻿using FinderMod.Tabs;
+﻿using FinderMod.Search;
+using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace FinderMod.Inputs
     /// <summary>
     /// Yes/No input
     /// </summary>
-    public class BoolInput : Input<bool>
+    public class BoolInput : Input<bool>, IGPUInput
     {
         /// <summary>Height of input.</summary>
         public override float InputHeight => 24f;
@@ -32,6 +33,18 @@ namespace FinderMod.Inputs
         /// <param name="element">Element whose value to check</param>
         /// <returns>Value of the input</returns>
         protected override bool GetValue(UIconfig element) => (element as OpLabelCheckbox)!.boolValue;
+
+        /// <inheritdoc/>
+        public virtual ICanGPU.GPUInput AsGPUInput()
+        {
+            return new ICanGPU.GPUInput
+            {
+                value = value ? 1 : 0,
+                start = 0,
+                range = 1,
+                bias = enabled ? bias : 0
+            };
+        }
 
         /// <summary>
         /// Variant of <see cref="OpCheckBox"/> that displays "Yes" or "No" as text

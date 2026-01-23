@@ -4,6 +4,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FinderMod.Search.Options;
+using Unity.Burst;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace FinderMod.Search
 {
@@ -27,9 +30,9 @@ namespace FinderMod.Search
         private int finished = 0;
 
         /// <summary>Whether or not the search is running</summary>
-        public bool Running => finished != threads && started && !abort;
+        public bool Running => (gpu ? progress[progress.Length - 1] < 1f : finished != threads) && started && !abort;
         /// <summary>Progress from 0 to 1</summary>
-        public float Progress => progress.Min();
+        public float Progress => gpu ? progress.Sum() / progress.Length : progress.Min();
         /// <summary>Reason for an abort, or null if not</summary>
         public string? AbortReason { get; private set; } = null;
 
@@ -44,15 +47,14 @@ namespace FinderMod.Search
         public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)
         {
             var span = PositiveDirGap(range.min, range.max, 1);
-            this.options = options;
+            this.options = [.. options];
             this.threads = threads;
             this.results = results;
             this.range = range;
             this.gpu = gpu;
-            if (gpu) throw new NotImplementedException("GPU is not implemented. Do not use.");
-            progress = new float[threads];
             distinctLinks = options.Count - options.Count(x => x.linked);
-            output = new Result[threads, distinctLinks, results];
+            progress = new float[gpu ? distinctLinks : threads];
+            output = new Result[gpu ? 1 : threads, distinctLinks, results];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -79,8 +81,19 @@ namespace FinderMod.Search
             if (Running) return;
             finished = 0;
             started = true;
-            if (gpu) throw new NotImplementedException();
 
+            // Handle GPU
+            if (gpu)
+            {
+                if (!options.All(x => x is ICanGPU))
+                {
+                    throw new InvalidOperationException("To run a GPU search, all options must implement ICanGPU!");
+                }
+                RunGPU();
+                return;
+            }
+
+            // Handle CPU
             uint gap = PositiveDirGap(range.min, range.max, threads);
             for (int i = 0; i < threads; i++)
             {
@@ -196,6 +209,193 @@ namespace FinderMod.Search
             }
         }
 
+        private void RunGPU()
+        {
+            ICanGPU[] gpuOptions = [.. options.Cast<ICanGPU>()];
+
+            // Get info from shaders
+            int[] kernels = [.. gpuOptions.Select(x => x.Shader.FindKernel("CSMain"))];
+            int inputsProperty = Shader.PropertyToID("_IDFinderInputs");
+            int resultsProperty = Shader.PropertyToID("_IDFinderResults");
+            int startingIdProperty = Shader.PropertyToID("_IDFinderStart");
+
+            // Set up input buffers
+            ComputeBuffer[] inputBuffers = new ComputeBuffer[gpuOptions.Length];
+            for (int i = 0; i < gpuOptions.Length; i++)
+            {
+                var gpuInputs = gpuOptions[i].GetGPUInputs();
+                inputBuffers[i] = new ComputeBuffer(gpuInputs.Length, 16);
+                inputBuffers[i].SetData(gpuInputs);
+                Plugin.logger.LogDebug($"GPU OPTION {i} INPUTS");
+                foreach (var gpuInput in gpuInputs)
+                {
+                    Plugin.logger.LogDebug(gpuInput.ToString());
+                }
+            }
+
+            // Set up output buffer
+            int total = 64 * threads;
+            ComputeBuffer resultsBuffer = new ComputeBuffer(total, sizeof(float));
+
+            // Assign buffers to the shaders
+            for (int i = 0; i < gpuOptions.Length; i++)
+            {
+                var shader = gpuOptions[i].Shader;
+                shader.SetBuffer(kernels[i], inputsProperty, inputBuffers[i]);
+                shader.SetBuffer(kernels[i], resultsProperty, resultsBuffer);
+            }
+
+            // Init our specific stuff
+            uint totalDispatches = PositiveDirGap(range.min, range.max, 1) / (uint)total;
+            var actualResults = new Result[distinctLinks, results];
+            for (int i = 0; i < actualResults.GetLength(0); i++)
+            {
+                for (int j = 0; j < actualResults.GetLength(1); j++)
+                {
+                    actualResults[i, j] = new Result
+                    {
+                        id = 0,
+                        dist = float.MaxValue
+                    };
+                }
+            }
+            float[] rawResults = new float[total];
+            float[] rawResultsTemp = new float[total];
+            int startingId = range.min;
+
+            int lastOption = options.Count - 1;
+            int currOption = 0;
+            int currLink = 0, prevLink = 0;
+            uint currIteration = 0;
+
+            Plugin.logger.LogInfo($"Started GPU search! Length: {PositiveDirGap(range.min, range.max, 1)} Total: {total} Dispatches: {totalDispatches}");
+
+            // Dispatch the first instance
+            gpuOptions[currOption].Shader.SetInt(startingIdProperty, startingId);
+            gpuOptions[currOption].Shader.Dispatch(kernels[currOption], threads, 1, 1);
+            AsyncGPUReadback.Request(resultsBuffer, GPUReadback);
+
+            void GPUReadback(AsyncGPUReadbackRequest request)
+            {
+                try
+                {
+                    if (request.hasError)
+                    {
+                        Abort("GPU readback reported error");
+                        DisposeBuffers();
+                        return;
+                    }
+                    else if (abort)
+                    {
+                        DisposeBuffers();
+                        return;
+                    }
+
+                    // Read in new data
+                    if (!options[currOption].linked)
+                    {
+                        resultsBuffer.GetData(rawResults);
+                    }
+                    else
+                    {
+                        resultsBuffer.GetData(rawResultsTemp);
+                        CombineTemp();
+                    }
+
+                    // Next index
+                    int prevOption = currOption;
+                    prevLink = currLink;
+                    if (currOption < lastOption)
+                    {
+                        currOption++;
+                        if (!options[currOption].linked) currLink++;
+                    }
+                    else
+                    {
+                        currOption = 0;
+                        currLink = 0;
+                    }
+
+                    // Handle our existing results
+                    if (currOption == 0 || currLink != prevLink)
+                    {
+                        progress[prevLink] = (float)currIteration / totalDispatches;
+                        SortIntoFinal(prevLink);
+                    }
+
+                    if (currOption == 0)
+                    {
+                        currIteration++;
+                        unchecked { startingId += total; }
+                    }
+
+                    if (currIteration < totalDispatches)
+                    {
+                        // Dispatch a new load and wait for finish
+                        gpuOptions[currOption].Shader.SetInt(startingIdProperty, startingId);
+                        gpuOptions[currOption].Shader.Dispatch(kernels[currOption], threads, 1, 1);
+                        AsyncGPUReadback.Request(resultsBuffer, GPUReadback);
+                    }
+                    else
+                    {
+                        // We should be done theoretically
+                        // First, ensure that progress is set to 1 in case it wasn't somehow
+                        for (int i = 0; i < progress.Length; i++) progress[i] = 1f;
+                        DisposeBuffers();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    Plugin.logger.LogError(e);
+                    Abort("Encountered error processing data");
+                    throw;
+                }
+            }
+
+            void CombineTemp()
+            {
+                for (int i = 0; i < rawResults.Length; i++)
+                {
+                    rawResults[i] += rawResultsTemp[i];
+                }
+            }
+
+            void SortIntoFinal(int link)
+            {
+                for (int i = 0; i < rawResults.Length; i++)
+                {
+                    int j = results - 1;
+                    if (rawResults[i] < actualResults[link, j].dist)
+                    {
+                        actualResults[link, j] = new Result { id = unchecked(startingId + i), dist = rawResults[i] };
+                        while (j > 0 && actualResults[link, j].dist < actualResults[link, j - 1].dist)
+                        {
+                            (actualResults[link, j], actualResults[link, j - 1]) = (actualResults[link, j - 1], actualResults[link, j]);
+                            j--;
+                        }
+                    }
+                }
+            }
+
+            void DisposeBuffers()
+            {
+                foreach (var buffer in inputBuffers)
+                {
+                    buffer.Dispose();
+                }
+                resultsBuffer.Dispose();
+
+                for (int i = 0; i < distinctLinks; i++)
+                {
+                    for (int j = 0; j < results; j++)
+                    {
+                        output[0, i, j] = actualResults[i, j];
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Returns search results such that the first dimension is each query and the second dimension is the results from each query.
         /// </summary>
@@ -216,10 +416,10 @@ namespace FinderMod.Search
                     }
                 }
                 combinedResults[j] = combinedResults[j]
-                    .OrderByDescending(x => x.dist)   // sort so the biggest distances are at the front
-                    .ThenBy(x => x, new IdComparer()) // also subsort so ids closer to 0 are favored, easier sharing/typing if lots of distance = 0
-                    .Skip((threads - 1) * results)    // remove the extras created by having multiple threads, which only does the biggest ones which we don't want anyway
-                    .Reverse()                        // reverse so the smaller distances are at the front
+                    .OrderByDescending(x => x.dist)          // sort so the biggest distances are at the front
+                    .ThenBy(x => x, new IdComparer())        // also subsort so ids closer to 0 are favored, easier sharing/typing if lots of distance = 0
+                    .Skip(gpu ? 0 : (threads - 1) * results) // since biggest are at the front, skip them until there are no more
+                    .Reverse()                               // reverse so the smaller distances are at the front
                     .ToList();
             }
             return combinedResults.Select(x => x.ToArray()).ToArray(); //wheeee!!!
