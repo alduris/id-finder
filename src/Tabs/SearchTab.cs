@@ -142,8 +142,9 @@ namespace FinderMod.Tabs
                 cont_results.items.Clear();
                 cont_results.SetContentSize(0f, true);
 
+                bool useGPU = canUseGPU && input_gpu.GetValueBool() && !input_gpu.greyedOut;
                 var label_searching = new OpLabel(10f, cont_results.size.y - 40f, "SEARCHING...", true);
-                label_progress = new OpLabel(10f, cont_results.size.y - 70f, "0.00% complete", false);
+                label_progress = new OpLabel(10f, cont_results.size.y - 70f, useGPU ? "GPU search does not support progress reading" : "0.00% complete", false);
                 var button_abort = new OpSimpleButton(new(10f, cont_results.size.y - 100f), new(80f, 24f), "ABORT")
                 { description = "Aborts the search and return the current results", colorEdge = RedColor, colorFill = RedColor };
                 button_abort.OnClick += _ =>
@@ -154,7 +155,7 @@ namespace FinderMod.Tabs
                 cont_results.SetContentSize(80f, true);
 
                 startTime = DateTime.Now;
-                threadmaster = new Threadmaster(options, threads, resultsPer, range, canUseGPU && input_gpu.GetValueBool());
+                threadmaster = new Threadmaster(options, threads, resultsPer, range, useGPU);
                 threadmaster.Run();
             };
 
@@ -347,7 +348,7 @@ namespace FinderMod.Tabs
                     // Reupdate query box to reenable everything
                     UpdateQueryBox();
                 }
-                else
+                else if (!threadmaster.IsGPU)
                 {
                     // Update progress thingy
                     double min = threadmaster.Progress;

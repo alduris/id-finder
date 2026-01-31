@@ -32,10 +32,13 @@ namespace FinderMod.Search
 
         /// <summary>Whether or not the search is running</summary>
         public bool Running => (gpu ? progress[progress.Length - 1] < 1f : finished != threads) && started && !abort;
-        /// <summary>Progress from 0 to 1</summary>
+        /// <summary>Progress from 0 to 1. Progress for GPU searches unsupported.</summary>
         public float Progress => gpu ? progress.Sum() / progress.Length : progress.Min();
         /// <summary>Reason for an abort, or null if not</summary>
         public string? AbortReason { get; private set; } = null;
+
+        /// <summary>Whether or not the search is a GPU search</summary>
+        public bool IsGPU => gpu;
 
         /// <summary>
         /// Initializes a searcher. Use <see cref="Run"/> to actually run the thing.
@@ -316,8 +319,8 @@ namespace FinderMod.Search
                 var toDispatch = queue.Peek();
                 var shader = gpuOptions[toDispatch.optionIndex].Shader;
 
-                int dispatchX = (toDispatch.dispatchCount % maxDispatchPerSide) + 1;
-                int dispatchY = (toDispatch.dispatchCount / maxDispatchPerSide) + 1;
+                int dispatchX = Math.Min(toDispatch.dispatchCount, maxDispatchPerSide);
+                int dispatchY = (toDispatch.dispatchCount + maxDispatchPerSide - 1) / maxDispatchPerSide; // integer division rounding up
 
                 shader.SetInt(startingIdProperty, toDispatch.startingId);
                 shader.SetInts(dispatchCountProperty, dispatchX, dispatchY, 1);
