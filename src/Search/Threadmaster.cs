@@ -267,6 +267,10 @@ namespace FinderMod.Search
                         });
                     }
                     totalDispatches -= maxDispatchAtOnce;
+                    unchecked
+                    {
+                        startId += maxDispatchAtOnce * unitDispatch;
+                    }
                 }
                 totalDispatches = maxDispatchAtOnce; // we know at least one is max dispatch length
             }

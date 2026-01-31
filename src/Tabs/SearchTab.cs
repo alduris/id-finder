@@ -84,7 +84,7 @@ namespace FinderMod.Tabs
             // Set up event listeners
             button_copy.OnClick += (_) =>
             {
-                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
+                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt), input_gpu.GetValueBool() && !input_gpu.greyedOut));
                 ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "search"));
             };
             button_paste.OnClick += (_) =>
@@ -330,14 +330,14 @@ namespace FinderMod.Tabs
                         {
                             if (saved) return;
                             saved = true;
-                            HistoryManager.SaveHistory(optionsLocalClone, results, range);
+                            HistoryManager.SaveHistory(optionsLocalClone, results, range, threadmaster.IsGPU);
                             button_save.Deactivate();
                             RemoveItems(button_save);
                         };
                         cont_results.AddItems(button_save);
 
                         // Temporary history gets removed after it is actually saved, or when the game closes
-                        HistoryManager.SaveTemporaryHistory(options, results, range);
+                        HistoryManager.SaveTemporaryHistory(options, results, range, threadmaster.IsGPU);
 
                         // Also print to dev console
                         Commands.TryPrint("ID FINDER RESULTS", Color.white);
