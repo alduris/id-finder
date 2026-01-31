@@ -259,8 +259,9 @@ namespace FinderMod.Tabs
 
             if (canUseGPU)
             {
-                input_gpu.greyedOut = !options.All(x => x is ICanGPU);
-                input_gpu.description = input_gpu.greyedOut ? "Not all search items support GPU searching!" : GPU_INPUT_DESCRIPTION;
+                input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked);
+                input_gpu.description = input_gpu.greyedOut ? "GPU search not supported for this search!" : GPU_INPUT_DESCRIPTION;
+                input_threads.greyedOut = input_gpu.greyedOut || !input_gpu.GetValueBool();
             }
         }
 

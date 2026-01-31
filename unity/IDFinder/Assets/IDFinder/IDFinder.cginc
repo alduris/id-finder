@@ -46,8 +46,9 @@ inline int RandomRange(int a, int b, inout uint4 state)
 
 inline float RandomRange(float a, float b, inout uint4 state)
 {
-    float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
-    return ((1.0f - f) * b) + (f * a);
+    return lerp(b, a, (NextU32(state) & 0x7FFFFFu) * 1.192093E-07); // in case this reduces local vars
+    /*float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
+    return ((1.0f - f) * b) + (f * a);*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,6 +80,41 @@ inline float WrapDistance(float value, Input input)
 inline float MatchDistance(int value, Input input)
 {
     return lerp(0, input.bias, input.value == value);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ID Finder main functionality
+
+struct Result
+{
+    int id;
+    float dist;
+};
+
+StructuredBuffer<Input> _IDFinderInputs;
+RWStructuredBuffer<Result> _IDFinderResults;
+uint3 _IDFinderDispatch;
+int _IDFinderStart;
+
+// This is user-defined, operates on a single id. Works just like FinderMod.Search.Option.Execute()
+float Execute(uint4 random, StructuredBuffer<Input> inputs);
+
+// The user must define this as a pragma kernel, as it will not work if I define it in here
+[numthreads(32,32,1)]
+void CS_IDFinderMain(uint3 thread : SV_DispatchThreadID)
+{
+    uint offset = (thread.x + thread.y * 32 * _IDFinderDispatch.x) * 32;
+    uint seed = _IDFinderStart + offset;
+    
+    // [unroll]
+    for (uint i = 0; i < 32; i++)
+    {
+        Result r;
+        r.id = seed + i;
+        uint4 random = InitState(r.id);
+        r.dist = Execute(random, _IDFinderInputs);
+        _IDFinderResults[offset + i] = r;
+    }
 }
 
 #endif

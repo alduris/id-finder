@@ -1,27 +1,20 @@
-// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+#pragma kernel CS_IDFinderMain
 
 #include "IDFinder.cginc"
 #include "Personality.cginc"
 
-StructuredBuffer<Input> _IDFinderInputs;
-RWStructuredBuffer<float> _IDFinderResults;
-int _IDFinderStart;
 
-[numthreads(64,1,1)]
-void CSMain (uint3 thread : SV_DispatchThreadID)
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
 {
-    uint4 random = InitState(_IDFinderStart + thread.x);
-
     Personality p = InitPersonality(random);
 
     float d = 0;
-    d += Distance(p.aggression, _IDFinderInputs[0]);
-    d += Distance(p.bravery, _IDFinderInputs[1]);
-    d += Distance(p.dominance, _IDFinderInputs[2]);
-    d += Distance(p.energy, _IDFinderInputs[3]);
-    d += Distance(p.nervous, _IDFinderInputs[4]);
-    d += Distance(p.sympathy, _IDFinderInputs[5]);
-
-    _IDFinderResults[thread.x] = d;
+    d += Distance(p.aggression, inputs[0]);
+    d += Distance(p.bravery, inputs[1]);
+    d += Distance(p.dominance, inputs[2]);
+    d += Distance(p.energy, inputs[3]);
+    d += Distance(p.nervous, inputs[4]);
+    d += Distance(p.sympathy, inputs[5]);
+    
+    return d;
 }

@@ -26,7 +26,8 @@ public class ComputeTester : EditorWindow
     };
 
     [SerializeField] private int startingId;
-    [SerializeField] private int idsToSearch;
+    [SerializeField] private int threadsX = 1;
+    [SerializeField] private int threadsY = 1;
 
     [SerializeField] private int selectedShaderIndex;
 
@@ -52,6 +53,10 @@ public class ComputeTester : EditorWindow
 
     public void CreateGUI()
     {
+        // Why do these start as 0...
+        if (threadsX < 1) threadsX = 1;
+        if (threadsY < 1) threadsY = 1;
+
         // Find all compute shaders in the project
         string[] guids = AssetDatabase.FindAssets("t:ComputeShader");
         List<ComputeShader> shaderList = new List<ComputeShader>();
@@ -69,21 +74,24 @@ public class ComputeTester : EditorWindow
         splitView.Add(rightPane);
 
         Box extraBox;
-        IntegerField startInput;
-        IntegerField rangeInput;
+        IntegerField startInput, threadsXInput, threadsYInput;
         Button startButton;
+        Label countLabel;
         rightPane.Add(new Label("Inputs:"));
         rightPane.Add(inputPane = new Box());
         rightPane.Add(new Label("Extra setup:"));
         rightPane.Add(extraBox = new Box());
         extraBox.Add(startInput = new IntegerField("Starting id"));
-        extraBox.Add(rangeInput = new IntegerField("Ids to search"));
+        extraBox.Add(threadsXInput = new IntegerField("Threads x"));
+        extraBox.Add(threadsYInput = new IntegerField("Threads y"));
+        extraBox.Add(countLabel = new Label($"{threadsX * threadsY * 32} results"));
         rightPane.Add(startButton = new Button() { text = "Run" });
         rightPane.Add(new Label("Output:"));
         rightPane.Add(outputPane = new Box());
 
         startInput.RegisterCallback<ChangeEvent<int>>((evt) => startingId = startInput.value);
-        rangeInput.RegisterCallback<ChangeEvent<int>>((evt) => idsToSearch = rangeInput.value);
+        threadsXInput.RegisterCallback<ChangeEvent<int>>((evt) => (threadsX, countLabel.text) = (threadsXInput.value, $"{threadsXInput.value * threadsY * 32 * 32 * 32} results"));
+        threadsYInput.RegisterCallback<ChangeEvent<int>>((evt) => (threadsY, countLabel.text) = (threadsYInput.value, $"{threadsYInput.value * threadsX * 32 * 32 * 32} results"));
         startButton.clicked += StartButton_clicked;
 
         // Set up shader panel
@@ -161,25 +169,25 @@ public class ComputeTester : EditorWindow
         if (TestInputs.TryGetValue(selectedShader.name, out var inputs))
         {
             // Setup
-            int kernel = selectedShader.FindKernel("CSMain");
-            selectedShader.GetKernelThreadGroupSizes(kernel, out uint sizeX, out _, out _);
-            int numThreads = Mathf.Max(1, (int)(idsToSearch / sizeX));
-            int total = numThreads * (int)sizeX;
+            int kernel = selectedShader.FindKernel("CS_IDFinderMain");
+            selectedShader.GetKernelThreadGroupSizes(kernel, out uint sizeX, out uint sizeY, out _);
+            int total = (int)sizeX * threadsX * (int)sizeY * threadsY * 32;
 
             // Load shader buffers and values
             ComputeBuffer inputBuffer = new ComputeBuffer(inputs.Count, 16);
-            ComputeBuffer resultsBuffer = new ComputeBuffer(total, sizeof(float));
+            ComputeBuffer resultsBuffer = new ComputeBuffer(total, 8);
 
             var gpuInputs = inputs.Select(x => x.AsGPUInput()).ToArray();
             inputBuffer.SetData(gpuInputs);
 
             selectedShader.SetBuffer(kernel, "_IDFinderInputs", inputBuffer);
             selectedShader.SetBuffer(kernel, "_IDFinderResults", resultsBuffer);
+            selectedShader.SetInts("_IDFinderDispatch", threadsX, threadsY, 1);
             selectedShader.SetInt("_IDFinderStart", startingId);
 
             // Dispatch and request
-            outputPane.Add(new Label("Dispatching to GPU..."));
-            selectedShader.Dispatch(kernel, numThreads, 1, 1);
+            outputPane.Add(new Label($"Dispatching to GPU... (expecting {total} results)"));
+            selectedShader.Dispatch(kernel, threadsX, threadsY, 1);
             AsyncGPUReadback.Request(resultsBuffer, (request) =>
             {
                 if (request.hasError)
@@ -190,13 +198,16 @@ public class ComputeTester : EditorWindow
                 else
                 {
                     outputPane.Add(new Label("Successfully dispatched without errors! Done: " + request.done));
+
                     // Retrieve results
-                    float[] results = new float[total];
+                    Result[] results = new Result[total];
                     resultsBuffer.GetData(results);
 
-                    for (int i = 0; i < total; i++)
+                    Array.Sort(results, new Result.ResultComparer());
+
+                    for (int i = 0; i < 32; i++)
                     {
-                        outputPane.Add(new Label($"Result: {startingId + i} (dist: {results[i]})"));
+                        outputPane.Add(new Label(results[i].ToString()));
                     }
                 }
 
@@ -208,6 +219,26 @@ public class ComputeTester : EditorWindow
         else
         {
             outputPane.Add(new Label("No test input setup found :("));
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 8)]
+    private struct Result
+    {
+        public int id;
+        public float dist;
+
+        public override readonly string ToString()
+        {
+            return $"Result: {id} (dist: {dist})";
+        }
+
+        public class ResultComparer : IComparer<Result>
+        {
+            int IComparer<Result>.Compare(Result x, Result y)
+            {
+                return x.dist.CompareTo(y.dist);
+            }
         }
     }
 
