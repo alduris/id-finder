@@ -76,6 +76,10 @@ namespace FinderMod.Tabs
                 input_gpu.greyedOut = true;
                 input_gpu.description = "Your hardware does not support compute shaders! Unable to use GPU to search.";
             }
+            input_gpu.OnValueUpdate += (_, _, _) =>
+            {
+                input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
+            };
 
             var button_run = new OpSimpleButton(new(510f, 221f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
 
@@ -262,7 +266,7 @@ namespace FinderMod.Tabs
             {
                 input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked);
                 input_gpu.description = input_gpu.greyedOut ? "GPU search not supported for this search!" : GPU_INPUT_DESCRIPTION;
-                input_threads.greyedOut = input_gpu.greyedOut || !input_gpu.GetValueBool();
+                input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
             }
         }
 

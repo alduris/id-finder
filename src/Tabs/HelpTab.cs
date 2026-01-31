@@ -26,9 +26,9 @@ namespace FinderMod.Tabs
             "property while searching; the actual input, which will only appear while the checkbox is checked; and usually a bias input on the right side, " +
             "although not all inputs have this. More on bias later. In addition to the inputs for individual search items, there are also inputs for the " +
             "overall search: the id range to cover, how many results to return, the number of CPU (or GPU) threads to use, and whether to use a GPU search (if " +
-            "supported). Most of these are self-explanatory, but a useful note about the id range inputs is that it always runs right from the From input." +
-            "This allows you to take advantage of integer wrapping, and also means you can search every single id by making the From input one more than the " +
-            "To input (like entering the range as From = 1 and To = 0).";
+            "supported). Most of these are self-explanatory, but a useful note about the id range inputs is that it always runs right from the From: input." +
+            "This allows you to take advantage of integer wrapping, and also means you can search every single id by making the From: input one more than the " +
+            "To: input (like entering the range as From = 1 and To = 0).";
         private const string TEXT_SEARCH_ACTUAL = "When you've set up your inputs, click the blue RUN button below the search box and wait. ID Finder will " +
             "tell you how far through the search it is as a percentage as well as give you an estimation of how long the search will take. The estimation gets " +
             "more accurate over time, and the search itself may slow down if you do stuff on other windows, although you are still welcome to (id searches can " +
@@ -52,6 +52,33 @@ namespace FinderMod.Tabs
         private const string TEXT_HISTORY_BUTTONS = "To the right of the name are three buttons: a copy button (with an arrow icon), a restore button (with a " +
             "reload icon), and a delete button. The copy button copies the search, which allows for easier sharing with others or for bug reports, while the " +
             "restore button sets up the search in the SEARCH tab with all previous inputs. Note that ID Finder version differences may change some inputs.";
+
+        private const string TEXT_TIPS_INTRO = "This section documents several tips and tricks, as well as hopefully answering any remaining major questions " +
+            "about searching for ids with ID Finder.";
+
+        private const string TEXT_TIPS_RANGE = "The id search range (the From: and To: inputs) determines what id range ID Finder will search, searching in " +
+            "the positive direction from the From: input and wrapping around on integer overflow. However, most searches won't need to search every single id; " +
+            "in fact, most likely don't even need to search more than 0.00116% of the id range. This is because without the help of mods, every single creature " +
+            "id you come across will likely be between 0 and 50000. The default range set for ID Finder is 0 to 100000 just in case, although you likely will " +
+            "not need it.";
+
+        private const string TEXT_TIPS_THREADS = "You may be wondering what an appropriate number of threads to set your search at is. It depends on your CPU " +
+            "and how much you want to torture your poor computer's CPU. I recommend setting it to anywhere between half and one minus the number of cores in " +
+            "your CPU (on Windows, you can find this number through Task Manager). The number of threads used essentially divides the amount of work into " +
+            "groups, assigned to a thread, which operate simultaneously to find the results. These work best if they are able to use one core of your computer " +
+            "each. Using more threads than there are cores on your computer has diminishing results and may even start to increase the time it takes compared " +
+            "to a more optimal therad count. Regardless, the more threads you use, the higher CPU usage the game will have, which may affect other applications " +
+            "running on your computer, so use this feature wisely.";
+
+        private const string TEXT_TIPS_GPU = "GPU searching is a powerful tool that allows you to save lots of time while searching at the cost of performance. " +
+            "Especially on searches across large id ranges, this can bring your search from several minutes or hours down to several seconds or minutes, but it " +
+            "is only suitable for computers with lots of RAM and VRAM. My own calculations suggest that a bare minimum of 1GB free RAM and VRAM is necessary " +
+            "for searching a very large range of numbers, but in my own experiments, the RAM required is actually closer to 4GB free, although this is likely " +
+            "due to garbage collector speed limitations. Regardless, expect taxing memory performance, the potential for blue screening, and the lack of an " +
+            "ability to see how much time is remaining (this is due to technical limitations).";
+        private const string TEXT_TIPS_GPU2 = "Additionally, GPU searching is somewhat experimental and although I have tried to verify results, there may be " +
+            "minor inaccuracies I haven't spotted yet. If you do find any discrepancies between GPU and CPU search results, please report the issue on the " +
+            "GitHub using the REPORT ISSUES button listed above.";
 
 
         public override void Initialize()
@@ -106,6 +133,20 @@ namespace FinderMod.Tabs
             AddHeading("HISTORY TAB");
             AddLongLabel(10f, 580f, TEXT_HISTORY_OVERVIEW);
             AddLongLabel(10f, 580f, TEXT_HISTORY_BUTTONS);
+
+            AddHorizontalRule();
+            AddHeading("TIPS AND TRICKS");
+            AddLongLabel(10f, 580f, TEXT_TIPS_INTRO);
+
+            AddHeading("SEARCH RANGE");
+            AddLongLabel(10f, 580f, TEXT_TIPS_RANGE);
+
+            AddHeading("THREAD COUNT");
+            AddLongLabel(10f, 580f, TEXT_TIPS_THREADS);
+
+            AddHeading("GPU SEARCHING");
+            AddLongLabel(10f, 580f, TEXT_TIPS_GPU);
+            AddLongLabel(10f, 580f, TEXT_TIPS_GPU2);
 
 
             // Set scrollbox size
