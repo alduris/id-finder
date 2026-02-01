@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FinderMod.Inputs;
 using MoreSlugcats;
 using RWCustom;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class SlupFoodOption : Option
+    internal class SlupFoodOption : Option, ICanGPU
     {
         internal static readonly string[] foodList = [
             "Blue fruit", "Water nut", "Jellyfish", "Slime mold", "Eggbug egg", "Fire egg", "Popcorn", "Gooieduck",
@@ -26,6 +27,8 @@ namespace FinderMod.Search.Options
             }
             elements = [.. inputs];
         }
+
+        public ComputeShader Shader => InternalShaders.slugpupFoodShader;
 
         internal static float GetFoodLike(XORShift128 Random, Personality p, int i)
         {
@@ -71,6 +74,11 @@ namespace FinderMod.Search.Options
             }
 
             return r;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return inputs.Select(x => x.AsGPUInput()).ToArray();
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)

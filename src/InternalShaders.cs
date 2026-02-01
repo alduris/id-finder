@@ -7,6 +7,10 @@ namespace FinderMod
     internal static class InternalShaders
     {
         public static ComputeShader personalityShader;
+        public static ComputeShader slugpupBehaviorShader;
+        public static ComputeShader slugpupFoodShader;
+        public static ComputeShader slugpupStatsShader;
+        public static ComputeShader slugpupVarsShader;
 
         public static void LoadShaders()
         {
@@ -19,6 +23,10 @@ namespace FinderMod
             }
 
             personalityShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/Personality.compute");
+            slugpupBehaviorShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupBehavior.compute");
+            slugpupFoodShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupFood.compute");
+            slugpupStatsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupStats.compute");
+            slugpupVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupVars.compute");
         }
     }
 }

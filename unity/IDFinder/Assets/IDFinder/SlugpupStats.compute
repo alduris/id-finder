@@ -1,0 +1,47 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float bal, met, stl, wde;
+
+    // Physical attributes
+    bal = pow(RandomRange(0.0, 1.0, random), 1.5);
+    met = pow(RandomRange(0.0, 1.0, random), 1.5);
+    stl = pow(RandomRange(0.0, 1.0, random), 1.5);
+    wde = pow(RandomRange(0.0, 1.0, random), 1.5);
+
+    // Performance attributes
+    float wgt = 0.65; // body weight
+    float vz0 = -0.2; // visibility (standing)
+    float vz1 = 0.6; // visibility (crouching)
+    float lou = 0.5; // loudness factor
+    float lng = 0.8; // lung capacity
+    float pol = 0.8; // pole climbing speed
+    float tun = 0.8; // corridor climbing speed
+    float spd = 0.8; // running speed
+
+    spd *= 0.85 + 0.15 * met + 0.15 * (1 - bal) + 0.1 * (1 - stl);
+    wgt *= 0.85 + 0.15 * wde + 0.1 * met;
+    vz0 *= 0.8 + 0.2 * (1 - stl) + 0.2 * met;
+    vz1 *= 0.75 + 0.35 * stl + 0.15 * (1 - met);
+    lou *= 0.8 + 0.2 * wde + 0.2 * (1 - stl);
+    lng *= 0.8 + 0.2 * (1 - met) + 0.2 * (1 - stl);
+    pol *= 0.85 + 0.15 * met + 0.15 * bal + 0.1 * (1 - stl);
+    tun *= 0.85 + 0.15 * met + 0.15 * (1 - bal) + 0.1 * (1 - stl);
+    
+    // Now calculate distance
+    float d = 0;
+    d += Distance(wgt, inputs[0]);
+    d += Distance(vz0, inputs[1]);
+    d += Distance(vz1, inputs[2]);
+    d += Distance(lou, inputs[3]);
+    d += Distance(lng, inputs[4]);
+    d += Distance(pol, inputs[5]);
+    d += Distance(tun, inputs[6]);
+    d += Distance(spd, inputs[7]);
+    
+    return d;
+}

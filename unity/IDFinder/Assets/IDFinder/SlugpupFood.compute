@@ -1,0 +1,19 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "SlugpupFood.cginc"
+
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+
+    float d = 0;
+    
+    for (int i = 0; i < 17; i++)
+    {
+        d += Distance(GetLikeOf(i, p, random), inputs[i]);
+    }
+    
+    return d;
+}

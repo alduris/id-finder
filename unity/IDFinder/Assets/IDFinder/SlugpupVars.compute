@@ -1,0 +1,53 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    uint seed = random.x;
+
+    // Physical attributes
+    NextU32(random); // float bal = pow(RandomRange(0.0, 1.0, random), 1.5);
+    float met = pow(RandomRange(0.0, 1.0, random), 1.5);
+    float stl = pow(RandomRange(0.0, 1.0, random), 1.5);
+    float siz = pow(RandomRange(0.0, 1.0, random), 1.5);
+    float wde = pow(RandomRange(0.0, 1.0, random), 1.5);
+
+    // Color
+    float h = lerp(RandomRange(0.15, 0.58, random), RandomValue(random), pow(RandomValue(random), 1.5 - met));
+    float s = pow(RandomRange(0.0, 1.0, random), 0.3 + stl * 0.3);
+    bool drk = RandomRange(0.0, 1.0, random) <= (0.3 + stl * 0.2);
+    float l = pow(RandomRange(lerp(0.75, 0.9, drk), 1.0, random), 1.5 - stl);
+    float eye = pow(RandomRange(0.0, 1.0, random), 2.0 - stl * 1.5);
+    
+    // Special color cases
+    /*h = lerp(h, 0.6111111, seed == 1000);
+    s = lerp(s, 0.6, seed == 1000);
+    l = lerp(s, 0.75, seed == 1000);
+    
+    drk = drk && (seed != 1001);
+    h = lerp(h, 0.4743589, seed == 1001);
+    s = lerp(s, 0.6, seed == 1001);
+    l = lerp(l, 0.675, seed == 1001);
+    
+    eye *= (seed != 1000) * (seed != 1001);
+    
+    drk = drk || (seed == 1002);
+    h = lerp(h, 0.9458887, seed == 1002);
+    s = lerp(s, 0.5238261, seed == 1002);
+    l = lerp(l, 0.288235, seed == 1002);*/
+    
+    l = lerp(l, clamp(1.0 - l, 0.01, 1.0), drk);
+    
+    // Distance calculations
+    float d = 0;
+    d += Distance(siz, inputs[0]);
+    d += Distance(wde, inputs[1]);
+    d += WrapDistance(h, inputs[2]);
+    d += Distance(s, inputs[3]);
+    d += Distance(l, inputs[4]);
+    d += MatchDistance(drk, inputs[5]);
+    d += Distance(eye, inputs[6]);
+    
+    return d;
+}

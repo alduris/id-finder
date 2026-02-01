@@ -1,0 +1,27 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "SlugpupFood.cginc"
+
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+
+    float d = 0;
+    
+    // Food stats
+    int i = 0;
+    for (; i < 17; i++)
+    {
+        d += FoodLikeDistance(GetLikeOf(i, p, random), inputs[i]);
+    }
+    
+    // Behavior stats
+    d += MatchDistance(p.energy > 0.6, inputs[i++]); // wiggles when held
+    d += MatchDistance(p.energy < 0.15, inputs[i++]); // takes naps
+    d += MatchDistance(p.energy > 0.85, inputs[i++]); // Plays with items
+    d += MatchDistance(p.energy < 0.35, inputs[i++]); // lays near parent
+    
+    return d;
+}

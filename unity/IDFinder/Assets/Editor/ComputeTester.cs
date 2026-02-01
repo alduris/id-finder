@@ -22,7 +22,72 @@ public class ComputeTester : EditorWindow
             new Input("Energy"),
             new Input("Nervous"),
             new Input("Sympathy")
-        }
+        },
+        ["SlugpupBehavior"] = new List<Input>()
+        {
+            new Input("Blue fruit", -1, 1),
+            new Input("Water nut", -1, 1),
+            new Input("Jellyfish", -1, 1),
+            new Input("Slime mold", -1, 1),
+            new Input("Eggbug egg", -1, 1),
+            new Input("Fire egg", -1, 1),
+            new Input("Popcorn", -1, 1),
+            new Input("Gooieduck", -1, 1),
+            new Input("Lilypuck", -1, 1),
+            new Input("Glow weed", -1, 1),
+            new Input("Dandelion peach", -1, 1),
+            new Input("Neuron", -1, 1),
+            new Input("Centipede", -1, 1),
+            new Input("Small centipede", -1, 1),
+            new Input("Vulture grub", -1, 1),
+            new Input("Small noodlefly", -1, 1),
+            new Input("Hazer", -1, 1),
+            new Input("Wiggles when held", 0, 1, 1),
+            new Input("Takes naps", 0, 1, 1),
+            new Input("Plays with items", 0, 1, 1),
+            new Input("Lays near parent", 0, 1, 1),
+        },
+        ["SlugpupFood"] = new List<Input>()
+        {
+            new Input("Blue fruit", -1, 1),
+            new Input("Water nut", -1, 1),
+            new Input("Jellyfish", -1, 1),
+            new Input("Slime mold", -1, 1),
+            new Input("Eggbug egg", -1, 1),
+            new Input("Fire egg", -1, 1),
+            new Input("Popcorn", -1, 1),
+            new Input("Gooieduck", -1, 1),
+            new Input("Lilypuck", -1, 1),
+            new Input("Glow weed", -1, 1),
+            new Input("Dandelion peach", -1, 1),
+            new Input("Neuron", -1, 1),
+            new Input("Centipede", -1, 1),
+            new Input("Small centipede", -1, 1),
+            new Input("Vulture grub", -1, 1),
+            new Input("Small noodlefly", -1, 1),
+            new Input("Hazer", -1, 1),
+        },
+        ["SlugpupStats"] = new List<Input>()
+        {
+            new Input("Body weight", 0.5525f, 0.715f),
+            new Input("Visibility (standing)", -0.24f, -0.16f),
+            new Input("Visibility (crouching)", 0.45f, 0.75f),
+            new Input("Loudness", 0.4f, 0.6f),
+            new Input("Lung capacity", 0.64f, 0.96f),
+            new Input("Pole climbing speed", 0.68f, 1f),
+            new Input("Tunnel crawling speed", 0.68f, 1f),
+            new Input("Running speed", 0.68f, 1f),
+        },
+        ["SlugpupVars"] = new List<Input>()
+        {
+            new Input("Size"),
+            new Input("Wideness"),
+            new Input("Hue"),
+            new Input("Saturation"),
+            new Input("L (different!!!)", 0.01f, 1), // original code has this flip
+            new Input("Dark?", 0, 1, 1),
+            new Input("Eye (L)")
+        },
     };
 
     [SerializeField] private int startingId;
@@ -99,12 +164,12 @@ public class ComputeTester : EditorWindow
         shaderPanel.bindItem = (item, index) => (item as Label).text = shaderList[index].name;
         shaderPanel.itemsSource = shaderList;
         shaderPanel.selectedIndex = selectedShaderIndex;
-        shaderPanel.onSelectionChange += ShaderPanel_onSelectionChange;
         shaderPanel.onSelectionChange += (_) =>
         {
             selectedShaderIndex = shaderPanel.selectedIndex;
             selectedShader = shaderList[selectedShaderIndex];
         };
+        shaderPanel.onSelectionChange += ShaderPanel_onSelectionChange;
     }
 
     private void ShaderPanel_onSelectionChange(IEnumerable<object> obj)
@@ -118,7 +183,7 @@ public class ComputeTester : EditorWindow
                 inputPane.Add(containerBox);
                 containerBox.Add(new Label(input.name));
 
-                var valueInput = new Slider("Value", input.min, input.max)
+                var valueInput = new Slider($"Value ({input.value})", input.min, input.max)
                 {
                     value = input.value
                 };
@@ -131,7 +196,9 @@ public class ComputeTester : EditorWindow
                     else
                     {
                         input.value = input.min + Mathf.Round((valueInput.value - input.min) / input.step) * input.step;
+                        valueInput.value = input.value;
                     }
+                    valueInput.label = $"Value ({input.value})";
                 });
                 containerBox.Add(valueInput);
 

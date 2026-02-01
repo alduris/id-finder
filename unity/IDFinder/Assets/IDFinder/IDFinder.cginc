@@ -46,9 +46,9 @@ inline int RandomRange(int a, int b, inout uint4 state)
 
 inline float RandomRange(float a, float b, inout uint4 state)
 {
-    return lerp(b, a, (NextU32(state) & 0x7FFFFFu) * 1.192093E-07); // in case this reduces local vars
-    /*float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
-    return ((1.0f - f) * b) + (f * a);*/
+    //return lerp(b, a, (NextU32(state) & 0x7FFFFFu) * 1.192093E-07); // in case this reduces local vars
+    float f = (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;
+    return ((1.0f - f) * b) + (f * a);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ struct Input
 
 inline float Distance(float value, Input input)
 {
-    return abs(value - input.value - input.start) / input.range * input.bias;
+    return abs(value - input.value) / input.range * input.bias;
 }
 
 inline float Distance(int value, Input input)
@@ -79,7 +79,13 @@ inline float WrapDistance(float value, Input input)
 
 inline float MatchDistance(int value, Input input)
 {
-    return lerp(0, input.bias, input.value == value);
+    return input.bias * (input.value != (float) value);
+}
+
+inline float MatchDistance(bool value, Input input)
+{
+    return input.bias * (value != (input.value > 0));
+    //return MatchDistance((int)value, input);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
