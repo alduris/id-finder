@@ -222,7 +222,7 @@ namespace FinderMod.Search
         private void RunGPU()
         {
             const int maxDispatchPerSide = 64;
-            const int maxDispatchAtOnce = maxDispatchPerSide * maxDispatchPerSide; // 1GB of data
+            const int maxDispatchAtOnce = maxDispatchPerSide * maxDispatchPerSide / 2;
             const int unitDispatch = 32 * 32 * 32;
 
             ICanGPU[] gpuOptions = [.. options.Cast<ICanGPU>()];

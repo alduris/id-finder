@@ -72,10 +72,8 @@ namespace FinderMod.Tabs
 
         private const string TEXT_TIPS_GPU = "GPU searching is a powerful tool that allows you to save lots of time while searching at the cost of performance. " +
             "Especially on searches across large id ranges, this can bring your search from several minutes or hours down to several seconds or minutes, but it " +
-            "is only suitable for computers with lots of RAM and VRAM. My own calculations suggest that a bare minimum of 1GB free RAM and VRAM is necessary " +
-            "for searching a very large range of numbers, but in my own experiments, the RAM required is actually closer to 4GB free, although this is likely " +
-            "due to garbage collector speed limitations. Regardless, expect taxing memory performance, the potential for blue screening, and the lack of an " +
-            "ability to see how much time is remaining (this is due to technical limitations).";
+            "is only suitable for computers with several free gigabytes RAM and VRAM. Expect taxing memory performance, the potential for blue screening, and " +
+            "the lack of an ability to see how much time is remaining (this is due to technical limitations).";
         private const string TEXT_TIPS_GPU2 = "Additionally, GPU searching is somewhat experimental and although I have tried to verify results, there may be " +
             "minor inaccuracies I haven't spotted yet. If you do find any discrepancies between GPU and CPU search results, please report the issue on the " +
             "GitHub using the REPORT ISSUES button listed above.";
