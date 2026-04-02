@@ -59,6 +59,30 @@ inline float RandomRange(float a, float b, inout uint4 state)
     return ((1.0f - f) * b) + (f * a);
 }
 
+inline float RandomValueIf(inout uint4 state, int cond)
+{
+    uint4 old = state;
+    float f = RandomValue(state);
+    state = state * cond + old * (1 - cond);
+    return f;
+}
+
+inline int RandomRangeIf(int a, int b, inout uint4 state, int cond)
+{
+    uint4 old = state;
+    int i = RandomRange(a, b, state);
+    state = state * cond + old * (1 - cond);
+    return i;
+}
+
+inline float RandomRangeIf(float a, float b, inout uint4 state, int cond)
+{
+    uint4 old = state;
+    float f = RandomRange(a, b, state);
+    state = state * cond + old * (1 - cond);
+    return f;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Distance helpers
 

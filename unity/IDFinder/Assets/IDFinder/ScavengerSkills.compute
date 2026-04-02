@@ -1,0 +1,47 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+// Input order:
+//   0: Dodge
+//   1: Mid-range
+//   2: Melee
+//   3: Blocking
+//   4: Reaction
+//   5: MSC enabled (passed as an input exclusively to use value)
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    
+    float d = 0;
+    float n = 1 - p.dominance;
+    float MSC = inputs[5].value > 0;
+    
+    // Dodge
+    d += Distance(
+        lerp(PushFromHalf(lerp(lerp(p.aggression, p.nervous, RandomValue(random) < 0.5), RandomValue(random), RandomValue(random)), 1 + RandomValue(random)), 0, MSC * n * 0.085),
+        inputs[0]);
+    
+    // Mid-range
+    d += Distance(
+        lerp(PushFromHalf(lerp(lerp(p.aggression, p.energy, RandomValue(random) < 0.5), RandomValue(random), RandomValue(random)), 1 + RandomValue(random)), 0, MSC * n * 0.085),
+        inputs[1]);
+    
+    // Melee
+    d += Distance(PushFromHalf(RandomValue(random), 1 + RandomValue(random)), inputs[2]);
+    
+    // Blocking
+    d += Distance(
+        lerp(PushFromHalf(invlerp(0.35, 1, lerp(lerp(p.energy, p.bravery, RandomValue(random) < 0.5), RandomValue(random), RandomValue(random))), 1 + RandomValue(random)), 0, MSC * n * 0.05),
+        inputs[3]);
+    
+    // Reaction
+    d += Distance(
+        lerp(PushFromHalf(lerp(p.energy, RandomValue(random), RandomValue(random)), 1 + RandomValue(random)), 0, MSC * n * 0.15),
+        inputs[4]);
+    
+    return d;
+}

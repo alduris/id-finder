@@ -88,6 +88,34 @@ public class ComputeTester : EditorWindow
             new Input("Dark?", 0, 1, 1),
             new Input("Eye (L)")
         },
+        ["ScavengerSkills"] = new List<Input>()
+        {
+            new Input("Dodge"),
+            new Input("Mid-range"),
+            new Input("Melee"),
+            new Input("Blocking"),
+            new Input("Reaction"),
+            new Input("MSC enabled?", 0, 1, 1),
+        },
+        ["ScavengerVars"] = new List<Input>()
+        {
+            new Input("Head size"),
+            new Input("Eartler thickness"),
+            new Input("Eye size"),
+            new Input("Eye narrowness"),
+            new Input("Eye angle"),
+            new Input("Fatness"),
+            new Input("Waist narrowness"),
+            new Input("Neck thickness"),
+            new Input("Pupil size"),
+            new Input("Deep pupils?", 0, 1, 1),
+            new Input("Hands color blend"),
+            new Input("Leg size"),
+            new Input("Arm thickness"),
+            new Input("Colored eartler tips?", 0, 1, 1),
+            new Input("Teeth wideness"),
+            new Input("Tail segments", 0, 4, 1),
+        },
     };
 
     [SerializeField] private int startingId;

@@ -5,9 +5,11 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class ScavSkillsOption : Option
+    internal class ScavSkillsOption : Option, ICanGPU
     {
         private readonly FloatInput dgeInp, midInp, mleInp, blkInp, reaInp;
+
+        public ComputeShader Shader => InternalShaders.scavengerSkillsShader;
 
         public ScavSkillsOption() : base()
         {
@@ -79,6 +81,26 @@ namespace FinderMod.Search.Options
             yield return $"Blocking: {results.blk}";
             yield return $"Reaction: {results.rea}";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                dgeInp.AsGPUInput(),
+                midInp.AsGPUInput(),
+                mleInp.AsGPUInput(),
+                blkInp.AsGPUInput(),
+                reaInp.AsGPUInput(),
+
+                // This is how I'm passing MSC to the GPU for this one
+                new ICanGPU.GPUInput()
+                {
+                    value = ModManager.MSC ? 1 : 0,
+                    start = 0,
+                    bias = 1,
+                    range = 1
+                }
+                ];
         }
     }
 }
