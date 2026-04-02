@@ -90,7 +90,7 @@ namespace FinderMod.Tabs
                 input_gpudispatch = new OpDragger(CosmeticRange(6, 1, 9), new Vector2(input_gpu.PosX, input_gpu.PosY - 30f))
                 {
                     description = GPU_MEM_DESCRIPTION,
-                    greyedOut = input_gpu.GetValueBool()
+                    greyedOut = !input_gpu.GetValueBool()
                 };
 
                 label_gpudispatch = new OpLabel(new Vector2(250f, input_gpudispatch.PosY), new Vector2(44f, 24f), "Memory:", FLabelAlignment.Right)
