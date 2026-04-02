@@ -17,7 +17,8 @@ namespace FinderMod.Tabs
 {
     internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
-        private const string GPU_INPUT_DESCRIPTION = "Toggles whether or not to use GPU searching.";
+        private const string GPU_INPUT_DESCRIPTION = "Toggles whether or not to use GPU searching. Intended for very large searches.";
+        private const string GPU_MEM_DESCRIPTION = "Determines how much CPU and GPU memory to use while searching. Tradeoff between more ids searched at once and finding the best results.";
 
         internal static SearchTab instance = null!;
         
@@ -28,6 +29,7 @@ namespace FinderMod.Tabs
         internal OpTextBox input_max = null!;
         internal OpDragger input_find = null!;
         internal OpDragger input_threads = null!;
+        internal OpDragger? input_gpudispatch = null;
         internal OpCheckBox input_gpu = null!;
         internal readonly List<Option> options = [];
         internal Threadmaster? threadmaster = null;
@@ -66,7 +68,7 @@ namespace FinderMod.Tabs
             input_find    = new OpDragger(CosmeticRange(6, 1, 100),                     210f, 236f) { description = "Number of ids to find per result (1-100)" };
             input_threads = new OpDragger(CosmeticRange(maxThreads / 2, 1, maxThreads), 210f, 206f) { description = "Number of threads to use" };
 
-            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(290f, 221f))
+            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(300f, 221f))
             {
                 description = GPU_INPUT_DESCRIPTION
             };
@@ -80,6 +82,38 @@ namespace FinderMod.Tabs
             {
                 input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
             };
+
+            OpLabel? label_gpudispatch = null, label_gpumemory = null;
+            if (canUseGPU)
+            {
+                input_gpu.PosY += 15f;
+                input_gpudispatch = new OpDragger(CosmeticRange(6, 1, 9), new Vector2(input_gpu.PosX, input_gpu.PosY - 30f))
+                {
+                    description = GPU_MEM_DESCRIPTION,
+                    greyedOut = input_gpu.GetValueBool()
+                };
+
+                label_gpudispatch = new OpLabel(new Vector2(250f, input_gpudispatch.PosY), new Vector2(44f, 24f), "Memory:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpudispatch.bumpBehav
+                };
+                label_gpumemory = new OpLabel(input_gpudispatch.pos + new Vector2(34f, 0f), new Vector2(0f, 24f), $"({Threadmaster.GPUDispatchSizeString(input_gpudispatch.GetValueInt())})", FLabelAlignment.Left)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpudispatch.bumpBehav
+                };
+
+                input_gpu.OnValueUpdate += (_, _, _) => input_gpudispatch.greyedOut = !input_gpu.GetValueBool();
+
+                input_gpudispatch.OnValueUpdate += (_, v, lv) =>
+                {
+                    if (v != lv)
+                    {
+                        label_gpumemory.text = $"({Threadmaster.GPUDispatchSizeString(input_gpudispatch.GetValueInt())})";
+                    }
+                };
+            }
 
             var button_run = new OpSimpleButton(new(510f, 221f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
 
@@ -158,6 +192,11 @@ namespace FinderMod.Tabs
                 cont_results.AddItems(label_searching, label_progress, button_abort);
                 cont_results.SetContentSize(80f, true);
 
+                if (useGPU)
+                {
+                    threads = input_gpudispatch.GetValueInt();
+                }
+
                 startTime = DateTime.Now;
                 threadmaster = new Threadmaster(options, threads, resultsPer, range, useGPU);
                 threadmaster.Run();
@@ -199,7 +238,7 @@ namespace FinderMod.Tabs
                 },
                 input_threads,
 
-                new OpLabel(new Vector2(250f, 221f), new Vector2(34f, 24f), "GPU:", FLabelAlignment.Right)
+                new OpLabel(new Vector2(250f, input_gpu.PosY), new Vector2(44f, 24f), "GPU:", FLabelAlignment.Right)
                 {
                     verticalAlignment = OpLabel.LabelVAlignment.Center,
                     bumpBehav = input_gpu.bumpBehav
@@ -212,6 +251,11 @@ namespace FinderMod.Tabs
                 cont_results,
             };
             AddItems(UIArrPlayerOptions);
+
+            if (input_gpudispatch != null && label_gpudispatch != null && label_gpumemory != null)
+            {
+                AddItems(input_gpudispatch, label_gpudispatch, label_gpumemory);
+            }
 
             // Dummy labels
             cont_queries.AddItems(new OpLabel(10f, cont_queries.size.y - 4f - LabelTest.LineHeight(true), "Input", true));
@@ -267,6 +311,10 @@ namespace FinderMod.Tabs
                 input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked);
                 input_gpu.description = input_gpu.greyedOut ? "GPU search not supported for this search!" : GPU_INPUT_DESCRIPTION;
                 input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
+                if (input_gpudispatch != null)
+                {
+                    input_gpudispatch.greyedOut = input_gpu.greyedOut || !input_gpu.GetValueBool();
+                }
             }
         }
 

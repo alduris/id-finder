@@ -5,6 +5,14 @@
 #ifndef IDFINDER
 #define IDFINDER
 
+#ifndef IDFINDER_X
+#define IDFINDER_X 32
+#endif
+
+#ifndef IDFINDER_Y
+#define IDFINDER_Y 32
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // XORShift128
 
@@ -106,7 +114,7 @@ int _IDFinderStart;
 float Execute(uint4 random, StructuredBuffer<Input> inputs);
 
 // The user must define this as a pragma kernel, as it will not work if I define it in here
-[numthreads(32,32,1)]
+[numthreads(IDFINDER_X, IDFINDER_Y, 1)]
 void CS_IDFinderMain(uint3 thread : SV_DispatchThreadID)
 {
     uint offset = (thread.x + thread.y * 32 * _IDFinderDispatch.x) * 32;

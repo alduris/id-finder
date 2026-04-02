@@ -16,6 +16,38 @@ namespace FinderMod.Search
     /// </summary>
     public class Threadmaster
     {
+        /// <summary>
+        /// Returns the size (in bytes) of memory that would be used for the GPU return array
+        /// </summary>
+        /// <param name="setting">Setting to use. Keep between 1 and 9</param>
+        public static long GPUDispatchSize(int setting)
+        {
+            // Magic number is 2^32 (setting 9), slightly arbitrary but at some point I have to put my foot down
+            // Absolute maximum I can use is 2^34 (setting 11) because at that point the number of results returned is bigger than compute buffers can handle
+            return Math.Min(1L << (23 + setting), 0x100000000L);
+        }
+
+        /// <summary>
+        /// Returns a human-readable size of memory that would be used for the GPU return array
+        /// </summary>
+        /// <param name="setting">Setting to use. Keep between 1 and 9</param>
+        public static string GPUDispatchSizeString(int setting)
+        {
+            long size = GPUDispatchSize(setting);
+
+            // I don't actually think it's possible to get to TB or beyond but I put the cases there anyways
+            if ((size >> 10) < 1024)
+                return (size / 1024F).ToString("F1") + " KB";
+            else if ((size >> 20) < 1024)
+                return ((size >> 10) / 1024F).ToString("F1") + " MB";
+            else if ((size >> 30) < 1024)
+                return ((size >> 20) / 1024F).ToString("F1") + " GB";
+            else if ((size >> 40) < 1024)
+                return ((size >> 30) / 1024F).ToString("F1") + " TB";
+            else
+                return "wtf are you trying to do";
+        }
+
         private readonly List<Option> options;
         private readonly int threads;
         private readonly int results;
@@ -44,10 +76,10 @@ namespace FinderMod.Search
         /// Initializes a searcher. Use <see cref="Run"/> to actually run the thing.
         /// </summary>
         /// <param name="options">Options to run with</param>
-        /// <param name="threads">Number of threads to use</param>
+        /// <param name="threads">Number of threads to use for CPU search, memory setting for GPU search</param>
         /// <param name="results">Number of results to return</param>
         /// <param name="range">Min and max, inclusive, as a tuple</param>
-        /// <param name="gpu">Not implemented. Do not use.</param>
+        /// <param name="gpu">Whether to use a GPU search</param>
         public Threadmaster(List<Option> options, int threads, int results, (int min, int max) range, bool gpu)
         {
             var span = PositiveDirGap(range.min, range.max, 1);
@@ -75,6 +107,20 @@ namespace FinderMod.Search
                 return (uint)(dist / div);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool InRange(int id, int min, int max)
+        {
+            return max > min ? (id >= min && id <= max) : (id <= max || id >= min);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool InRange(int id, (int min, int max) range)
+        {
+            return InRange(id, range.min, range.max);
+        }
+
+        private static int DivCeil(int a, int b) => (int)((a + b - 1L) / b);
 
         /// <summary>Starts a search.</summary>
         /// <remarks>Does nothing if a search has already been started. Use <see cref="Abort(string)"/> to stop a search.</remarks>
@@ -221,14 +267,24 @@ namespace FinderMod.Search
 
         private void RunGPU()
         {
-            const int maxDispatchPerSide = 64;
-            const int maxDispatchAtOnce = maxDispatchPerSide * maxDispatchPerSide / 2;
-            const int unitDispatch = 32 * 32 * 32;
+            //const int maxDispatchPerSide = 64;
+            //const int maxDispatchAtOnce = maxDispatchPerSide * maxDispatchPerSide / 2;
+            //const int maxUnitDispatch = 32 * 32 * 32;
+
+            uint maxIdsAtOnce = (uint)(GPUDispatchSize(threads) / 8); // 8 = sizeof(Result)
 
             ICanGPU[] gpuOptions = [.. options.Cast<ICanGPU>()];
 
             // Get info from shaders
-            int[] kernels = [.. gpuOptions.Select(x => x.Shader.FindKernel("CS_IDFinderMain"))];
+            int[] kernels = new int[gpuOptions.Length];
+            KernelThreads[] threadCounts = new KernelThreads[kernels.Length];
+            for (int i = 0; i < kernels.Length; i++)
+            {
+                kernels[i] = gpuOptions[i].Shader.FindKernel("CS_IDFinderMain");
+                gpuOptions[i].Shader.GetKernelThreadGroupSizes(kernels[i], out uint x, out uint y, out uint z);
+                threadCounts[i] = new KernelThreads(x, y, z);
+            }
+
             int inputsProperty = Shader.PropertyToID("_IDFinderInputs");
             int resultsProperty = Shader.PropertyToID("_IDFinderResults");
             int startingIdProperty = Shader.PropertyToID("_IDFinderStart");
@@ -251,43 +307,36 @@ namespace FinderMod.Search
             // Set up output buffer
             var queue = new Queue<GPUQueueElement>();
             uint idsToSearch = PositiveDirGap(range.min, range.max, 1);
-            int totalDispatches = (int)((idsToSearch + unitDispatch - 1) / unitDispatch); // integer division rounding up
-            if (totalDispatches > maxDispatchAtOnce)
+            Plugin.logger.LogDebug($"GPU MAX IDS AT ONCE: {maxIdsAtOnce}, TOTAL IDS TO SEARCH: {idsToSearch}");
+            int maxResultsAtOnce = 0;
+            for (int i = 0; i < gpuOptions.Length; i++)
             {
+                int unitResults = threadCounts[i].NumResults;
+                int dispatchCount = Math.Max(1, (int)(maxIdsAtOnce / unitResults));
+                int totalResults = (int)Math.Min(unitResults * dispatchCount, idsToSearch);
+                maxResultsAtOnce = Math.Max(maxResultsAtOnce, totalResults);
                 int startId = range.min;
-                while (totalDispatches > 0)
+                int searchIterations = Math.Max(1, (int)(((long)idsToSearch + totalResults - 1L) / totalResults));
+                uint soFar = 0;
+                for (int j = 0; j < searchIterations; j++)
                 {
-                    for (int i = 0; i < gpuOptions.Length; i++)
-                    {
-                        queue.Enqueue(new GPUQueueElement
-                        {
-                            startingId = startId,
-                            dispatchCount = Math.Min(totalDispatches, maxDispatchAtOnce),
-                            optionIndex = i,
-                        });
-                    }
-                    totalDispatches -= maxDispatchAtOnce;
-                    unchecked
-                    {
-                        startId += maxDispatchAtOnce * unitDispatch;
-                    }
-                }
-                totalDispatches = maxDispatchAtOnce; // we know at least one is max dispatch length
-            }
-            else
-            {
-
-                for (int i = 0; i < gpuOptions.Length; i++)
-                {
+                    int currTotalResults = (int)Math.Min(unitResults * dispatchCount, idsToSearch - soFar);
+                    Plugin.logger.LogDebug($"GPU THREAD QUEUE ELEMENT: index {i}, unit results {unitResults}, starting at {startId}, dispatch count {dispatchCount}, total results {currTotalResults}");
                     queue.Enqueue(new GPUQueueElement
                     {
-                        startingId = range.min,
-                        dispatchCount = totalDispatches,
-                        optionIndex = i,
+                        startingId = startId,
+                        dispatchCount = dispatchCount,
+                        optionIndex = i
                     });
+                    unchecked
+                    {
+                        startId += totalResults;
+                        soFar += (uint)totalResults;
+                    }
                 }
             }
-                var resultsBuffer = new ComputeBuffer(totalDispatches * unitDispatch, 8);
+
+            var resultsBuffer = new ComputeBuffer(maxResultsAtOnce, 8);
 
             // Init our specific stuff
             var actualResults = new Result[gpuOptions.Length, results];
@@ -302,7 +351,17 @@ namespace FinderMod.Search
                     };
                 }
             }
-            Result[] rawResults = new Result[totalDispatches * unitDispatch];
+
+            Result[] rawResults;
+            try
+            {
+                rawResults = new Result[maxResultsAtOnce];
+            }
+            catch (OutOfMemoryException)
+            {
+                Abort("Ran out of memory!");
+                return;
+            }
 
             Plugin.logger.LogInfo($"Started GPU search! Length: {PositiveDirGap(range.min, range.max, 1)} Dispatches: {queue.Count}");
 
@@ -312,7 +371,7 @@ namespace FinderMod.Search
 
             void GPUDispatch()
             {
-                if (queue.Count == 0)
+                if (queue.Count == 0 || abort)
                 {
                     DisposeBuffers();
                     return;
@@ -323,6 +382,7 @@ namespace FinderMod.Search
                 var toDispatch = queue.Peek();
                 var shader = gpuOptions[toDispatch.optionIndex].Shader;
 
+                const int maxDispatchPerSide = 64;
                 int dispatchX = Math.Min(toDispatch.dispatchCount, maxDispatchPerSide);
                 int dispatchY = (toDispatch.dispatchCount + maxDispatchPerSide - 1) / maxDispatchPerSide; // integer division rounding up
 
@@ -358,8 +418,10 @@ namespace FinderMod.Search
 
                     // Handle our existing results
                     var dispatch = queue.Dequeue();
-                    for (int i = 0; i < rawResults.Length; i++)
+                    int total = dispatch.dispatchCount * threadCounts[dispatch.optionIndex].NumResults;
+                    for (int i = 0; i < total; i++)
                     {
+                        if (!InRange(rawResults[i].id, range)) continue;
                         int j = results - 1;
                         if (rawResults[i].dist < actualResults[dispatch.optionIndex, j].dist)
                         {
@@ -370,6 +432,7 @@ namespace FinderMod.Search
                                 j--;
                             }
                         }
+                        if (rawResults[i].id == range.max) break;
                     }
 
                     // Dispatch a new thing (also handles if we can't dispatch anymore)
@@ -474,6 +537,12 @@ namespace FinderMod.Search
             public int startingId;
             public int dispatchCount;
             public int optionIndex;
+        }
+
+        private readonly struct KernelThreads(uint x, uint y, uint z)
+        {
+            public readonly uint x = x, y = y, z = z;
+            public readonly int NumResults => (int)(x * y * z * 32);
         }
     }
 }
