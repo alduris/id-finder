@@ -116,11 +116,23 @@ public class ComputeTester : EditorWindow
             new Input("Teeth wideness"),
             new Input("Tail segments", 0, 4, 1),
         },
+        ["LizardColors"] = new List<Input>()
+        {
+            /*new Input("Lizard type", 1, 17, 1),
+            new Input("Hue", 0, 1),
+            new Input("Sat", 0, 1),
+            new Input("Lgt", 0, 1),*/
+            new Input("Pink lizard", 1, 2, 2),
+            new Input("Hue", 0.77f, 0.97f),
+            new Input("Sat", 1, 2, 2),
+            new Input("Lgt", 0.35f, 0.65f),
+        }
     };
 
     [SerializeField] private int startingId;
     [SerializeField] private int threadsX = 1;
     [SerializeField] private int threadsY = 1;
+    [SerializeField] private int numResults = 32;
 
     [SerializeField] private int selectedShaderIndex;
 
@@ -167,7 +179,7 @@ public class ComputeTester : EditorWindow
         splitView.Add(rightPane);
 
         Box extraBox;
-        IntegerField startInput, threadsXInput, threadsYInput;
+        IntegerField startInput, numResultsInput, threadsXInput, threadsYInput;
         Button startButton;
         Label countLabel;
         rightPane.Add(new Label("Inputs:"));
@@ -175,8 +187,13 @@ public class ComputeTester : EditorWindow
         rightPane.Add(new Label("Extra setup:"));
         rightPane.Add(extraBox = new Box());
         extraBox.Add(startInput = new IntegerField("Starting id"));
+        startInput.value = startingId;
+        extraBox.Add(numResultsInput = new IntegerField("Results to show"));
+        numResultsInput.value = numResults;
         extraBox.Add(threadsXInput = new IntegerField("Threads x"));
+        threadsXInput.value = threadsX;
         extraBox.Add(threadsYInput = new IntegerField("Threads y"));
+        threadsYInput.value = threadsY;
         extraBox.Add(countLabel = new Label($"{threadsX * threadsY * 32} results"));
         rightPane.Add(startButton = new Button() { text = "Run" });
         rightPane.Add(new Label("Output:"));
@@ -300,7 +317,8 @@ public class ComputeTester : EditorWindow
 
                     Array.Sort(results, new Result.ResultComparer());
 
-                    for (int i = 0; i < 32; i++)
+                    int num = Math.Min(total, numResults);
+                    for (int i = 0; i < num; i++)
                     {
                         outputPane.Add(new Label(results[i].ToString()));
                     }

@@ -1,0 +1,76 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Lizard.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float3 hsl;
+    
+    int type = (int) inputs[0].value; // constant per dispatch
+    float3 hueRange;
+    float3 lgtRange;
+
+    switch (type)
+    {
+        case LizardType_Pink:
+            hueRange = float3(0.87, 0.1, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Green:
+            hueRange = float3(0.32, 0.1, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Blue:
+            hueRange = float3(0.57, 0.08, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Yellow:
+            hueRange = float3(0.1, 0.05, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Salamander:
+            hueRange = float3(0.9, 0.15, 0.6);
+            lgtRange = float3(0.4, 0.15, 0.1);
+            break;
+        case LizardType_Red:
+            hueRange = float3(0.0025, 0.02, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Cyan:
+            hueRange = float3(0.49, 0.04, 0.6);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Blizzard:
+            hueRange = float3(0.5, 0.2, 0.44);
+            lgtRange = float3(0.7, 0.15, 0.85);
+            break;
+        case LizardType_Basilisk:
+            hueRange = float3(0.11, 0.06, 0.44);
+            lgtRange = float3(0.5, 0.15, 0.1);
+            break;
+        case LizardType_Indigo:
+            hueRange = float3(0.7, 0.08, 0.6);
+            lgtRange = float3(0.52, 0.15, 0.1);
+            break;
+        case LizardType_Peach:
+            hueRange = float3(1, 0.07, 0.5);
+            lgtRange = float3(0.7, 0.07, 0.1);
+            break;
+        default:
+            hueRange = float3(0, 0, 0);
+            lgtRange = float3(0, 0, 0);
+            break;
+    }
+    
+    hsl = float3(WrappedRandomVariation(hueRange, random), 1, ClampedRandomVariation(lgtRange, random));
+    
+    // fuck you blizzard and basilisk lizards for making things more complicated
+    float3 rgb = HSL2RGB(hsl);
+    hsl = type == LizardType_Blizzard ? RGB2HSL(lerp(float3(0.55, 0.6, 0.7), rgb, 0.05)) : hsl;
+    hsl = type == LizardType_Basilisk ? RGB2HSL(lerp(rgb, float3(0, 0, 0), 0.85)) : hsl;
+    
+    float d = WrapDistance(hsl.x, inputs[1]) + Distance(hsl.y, inputs[2]) + Distance(hsl.z, inputs[3]);
+    return d;
+}

@@ -25,27 +25,27 @@ namespace FinderMod.Search
         /// Struct representing a single input. Transferred to the GPU.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
-        public struct GPUInput
+        public struct GPUInput(float value, float start, float range, int bias)
         {
             /// <summary>
             /// The value of the input.
             /// </summary>
-            public float value;
+            public float value = value;
 
             /// <summary>
             /// The start of the range of the input.
             /// </summary>
-            public float start;
+            public float start = start;
 
             /// <summary>
             /// The range of the input.
             /// </summary>
-            public float range;
+            public float range = range;
 
             /// <summary>
             /// The bias of the input. Setting to 0 disables the input.
             /// </summary>
-            public int bias;
+            public int bias = bias;
 
             /// <summary>
             /// Returns information about this GPUInput
