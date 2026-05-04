@@ -6,9 +6,11 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class ScavColorsOption : Option
+    internal class ScavColorsOption : Option, ICanGPU
     {
         private readonly ColorHSLInput body, head, deco, eye;
+
+        public ComputeShader Shader => InternalShaders.scavengerColorsShader;
 
         public ScavColorsOption() : base()
         {
@@ -230,6 +232,26 @@ namespace FinderMod.Search.Options
             yield return $"Deco color: hsl({decoColor.hue}, {decoColor.saturation}, {decoColor.lightness})";
             yield return $"Eye color: hsl({eyeColor.hue}, {eyeColor.saturation}, {eyeColor.lightness})";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                head.HueInput.AsGPUInput(),
+                head.SatInput.AsGPUInput(),
+                head.LightInput.AsGPUInput(),
+
+                body.HueInput.AsGPUInput(),
+                body.SatInput.AsGPUInput(),
+                body.LightInput.AsGPUInput(),
+
+                deco.HueInput.AsGPUInput(),
+                deco.SatInput.AsGPUInput(),
+                deco.LightInput.AsGPUInput(),
+
+                eye.HueInput.AsGPUInput(),
+                eye.LightInput.AsGPUInput(),
+                ];
         }
     }
 }

@@ -13,7 +13,10 @@ namespace FinderMod
         public static ComputeShader slugpupVarsShader;
         public static ComputeShader scavengerSkillsShader;
         public static ComputeShader scavengerVarsShader;
+        public static ComputeShader scavengerColorsShader;
+        public static ComputeShader eliteScavengerSkillsShader;
         public static ComputeShader lizardColorsShader;
+        public static ComputeShader lizardVarsShader;
 
         public static void LoadShaders()
         {
@@ -32,7 +35,10 @@ namespace FinderMod
             slugpupVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupVars.compute");
             scavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerSkills.compute");
             scavengerVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerVars.compute");
+            scavengerColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerColors.compute");
+            eliteScavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerSkills.compute");
             lizardColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardColors.compute");
+            lizardVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardVars.compute");
         }
     }
 }

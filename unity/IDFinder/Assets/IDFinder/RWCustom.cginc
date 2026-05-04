@@ -21,6 +21,16 @@ inline float LerpMap(float val, float fromA, float toA, float fromB, float toB, 
     return lerp(fromB, toB, pow(invlerp(fromA, toA, val), exponent));
 }
 
+inline float Decimal(float val)
+{
+    return val - floor(val);
+}
+
+inline float DistanceBetweenZeroToOneFloats(float a, float b)
+{
+    return min(min(abs(a - b), abs(a + 1.0 - b)), abs(a - 1.0 - b));
+}
+
 inline float PushFromHalf(float val, float pushExponent)
 {
     return LerpMap(val, round(val), 0.5, round(val), 0.5, pushExponent);

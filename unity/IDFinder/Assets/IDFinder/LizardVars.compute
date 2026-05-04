@@ -1,0 +1,53 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Lizard.cginc"
+
+// Input order:
+// 0 - lizard type
+// 1 - head size
+// 2 - fatness
+// 3 - tail length
+// 4 - tail fatness
+// 5 - tail color
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    int type = (int) inputs[0].value;
+    
+    float headSize = ClampedRandomVariation(0.5, 0.07, 0.5, random) * 2.0;
+    headSize = lerp(headSize, 1.0, RandomValue(random) < 0.5);
+    
+    float fatness = ClampedRandomVariation(0.5, 0.12, 0.5, random) * 2.0;
+    float tailLength = ClampedRandomVariation(0.5, 0.2, 0.3, random) * 2.0;
+    float tailFatness = ClampedRandomVariation(0.45, 0.1, 0.3, random) * 2.0;
+    
+    bool tailColorCond = RandomValueIf(random, type != LizardType_White) > 0.5 && type != LizardType_White;
+    float tailColor = RandomValueIf(random, tailColorCond) * tailColorCond;
+    
+    if (type == LizardType_Red)
+    {
+        fatness = min(1.0, fatness);
+        tailFatness = min(1.0, tailFatness);
+    }
+    else if (type == LizardType_Black)
+    {
+        fatness = ClampedRandomVariation(0.45, 0.06, 0.5, random) * 2.0;
+    }
+    else if (type == LizardType_Caramel || type == LizardType_Zoop)
+    {
+        fatness = min(0.8, fatness);
+        tailFatness = min(0.9, tailFatness);
+    }
+    
+    
+    float d = 0;
+    d += Distance(headSize, inputs[1]);
+    d += Distance(fatness, inputs[2]);
+    d += Distance(tailLength, inputs[3]);
+    d += Distance(tailFatness, inputs[4]);
+    d += Distance(tailColor, inputs[5]);
+    
+    return d;
+}

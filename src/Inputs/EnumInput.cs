@@ -46,6 +46,7 @@ namespace FinderMod.Inputs
                 .Where(x => !excludeOptions.Contains((T)Enum.Parse(typeof(T), x.name)))
                 .Select(x => nameConv != null ? new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value) : x)
                 .ToArray();
+            el.listHeight = (ushort)Math.Min(10, el._itemList.Length);
             return el;
         }
 

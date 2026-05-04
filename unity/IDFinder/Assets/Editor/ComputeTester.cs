@@ -116,17 +116,48 @@ public class ComputeTester : EditorWindow
             new Input("Teeth wideness"),
             new Input("Tail segments", 0, 4, 1),
         },
+        ["ScavengerColors"] = new List<Input>()
+        {
+            new Input("Body color H"),
+            new Input("Body color S"),
+            new Input("Body color L"),
+            new Input("Head color H"),
+            new Input("Head color S"),
+            new Input("Head color L"),
+            new Input("Deco color H"),
+            new Input("Deco color S"),
+            new Input("Deco color L"),
+            new Input("Eye color H"),
+            new Input("Eye color L"),
+        },
+        ["EliteScavengerSkills"] = new List<Input>()
+        {
+            new Input("Dodge"),
+            new Input("Mid-range"),
+            new Input("Melee"),
+            new Input("Blocking"),
+            new Input("Reaction")
+        },
         ["LizardColors"] = new List<Input>()
         {
-            /*new Input("Lizard type", 1, 17, 1),
+            new Input("Lizard type", 1, 17, 1),
             new Input("Hue", 0, 1),
             new Input("Sat", 0, 1),
-            new Input("Lgt", 0, 1),*/
-            new Input("Pink lizard", 1, 2, 2),
+            new Input("Lgt", 0, 1),
+            /*new Input("Pink lizard", 1, 2, 2),
             new Input("Hue", 0.77f, 0.97f),
             new Input("Sat", 1, 2, 2),
-            new Input("Lgt", 0.35f, 0.65f),
-        }
+            new Input("Lgt", 0.35f, 0.65f),*/
+        },
+        ["LizardVars"] = new List<Input>()
+        {
+            new Input("Lizard type", 1, 17, 1),
+            new Input("Head size", 0.86f, 1.14f),
+            new Input("Fatness", 0.76f, 1.24f),
+            new Input("Tail length", 0.6f, 1.4f),
+            new Input("Tail fatness", 0.7f, 1.1f),
+            new Input("Tail color")
+        },
     };
 
     [SerializeField] private int startingId;
