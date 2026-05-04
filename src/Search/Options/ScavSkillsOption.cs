@@ -96,7 +96,6 @@ namespace FinderMod.Search.Options
                 new ICanGPU.GPUInput()
                 {
                     value = ModManager.MSC ? 1 : 0,
-                    start = 0,
                     bias = 1,
                     range = 1
                 }

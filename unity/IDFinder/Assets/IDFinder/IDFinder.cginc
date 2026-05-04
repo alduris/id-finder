@@ -89,7 +89,6 @@ inline float RandomRangeIf(float a, float b, inout uint4 state, int cond)
 struct Input
 {
     float value;
-    float start;
     float range;
     int bias;
 };

@@ -76,7 +76,6 @@ namespace FinderMod.Inputs
             {
                 bias = bias,
                 range = Enum.GetValues(typeof(T)).Length,
-                start = 0,
                 value = (int)(object)value // have to convert to object first because generic
             };
         }

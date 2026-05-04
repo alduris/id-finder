@@ -24,18 +24,13 @@ namespace FinderMod.Search
         /// <summary>
         /// Struct representing a single input. Transferred to the GPU.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
-        public struct GPUInput(float value, float start, float range, int bias)
+        [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 12)]
+        public struct GPUInput(float value, float range, int bias)
         {
             /// <summary>
             /// The value of the input.
             /// </summary>
             public float value = value;
-
-            /// <summary>
-            /// The start of the range of the input.
-            /// </summary>
-            public float start = start;
 
             /// <summary>
             /// The range of the input.
@@ -53,7 +48,7 @@ namespace FinderMod.Search
             /// <returns>Information</returns>
             public readonly override string ToString()
             {
-                return $"GPU Input (value: {value}, range: {range}, start: {start}, bias: {bias})";
+                return $"GPU Input (value: {value}, range: {range}, bias: {bias})";
             }
         }
     }

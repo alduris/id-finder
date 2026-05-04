@@ -40,7 +40,6 @@ namespace FinderMod.Inputs
             return new ICanGPU.GPUInput
             {
                 value = value ? 1 : 0,
-                start = 0,
                 range = 1,
                 bias = enabled ? bias : 0
             };

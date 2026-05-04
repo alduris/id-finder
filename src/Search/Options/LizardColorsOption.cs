@@ -125,9 +125,9 @@ namespace FinderMod.Search.Options
         {
             return [
                 typeInp.AsGPUInput(), // only the value gets used on the GPU side
-                colrInp.HueInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 0, 1, 0),
-                colrInp.SatInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 0, 1, 0),
-                colrInp.LightInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 0, 1, 0)
+                colrInp.HueInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                colrInp.SatInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                colrInp.LightInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0)
                 ];
         }
 

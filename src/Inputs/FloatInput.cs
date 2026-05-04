@@ -31,7 +31,6 @@ namespace FinderMod.Inputs
             {
                 value = value,
                 range = max - min,
-                start = min,
                 bias = enabled ? bias : 0
             };
         }
