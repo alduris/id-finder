@@ -131,6 +131,11 @@ inline float MatchDistance(bool value, Input input)
     //return MatchDistance((int)value, input);
 }
 
+inline float DistanceColor(float3 color, Input inputR, Input inputG, Input inputB)
+{
+    return distance(color, float3(inputR.value, inputG.value, inputB.value)) * inputR.bias;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ID Finder main functionality
 

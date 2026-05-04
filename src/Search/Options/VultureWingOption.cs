@@ -5,17 +5,19 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class VultureWingOption : Option
+    internal class VultureWingOption : Option, ICanGPU
     {
         private readonly ColorHSLInput ColorAInput, ColorBInput;
         private readonly IntInput FeathersInput;
+
+        public ComputeShader Shader => InternalShaders.vultureWingShader;
 
         public VultureWingOption() : base()
         {
             RepresentedCreature = CreatureTemplate.Type.Vulture;
             elements = [
-                ColorAInput = new ColorHSLInput("Color A"),
-                ColorBInput = new ColorHSLInput("Color B"),
+                ColorAInput = new ColorHSLInput("Color A", true, 0f, 1f, true, 0.5f, 0.7f, true, 0.7f, 0.8f),
+                ColorBInput = new ColorHSLInput("Color B", true, 0f, 1f, true, 0.8f, 1f, true, 0.45f, 1f),
                 FeathersInput = new IntInput("Feather count", 13, 19)
             ];
         }
@@ -70,8 +72,21 @@ namespace FinderMod.Search.Options
 
             // Relay results
             yield return $"Color A: hsl({results.a.hue}, {results.a.saturation}, {results.a.lightness})";
-            yield return $"Color A: hsl({results.b.hue}, {results.b.saturation}, {results.b.lightness})";
+            yield return $"Color B: hsl({results.b.hue}, {results.b.saturation}, {results.b.lightness})";
             yield return $"Feather count: {results.feathers}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                ColorAInput.HueInput.AsGPUInput(),
+                ColorAInput.SatInput.AsGPUInput(),
+                ColorAInput.LightInput.AsGPUInput(),
+                ColorBInput.HueInput.AsGPUInput(),
+                ColorBInput.SatInput.AsGPUInput(),
+                ColorBInput.LightInput.AsGPUInput(),
+                FeathersInput.AsGPUInput()
+                ];
         }
     }
 }

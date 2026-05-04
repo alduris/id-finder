@@ -5,10 +5,12 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class NootAdultVarsOption : Option
+    internal class NootAdultVarsOption : Option, ICanGPU
     {
         private readonly FloatInput wsInp, lsInp, fatInp, slInp;
         private readonly ColorRGBInput bodyInp, eyeInp;
+
+        public ComputeShader Shader => InternalShaders.noodleflyAdultVarsShader;
 
         public NootAdultVarsOption() : base()
         {
@@ -112,6 +114,18 @@ namespace FinderMod.Search.Options
             yield return $"Snout length: {results.snoutLength}";
             yield return $"Body color: rgb({results.bodyColor.r}, {results.bodyColor.g}, {results.bodyColor.b})";
             yield return $"Eye color: rgb({results.eyeColor.r}, {results.eyeColor.g}, {results.eyeColor.b})";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                wsInp.AsGPUInput(),
+                lsInp.AsGPUInput(),
+                fatInp.AsGPUInput(),
+                slInp.AsGPUInput(),
+                .. bodyInp.GetGPUInputs(),
+                .. eyeInp.GetGPUInputs(),
+                ];
         }
     }
 }

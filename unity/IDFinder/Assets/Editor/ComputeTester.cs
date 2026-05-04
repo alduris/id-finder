@@ -158,6 +158,62 @@ public class ComputeTester : EditorWindow
             new Input("Tail fatness", 0.7f, 1.1f),
             new Input("Tail color")
         },
+        ["VultureWings"] = new List<Input>()
+        {
+            new Input("Color A hue"),
+            new Input("Color A sat", 0.5f, 0.7f),
+            new Input("Color A lightness", 0.7f, 0.8f),
+            new Input("Color B hue"),
+            new Input("Color B sat", 0.8f, 1f),
+            new Input("Color B lightness", 0.45f, 1f),
+            new Input("Feather count", 13, 19, 1)
+        },
+        ["VultureKingWings"] = new List<Input>()
+        {
+            new Input("Color A hue"),
+            new Input("Color A sat", 0.5f, 0.7f),
+            new Input("Color A lightness", 0.7f, 0.8f),
+            new Input("Color B hue"),
+            new Input("Color B sat", 0.8f, 1f),
+            new Input("Color B lightness", 0.45f, 1f),
+            new Input("Feather count", 13, 19, 1)
+        },
+        ["NoodleflyAdultVars"] = new List<Input>()
+        {
+            new Input("Wing size", 0.8f, 1.2f),
+            new Input("Leg size", 0.6f, 1.4f),
+            new Input("Fatness"),
+            new Input("Snout length"),
+            new Input("Body color R"),
+            new Input("Body color G"),
+            new Input("Body color B"),
+            new Input("Eye color R"),
+            new Input("Eye color G"),
+            new Input("Eye color B"),
+        },
+        ["NoodleflyBabyVars"] = new List<Input>()
+        {
+            new Input("Wing size", 0.4f, 0.8f),
+            new Input("Leg size", 0.48f, 1.12f),
+            new Input("Fatness"),
+            new Input("Snout length"),
+            new Input("Body color R"),
+            new Input("Body color G"),
+            new Input("Body color B"),
+            new Input("Eye color R"),
+            new Input("Eye color G"),
+            new Input("Eye color B"),
+        },
+        ["BigSpiderVars"] = new List<Input>()
+        {
+            new Input("Spider type", 0, 2, 1),
+            new Input("Number of spines", 10, 38, 1),
+            new Input("Leg thickness", 0.7f, 1.1f),
+            new Input("Body thickness", 1.8f, 6.1f),
+            new Input("Spine color R", value: 1f),
+            new Input("Spine color G", value: 0.8f),
+            new Input("Spine color B", value: 0.3f)
+        },
     };
 
     [SerializeField] private int startingId;
@@ -317,7 +373,7 @@ public class ComputeTester : EditorWindow
             int total = (int)sizeX * threadsX * (int)sizeY * threadsY * 32;
 
             // Load shader buffers and values
-            ComputeBuffer inputBuffer = new ComputeBuffer(inputs.Count, 16);
+            ComputeBuffer inputBuffer = new ComputeBuffer(inputs.Count, 12);
             ComputeBuffer resultsBuffer = new ComputeBuffer(total, 8);
 
             var gpuInputs = inputs.Select(x => x.AsGPUInput()).ToArray();

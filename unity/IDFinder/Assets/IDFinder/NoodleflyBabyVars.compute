@@ -1,0 +1,50 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs
+//   0 - Wing size
+//   1 - Leg size
+//   2 - Fatness
+//   3 - Snout length
+//   4 - Body color R
+//   5 - Body color G
+//   6 - Body color B
+//   7 - Eye color R
+//   8 - Eye color G
+//   9 - Eye color B
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    // Generic factors
+    d += Distance(0.5 * lerp(0.8, 1.2, ClampedRandomVariation(0.5, 0.5, 0.4, random)), inputs[0]); // wing size
+    d += Distance(0.8 * lerp(0.6, 1.4, RandomValue(random)), inputs[1]); // leg size
+    d += Distance(ClampedRandomVariation(0.5, 0.5, 0.4, random), inputs[2]); // fatness
+    d += Distance(lerp(0.5, 1.5, RandomValue(random)), inputs[3]); // snout length
+    
+    // Figure out hue
+    float hue = WrappedRandomVariation(0.5, 0.08, 0.2, random);
+    
+    // Random shifts (but we need one of the random values so we store it for later)
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    
+    // Figure out lightness
+    float lightness = lerp(0.3, 1, pow(ClampedRandomVariation(0.5, 0.5, 0.4, random), 0.4));
+    
+    // Actual color calculation
+    hue += 0.478;
+    float3 bodyColor = HSL2RGB(hue, LerpMap(lightness, 0.5, 1, 0.9, 0.5), lerp(0.1, 0.8, lightness * lightness));
+    d += DistanceColor(bodyColor, inputs[4], inputs[5], inputs[6]);
+    
+    hue += invlerp(0.5, 0.6, lightness) * 0.5;
+    float3 eyeColor = HSL2RGB(hue + 0.5, 1, lerp(0.7, 0.3, pow(lightness, 1.5)));
+    d += DistanceColor(eyeColor, inputs[7], inputs[8], inputs[9]);
+    
+    return d;
+}

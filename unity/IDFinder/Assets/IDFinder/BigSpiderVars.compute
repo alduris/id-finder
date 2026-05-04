@@ -1,0 +1,56 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+#define BigSpider 0
+#define SpitterSpider 1
+#define MotherSpider 2
+
+inline float4 SpiderColor(int type)
+{
+    switch (type)
+    {
+        default:
+            return float4(1, 0.8, 0.3, 1);
+        case SpitterSpider:
+            return float4(1, 0, 0, 1);
+        case MotherSpider:
+            return float4(0, 1, 0, 1);
+    }
+}
+
+// Inputs:
+//  0 - Spider type
+//  1 - Number of spines
+//  2 - Leg thickness
+//  3 - Body thickness
+//  4 - Blended color R
+//  5 - Blended color G
+//  6 - Blended color B
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    uint4 initial = random;
+    float d = 0;
+    int type = (int) inputs[0].value;
+    
+    // BigSpider constructor
+    float4 randomColor = float4(HSL2RGB(RandomValue(random), RandomValue(random), RandomValue(random)), 1);
+    float4 spiderColor = lerp(SpiderColor(type), randomColor, RandomValue(random) * 0.2);
+    // this distance calculation is scuffed as hell
+    float4 inputColor = float4(inputs[4].value, inputs[5].value, inputs[6].value, 1);
+    d += distance(spiderColor, inputColor) * inputs[4].bias; // yes this is the normal hlsl distance function
+    
+    // BigSpiderGraphics constructor
+    random = initial;
+    int scales = (type == SpitterSpider) * 10 + RandomRange((type == SpitterSpider) * 6 + 10, RandomRange(20, 28, random), random);
+    d += Distance(scales, inputs[1]);
+    d += Distance(lerp(0.7, 1.1, RandomValue(random)), inputs[2]); // leg thickness
+    
+    float bodyThickness = lerp(0.9, 1.1, RandomValue(random)) + 0.9 + (type == SpitterSpider) * 0.8;
+    bodyThickness = lerp(bodyThickness, lerp(0.9, 1.1, RandomValueIf(random, type == MotherSpider)) + 5.0, type == MotherSpider);
+    d += Distance(bodyThickness, inputs[3]);
+    
+    return d;
+}

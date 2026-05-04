@@ -295,7 +295,7 @@ namespace FinderMod.Search
             for (int i = 0; i < gpuOptions.Length; i++)
             {
                 var gpuInputs = gpuOptions[i].GetGPUInputs();
-                inputBuffers[i] = new ComputeBuffer(gpuInputs.Length, 16);
+                inputBuffers[i] = new ComputeBuffer(gpuInputs.Length, 12);
                 inputBuffers[i].SetData(gpuInputs);
                 Plugin.logger.LogDebug($"GPU OPTION {i} INPUTS");
                 foreach (var gpuInput in gpuInputs)

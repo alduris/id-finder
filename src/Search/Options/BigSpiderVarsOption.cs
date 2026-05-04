@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class BigSpiderVarsOption : Option
+    internal class BigSpiderVarsOption : Option, ICanGPU
     {
         public enum SpiderType
         {
@@ -38,6 +38,8 @@ namespace FinderMod.Search.Options
             }
             protected set => throw new NotImplementedException();
         }
+
+        public ComputeShader Shader => InternalShaders.bigSpiderVarsShader;
 
         public BigSpiderVarsOption(SpiderType type)
         {
@@ -118,6 +120,17 @@ namespace FinderMod.Search.Options
             yield return $"Spine color: rgb({results.spineColor.r}, {results.spineColor.g}, {results.spineColor.b})";
         }
 
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                new ICanGPU.GPUInput((float)type, 1, 0),
+                NumScalesInput.AsGPUInput(),
+                LegThicknessInput.AsGPUInput(),
+                BodyThicknessInput.AsGPUInput(),
+                .. SpineColorInput.GetGPUInputs()
+                ];
+        }
+
         private struct BigSpiderResults
         {
             public int numScales;
@@ -126,7 +139,7 @@ namespace FinderMod.Search.Options
             public Color spineColor;
         }
 
-        private class BigSpiderColorInput(SpiderType type) : IElement, ISaveInHistory
+        private class BigSpiderColorInput(SpiderType type) : IElement, ISaveInHistory, IGPUMultiInput
         {
             private readonly FloatInput BlendInput = new("Spine color", 0f, 0.2f);
             private Color selectedColor = new(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
@@ -173,6 +186,10 @@ namespace FinderMod.Search.Options
                     {
                         pickerMode = picker._mode;
                     };
+                    BlendInput.OnValueChanged += (_, _, _) =>
+                    {
+                        rect.colorFill = BlendedColor;
+                    };
                 }
             }
 
@@ -200,6 +217,16 @@ namespace FinderMod.Search.Options
                     yield return $"    Result: rgb({BlendedColor.r}, {BlendedColor.g}, {BlendedColor.b})";
                 }
                 yield break;
+            }
+
+            public ICanGPU.GPUInput[] GetGPUInputs()
+            {
+                return
+                [
+                    new ICanGPU.GPUInput(BlendedColor.r, 1f, Enabled ? Bias : 0),
+                    new ICanGPU.GPUInput(BlendedColor.g, 1f, Enabled ? Bias : 0),
+                    new ICanGPU.GPUInput(BlendedColor.b, 1f, Enabled ? Bias : 0),
+                ];
             }
         }
     }
