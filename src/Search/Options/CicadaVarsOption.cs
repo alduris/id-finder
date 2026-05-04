@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class CicadaVarsOption : Option
+    internal class CicadaVarsOption : Option, ICanGPU
     {
         private readonly HueInput ColorInput;
         private readonly FloatInput FatnessInput;
@@ -14,6 +14,8 @@ namespace FinderMod.Search.Options
         private readonly FloatInput WingLengthInput;
         private readonly FloatInput WingThicknessInput;
         private readonly Toggleable<IntInput> BustedWingInput;
+
+        public ComputeShader Shader => InternalShaders.squidcadaVarsShader;
 
         public CicadaVarsOption()
         {
@@ -76,9 +78,21 @@ namespace FinderMod.Search.Options
             yield return $"Wing length: {results.wingLength}";
             yield return $"Wing thickness: {results.wingThickness}";
             if (results.bustedWing.HasValue)
-                yield return $"Busted wing: {results.wingThickness}";
+                yield return $"Busted wing: {results.bustedWing.Value}";
             else
                 yield return "No busted wing";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                ColorInput.AsGPUInput(),
+                FatnessInput.AsGPUInput(),
+                TentacleLengthInput.AsGPUInput(),
+                WingLengthInput.AsGPUInput(),
+                WingThicknessInput.AsGPUInput(),
+                .. BustedWingInput.GetGPUInputs()
+                ];
         }
 
         private struct CicadaResults

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using UnityEngine;
 
 #nullable disable
 namespace FinderMod
@@ -26,6 +25,11 @@ namespace FinderMod
         public static ComputeShader coalescipedeSizeShader;
         public static ComputeShader dropwigVarsShader;
         public static ComputeShader eggbugColorsShader;
+        public static ComputeShader grappleWormColorsShader;
+        public static ComputeShader jetfishVarsShader;
+        public static ComputeShader lanternMouseVarsShader;
+        public static ComputeShader snailVarsShader;
+        public static ComputeShader squidcadaVarsShader;
 
         public static void LoadShaders()
         {
@@ -57,6 +61,11 @@ namespace FinderMod
             coalescipedeSizeShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/CoalescipedeSize.compute");
             dropwigVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/DropwigVars.compute");
             eggbugColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EggbugColors.compute");
+            grappleWormColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/GrappleWormColors.compute");
+            jetfishVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/JetfishVars.compute");
+            lanternMouseVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LanternMouseVars.compute");
+            snailVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SnailVars.compute");
+            squidcadaVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SquidcadaVars.compute");
         }
     }
 }

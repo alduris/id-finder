@@ -87,7 +87,7 @@ namespace FinderMod.Inputs
         }
 
         /// <returns>The input as several GPU inputs</returns>
-        public ICanGPU.GPUInput[] GetGPUInputs()
+        public virtual ICanGPU.GPUInput[] GetGPUInputs()
         {
             return
             [

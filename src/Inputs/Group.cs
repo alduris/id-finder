@@ -150,7 +150,7 @@ namespace FinderMod.Inputs
         /// Returns all GPU input-compatible children as GPU inputs, recursively.
         /// </summary>
         /// <returns></returns>
-        public ICanGPU.GPUInput[] GetGPUInputs()
+        public virtual ICanGPU.GPUInput[] GetGPUInputs()
         {
             List<ICanGPU.GPUInput> list = [];
 

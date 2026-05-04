@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class GrappleWormColorsOption : Option
+    internal class GrappleWormColorsOption : Option, ICanGPU
     {
         private readonly ColorHSLInput ColorInput = new("Color", 0.52f, 0.68f, 0.4f, 0.9f, 0.15f, 0.3f);
+
+        public ComputeShader Shader => InternalShaders.grappleWormColorsShader;
 
         public GrappleWormColorsOption()
         {
@@ -26,5 +28,7 @@ namespace FinderMod.Search.Options
             var color = Color(Random);
             yield return $"Color: hsl({color.hue}, {color.saturation}, {color.lightness})";
         }
+
+        public ICanGPU.GPUInput[] GetGPUInputs() => ColorInput.GetGPUInputs();
     }
 }

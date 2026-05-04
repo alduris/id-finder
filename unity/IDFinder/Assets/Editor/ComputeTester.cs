@@ -239,6 +239,46 @@ public class ComputeTester : EditorWindow
             new Input("Hue", 0, 2, value: 1.35f),
             new Input("Firebug?", 0, 1, 1)
         },
+        ["GrappleWormColors"] = new List<Input>()
+        {
+            new Input("Hue", 0.52f, 0.68f),
+            new Input("Saturation", 0.4f, 0.9f),
+            new Input("Lightness", 0.15f, 0.3f)
+        },
+        ["JetfishVars"] = new List<Input>()
+        {
+            new Input("Tentacle length"),
+            new Input("Number of whiskers", 0, 3, 1),
+            new Input("Flipper graphic", 0, 4, 1),
+            new Input("Flipper size", 0.7f, 1.1f)
+        },
+        ["LanternMouseVars"] = new List<Input>()
+        {
+            new Input("Hue"),
+            new Input("Dominance")
+        },
+        ["SnailVars"] = new List<Input>()
+        {
+            new Input("Size", 0.6f, 1.4f),
+            new Input("Color A red"),
+            new Input("Color A green"),
+            new Input("Color A blue"),
+            new Input("Color B red"),
+            new Input("Color B green"),
+            new Input("Color B blue"),
+            new Input("Same color?", 0, 1, 1) { enabled = false }
+        },
+        ["SquidcadaVars"] = new List<Input>()
+        {
+            new Input("Hue", 0.45f, 0.65f),
+            new Input("Fatness", 0.8f, 1.2f),
+            new Input("Tentacle length", 0.6f, 1.4f),
+            new Input("Tentacle thickness", 0.6f, 1.4f),
+            new Input("Wing length", 0.4f, 1f),
+            new Input("Wing thickness", (0.66667f - 0.3f) * 1.5f, (0.66667f + 0.3f) * 1.5f),
+            new Input("Has busted wing?", 0, 1, 1),
+            new Input("Busted wing", 0, 3, 1)
+        },
     };
 
     [SerializeField] private int startingId;

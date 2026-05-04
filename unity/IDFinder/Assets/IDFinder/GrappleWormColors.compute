@@ -1,0 +1,11 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float3 color = float3(lerp(0.52, 0.68, RandomValue(random)), lerp(0.4, 0.9, RandomValue(random)), lerp(0.15, 0.3, RandomValue(random)));
+    float d = WrapDistance(color.x, inputs[0]) + Distance(color.y, inputs[1]) + Distance(color.z, inputs[2]);
+    
+    return d;
+}

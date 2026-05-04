@@ -1,0 +1,25 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs:
+// 0 - tentacle length
+// 1 - num whiskers
+// 2 - flipper graphic
+// 3 - flipper size
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    Shift(random); // fatness
+    Shift(random); // fatness
+    d += Distance(RandomRange(0, 4, random), inputs[1]); // num whiskers
+    d += Distance(RandomValue(random), inputs[0]); // tentacle length
+    Shift(random);
+    d += Distance(RandomRange(0, 5, random), inputs[2]); // flipper graphic
+    d += Distance(lerp(0.7, 1.1, RandomValue(random)), inputs[3]); // flipper size
+    
+    return d;
+}

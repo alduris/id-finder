@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using RWCustom;
@@ -152,6 +153,19 @@ namespace FinderMod.Inputs
             if (HueInput is not null) yield return internalName + " H: " + HueInput.value;
             if (SatInput is not null) yield return internalName + " S: " + SatInput.value;
             if (LightInput is not null) yield return internalName + " L: " + LightInput.value;
+        }
+
+        /// <summary>
+        /// Returns the color sliders as GPU inputs
+        /// </summary>
+        public override ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            // The base method returns the exact same thing but this processes it less and I can override the documentation
+            List<ICanGPU.GPUInput> inputs = [];
+            if (HueInput is not null) inputs.Add(HueInput.AsGPUInput());
+            if (SatInput is not null) inputs.Add(SatInput.AsGPUInput());
+            if (LightInput is not null) inputs.Add(LightInput.AsGPUInput());
+            return [.. inputs];
         }
 
 
