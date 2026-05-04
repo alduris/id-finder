@@ -140,7 +140,7 @@ float Execute(uint4 random, StructuredBuffer<Input> inputs);
 [numthreads(IDFINDER_X, IDFINDER_Y, 1)]
 void CS_IDFinderMain(uint3 thread : SV_DispatchThreadID)
 {
-    uint offset = (thread.x + thread.y * 32 * _IDFinderDispatch.x) * 32;
+    uint offset = (thread.x + thread.y * IDFINDER_X * _IDFinderDispatch.x) * 32;
     uint seed = _IDFinderStart + offset;
     
     // [unroll]
