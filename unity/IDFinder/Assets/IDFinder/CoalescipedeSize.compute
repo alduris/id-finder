@@ -1,0 +1,9 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    // There is only one input and it maps to a single Random.value call
+    return Distance(RandomValue(random), inputs[0]);
+}

@@ -214,6 +214,17 @@ public class ComputeTester : EditorWindow
             new Input("Spine color G", value: 0.8f),
             new Input("Spine color B", value: 0.3f)
         },
+        ["CentipedeVars"] = new List<Input>()
+        {
+            new Input("Type", 0, 3, 1),
+            new Input("Hue", 0f, 1f, value: 0.04f),
+            new Input("Saturation", 0.8f, 1f) { enabled = false },
+            new Input("Size", 0f, 1f)
+        },
+        ["CoalescipedeSize"] = new List<Input>()
+        {
+            new Input("Size", 0f, 1f)
+        },
     };
 
     [SerializeField] private int startingId;

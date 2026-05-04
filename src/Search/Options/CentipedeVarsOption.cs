@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class CentipedeVarsOption : Option
+    internal class CentipedeVarsOption : Option, ICanGPU
     {
         public enum CentipedeType
         {
@@ -36,6 +36,8 @@ namespace FinderMod.Search.Options
             }
             protected set => throw new NotImplementedException();
         }
+
+        public ComputeShader Shader => InternalShaders.centipedeVarsShader;
 
         public CentipedeVarsOption(CentipedeType type)
         {
@@ -97,7 +99,7 @@ namespace FinderMod.Search.Options
             }
             else if (type == CentipedeType.Red)
             {
-                hue = Mathf.Lerp(-0.02f, 0.1f, Random.Value);
+                hue = Mathf.Lerp(-0.02f, 0.01f, Random.Value);
                 saturation = Mathf.Lerp(0.9f, 1f, Random.Value);
             }
             else
@@ -123,6 +125,16 @@ namespace FinderMod.Search.Options
             yield return $"Hue: {hue}";
             yield return $"Saturation: {saturation}";
             yield return $"Size: {size}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                new ICanGPU.GPUInput((int)type, 1, 0),
+                ColorInput?.HueInput?.AsGPUInput() ?? HueInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                ColorInput?.SatInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                SizeInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                ];
         }
     }
 }
