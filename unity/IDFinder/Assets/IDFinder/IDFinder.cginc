@@ -36,6 +36,18 @@ inline uint NextU32(inout uint4 state)
     return state.w = state.w ^ (state.w >> 19) ^ t ^ (t >> 8);
 }
 
+inline void Shift(inout uint4 state)
+{
+    NextU32(state);
+}
+
+inline void ShiftIf(inout uint4 state, int cond)
+{
+    uint4 old = state;
+    NextU32(state);
+    state = state * cond + old * (1 - cond);
+}
+
 inline float RandomValue(inout uint4 state)
 {
     return (NextU32(state) & 0x7FFFFFu) * 1.192093E-07;

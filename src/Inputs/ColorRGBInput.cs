@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace FinderMod.Inputs
     /// <summary>
     /// RGB color input
     /// </summary>
-    public class ColorRGBInput : Input<Color>
+    public class ColorRGBInput : Input<Color>, IGPUMultiInput
     {
         /// <summary>Height of input.</summary>
         public override float InputHeight => 150f;
@@ -83,6 +84,17 @@ namespace FinderMod.Inputs
                 yield return $"{name}: rgb({value.r}, {value.g}, {value.b})" + (bias != 1 ? $" (bias: {bias})" : "");
             }
             yield break;
+        }
+
+        /// <returns>The input as several GPU inputs</returns>
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return
+            [
+                new ICanGPU.GPUInput(value.r, 1f, enabled ? bias : 0),
+                new ICanGPU.GPUInput(value.g, 1f, enabled ? bias : 0),
+                new ICanGPU.GPUInput(value.b, 1f, enabled ? bias : 0),
+            ];
         }
     }
 

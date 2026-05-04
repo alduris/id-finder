@@ -386,11 +386,10 @@ public class ComputeTester : EditorWindow
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 12)]
     private struct GPUInput
     {
         public float value;
-        public float start;
         public float range;
         public int bias;
     }
@@ -407,7 +406,7 @@ public class ComputeTester : EditorWindow
 
         [SerializeField] public int bias;
 
-        public Input(string name, float min = 0f, float max = 1f, float step = 0f)
+        public Input(string name, float min = 0f, float max = 1f, float step = 0f, float? value = null)
         {
             this.name = name;
             this.min = min;
@@ -415,7 +414,7 @@ public class ComputeTester : EditorWindow
             this.step = step;
             enabled = true;
             bias = 1;
-            value = min;
+            this.value = value ?? min;
         }
 
         public GPUInput AsGPUInput()
@@ -423,7 +422,6 @@ public class ComputeTester : EditorWindow
             return new GPUInput
             {
                 value = value,
-                start = min,
                 range = max - min,
                 bias = enabled ? bias : 0,
             };
