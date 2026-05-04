@@ -225,6 +225,20 @@ public class ComputeTester : EditorWindow
         {
             new Input("Size", 0f, 1f)
         },
+        ["DropwigVars"] = new List<Input>()
+        {
+            new Input("Body thickness", 0.6f, 1.4f),
+            new Input("Legs thickness", 0.6f, 1.4f),
+            new Input("Antennae length", 0.6f, 1.4f),
+            new Input("Pinchers length", 40f, 60f),
+            new Input("Antennae color intensity"),
+            new Input("Hue", 0.6722222f - 0.2f, 0.6722222f + 0.2f),
+        },
+        ["EggbugVars"] = new List<Input>()
+        {
+            new Input("Hue", 0, 2, value: 1.35f),
+            new Input("Firebug?", 0, 1, 1)
+        },
     };
 
     [SerializeField] private int startingId;

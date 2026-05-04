@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class DropwigVarsOption : Option
+    internal class DropwigVarsOption : Option, ICanGPU
     {
         private readonly FloatInput BodyThicknessInput;
         private readonly FloatInput LegsThicknessInput;
@@ -13,6 +13,8 @@ namespace FinderMod.Search.Options
         private readonly FloatInput PinchersLengthInput;
         private readonly FloatInput ColoredAntennaeInput;
         private readonly HueInput ColorInput;
+
+        public ComputeShader Shader => InternalShaders.dropwigVarsShader;
 
         public DropwigVarsOption()
         {
@@ -29,6 +31,7 @@ namespace FinderMod.Search.Options
 
         private DropwigResults GetResults(XORShift128 Random)
         {
+            Random.Shift(15);
             return new DropwigResults
             {
                 bodyThickness = Mathf.Lerp(0.6f, 1.4f, Random.Value),
@@ -42,12 +45,11 @@ namespace FinderMod.Search.Options
 
         public override float Execute(XORShift128 Random)
         {
-            Random.Shift(10);
             var results = GetResults(Random);
             return DistanceIf(results.bodyThickness, BodyThicknessInput)
                 + DistanceIf(results.legsThickness, LegsThicknessInput)
                 + DistanceIf(results.antennaeLength, AntennaeLengthInput)
-                + DistanceIf(results.pinchersLength, PinchersLengthInput) / 20f
+                + DistanceIf(results.pinchersLength, PinchersLengthInput)
                 + DistanceIf(results.coloredAntennae, ColoredAntennaeInput)
                 + DistanceIf(results.hue, ColorInput);
         }
@@ -61,6 +63,18 @@ namespace FinderMod.Search.Options
             yield return $"Pinchers length: {results.pinchersLength}";
             yield return $"Antennae color intensity: {results.coloredAntennae}";
             yield return $"Hue: {results.hue}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                BodyThicknessInput.AsGPUInput(),
+                LegsThicknessInput.AsGPUInput(),
+                AntennaeLengthInput.AsGPUInput(),
+                PinchersLengthInput.AsGPUInput(),
+                ColoredAntennaeInput.AsGPUInput(),
+                ColorInput.AsGPUInput(),
+                ];
         }
 
         private struct DropwigResults

@@ -100,7 +100,7 @@ namespace FinderMod.Search.Options
             else if (type == CentipedeType.Red)
             {
                 hue = Mathf.Lerp(-0.02f, 0.01f, Random.Value);
-                saturation = Mathf.Lerp(0.9f, 1f, Random.Value);
+                saturation = 0.9f + 0.1f * Random.Value;
             }
             else
             {

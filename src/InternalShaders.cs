@@ -24,6 +24,8 @@ namespace FinderMod
         public static ComputeShader bigSpiderVarsShader;
         public static ComputeShader centipedeVarsShader;
         public static ComputeShader coalescipedeSizeShader;
+        public static ComputeShader dropwigVarsShader;
+        public static ComputeShader eggbugColorsShader;
 
         public static void LoadShaders()
         {
@@ -53,6 +55,8 @@ namespace FinderMod
             bigSpiderVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/BigSpiderVars.compute");
             centipedeVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/CentipedeVars.compute");
             coalescipedeSizeShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/CoalescipedeSize.compute");
+            dropwigVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/DropwigVars.compute");
+            eggbugColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EggbugColors.compute");
         }
     }
 }

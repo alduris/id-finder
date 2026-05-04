@@ -1,0 +1,22 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+#define HUE_OFF 1.5
+#define HUE_OFF_2 0.65
+
+// 0 - Hue
+// 1 - Firebug?
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    bool FireBug = inputs[1].value > 0;
+    
+    float body = lerp(FireBug ? 0.35 : -0.15, FireBug ? 0.6 : 0.1, ClampedRandomVariation(0.5, 0.5, 2, random));
+    float egg = frac(body + HUE_OFF);
+    float value = frac(inputs[0].value);
+    int bias = inputs[0].bias;
+    
+    return min(abs(egg - (value - 1)), min(abs(egg - value), abs(egg - (value + 1)))) * bias;
+}
