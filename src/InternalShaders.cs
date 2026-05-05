@@ -10,10 +10,11 @@ namespace FinderMod
         public static ComputeShader slugpupFoodShader;
         public static ComputeShader slugpupStatsShader;
         public static ComputeShader slugpupVarsShader;
-        public static ComputeShader scavengerSkillsShader;
         public static ComputeShader scavengerVarsShader;
+        public static ComputeShader scavengerSkillsShader;
         public static ComputeShader scavengerColorsShader;
         public static ComputeShader eliteScavengerSkillsShader;
+        public static ComputeShader eliteScavengerColorsShader;
         public static ComputeShader lizardColorsShader;
         public static ComputeShader lizardVarsShader;
         public static ComputeShader vultureWingShader;
@@ -46,10 +47,11 @@ namespace FinderMod
             slugpupFoodShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupFood.compute");
             slugpupStatsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupStats.compute");
             slugpupVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupVars.compute");
-            scavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerSkills.compute");
             scavengerVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerVars.compute");
+            scavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerSkills.compute");
             scavengerColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerColors.compute");
             eliteScavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerSkills.compute");
+            eliteScavengerColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerColors.compute");
             lizardColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardColors.compute");
             lizardVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardVars.compute");
             vultureWingShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/VultureWings.compute");

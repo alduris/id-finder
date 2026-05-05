@@ -21,11 +21,6 @@
 //     6 - deco hue
 //     7 - deco saturation
 //     8 - deco lightness
-//
-//   Eyes color:
-//     9 - eyes hue
-//         (no saturation)
-//    10 - eyes lightness
 
 float Execute(uint4 random, StructuredBuffer<Input> inputs)
 {
@@ -37,38 +32,30 @@ float Execute(uint4 random, StructuredBuffer<Input> inputs)
     float generalMelanin = PushFromHalf(RandomValue(random), 2);
     float headSize = ClampedRandomVariation(0.5, 0.5, 0.1, random);
     NextU32(random);
-    float eyeSize = pow(max(0, lerp(RandomValue(random), pow(headSize, 0.5), RandomValue(random) * 0.4)), lerp(0.95, 0.55, p.sympathy));
-    float narrowEyes = RandomValue(random) >= lerp(0.3, 0.7, p.sympathy);
-    narrowEyes *= pow(RandomValueIf(random, narrowEyes != 0), lerp(0.5, 1.5, p.sympathy));
+    float eyeSize = pow(max(0, lerp(RandomValue(random), sqrt(headSize), RandomValue(random) * 0.4)), lerp(0.95, 0.55, p.sympathy));
+    bool narrowEyesTick = RandomValue(random) >= lerp(0.3, 0.7, p.sympathy);
+    ShiftIf(random, narrowEyesTick);
+    float narrowEyes = 1;
     
-    // 9 shifts
-    NextU32(random); // eyes angle
-    NextU32(random); // fatness
-    NextU32(random); // fatness
-    NextU32(random); // fatness
-    NextU32(random); // narrow waist
-    NextU32(random); // narrow waist
-    NextU32(random); // narrow waist
-    NextU32(random); // neck thickness
-    NextU32(random); // neck thickness
-    
-    // Some more stuff yauy
-    int doPupilStuff = RandomValue(random) < 0.65 && eyeSize > 0.4 && narrowEyes < 0.3;
-    int deepPupil = doPupilStuff * (RandomValueIf(random, doPupilStuff) >= pow(saturate(p.sympathy), 1.5) * 0.8);
-    float pupilSize = doPupilStuff * lerp(lerp(0.4, 0.8, pow(RandomValueIf(random, doPupilStuff * (1 - deepPupil)), 0.5)), 0.7, deepPupil);
-    int coloredPupilChance = (RandomValueIf(random, doPupilStuff * (1 - deepPupil)) < 0.6666667);
-    bool coloredPupils = doPupilStuff * (1 - deepPupil) * coloredPupilChance;
-    ShiftIf(random, coloredPupils); // colored pupils (tick but discard)
-    
-    // 8 more shifts yay
-    NextU32(random); // hands head color
-    NextU32(random); // hands head color
-    NextU32(random); // hands head color
-    NextU32(random); // legs size
-    NextU32(random); // arms thickness
-    NextU32(random); // arms thickness
-    NextU32(random); // colored eartler tips
-    NextU32(random); // wide teeth
+    // 18 shifts
+    Shift(random); // eyes angle
+    Shift(random); // fatness
+    Shift(random); // fatness
+    Shift(random); // fatness
+    Shift(random); // narrow waist
+    Shift(random); // narrow waist
+    Shift(random); // narrow waist
+    Shift(random); // neck thickness
+    Shift(random); // neck thickness
+    Shift(random); // do pupils check (fails because narrowEyes = 1)
+    Shift(random); // colored pupils (elite scav edition)
+    Shift(random); // hands head color
+    Shift(random); // hands head color
+    Shift(random); // hands head color
+    Shift(random); // legs size
+    Shift(random); // arms thickness
+    Shift(random); // arms thickness
+    Shift(random); // wide teeth
     
     // bonus conditional shifts :O
     bool temp = RandomValue(random) >= 0.5;
@@ -78,9 +65,11 @@ float Execute(uint4 random, StructuredBuffer<Input> inputs)
     
     // Congratulations! We have now gotten to the color slop part :DDDDDD
     // Important numbers
-    float bodyHue = RandomValue(random) * 0.1;
+    Shift(random);
     bool diverseHue = RandomValue(random) < 0.025;
-    bodyHue = lerp(bodyHue, pow(RandomValueIf(random, diverseHue), 0.4), diverseHue);
+    ShiftIf(random, diverseHue);
+    float bodyHue = RandomValue(random);
+    bodyHue *= bodyHue * bodyHue * bodyHue * bodyHue; // this whole chain is equivalent to pow(RandomValue(random), 5)
     
     float temp1 = RandomValue(random);
     float temp2 = RandomValue(random);
@@ -165,14 +154,6 @@ float Execute(uint4 random, StructuredBuffer<Input> inputs)
     float decoLight = 0.5 + 0.5 * sqrt(RandomValue(random));
     decoLight *= lerp(generalMelanin, RandomValue(random), 0.5);
     d += Distance(decoLight, inputs[8]);
-    
-    // Eye color
-    d += WrapDistance(accentHue2, inputs[9]); // eye hue
-    bool eyeLightTemp = RandomValue(random) < 0.2;
-    float eyeL = 0.5 + 0.5 * RandomValueIf(random, eyeLightTemp) * eyeLightTemp;
-    eyeL = lerp(eyeL, 1, coloredPupils * 0.3);
-    eyeL *= lerp(1, 0.2, ((headColor.z * (1.0 - headColorBlack)) > (eyeL / 2.0)) * ((pupilSize == 0.0) || deepPupil));
-    d += Distance(eyeL, inputs[10]);
     
     return d;
 }

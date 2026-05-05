@@ -138,6 +138,18 @@ public class ComputeTester : EditorWindow
             new Input("Blocking"),
             new Input("Reaction")
         },
+        ["EliteScavengerColors"] = new List<Input>()
+        {
+            new Input("Body color H"),
+            new Input("Body color S"),
+            new Input("Body color L"),
+            new Input("Head color H"),
+            new Input("Head color S"),
+            new Input("Head color L"),
+            new Input("Deco color H"),
+            new Input("Deco color S"),
+            new Input("Deco color L"),
+        },
         ["LizardColors"] = new List<Input>()
         {
             new Input("Lizard type", 1, 17, 1),
