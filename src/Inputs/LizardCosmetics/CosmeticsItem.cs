@@ -241,7 +241,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(MaxSizeInput = new("Max size", 2.5f, 35f) { enabled = false });
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false, hasBias = true });
             children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
         public LongShoulderScalesCosmetic(LizardType type) : this(LongShoulderScalesVars.MinNumScales(type), LongShoulderScalesVars.MaxNumScales(type)) { }
@@ -336,7 +336,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         private ShortBodyScalesCosmetic(int minScales, int maxScales) : base(CosmeticType.ShortBodyScales)
         {
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.Patch) { enabled = false, hasBias = true });
         }
         public ShortBodyScalesCosmetic(LizardType type) : this(ShortBodyScalesVars.MinNumScales(type), ShortBodyScalesVars.MaxNumScales(type)) { }
 
@@ -389,26 +389,41 @@ namespace FinderMod.Inputs.LizardCosmetics
     public class SpineSpikesCosmetic : CosmeticsItem
     {
         public FloatInput LengthInput;
+        public BoolInput FlippedInput;
         public IntInput NumScalesInput;
         public IntInput GraphicInput;
+        public EnumInput<SpineSpikesVars.ColorMode>? ColoredInput = null;
 
-        private SpineSpikesCosmetic(float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.SpineSpikes)
+        private SpineSpikesCosmetic(LizardType type, float minLen, float maxLen, int minScales, int maxScales) : base(CosmeticType.SpineSpikes)
         {
             children.Add(LengthInput = new("Length", minLen, maxLen) { enabled = false });
+            children.Add(FlippedInput = new("Spines flipped", false) { enabled = false });
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
+
+            if (type != LizardType.Train)
+            {
+                ColoredInput = new("Color mode", SpineSpikesVars.ColorMode.None) { enabled = false, hasBias = true };
+            }
+
+            if (ColoredInput != null)
+            {
+                children.Add(ColoredInput);
+            }
         }
 
         public SpineSpikesCosmetic(LizardType type)
-            : this(SpineSpikesVars.MinSpineLength(type), SpineSpikesVars.MaxSpineLength(type), SpineSpikesVars.MinNumScales(type), SpineSpikesVars.MaxNumScales(type)) { }
+            : this(type, SpineSpikesVars.MinSpineLength(type), SpineSpikesVars.MaxSpineLength(type), SpineSpikesVars.MinNumScales(type), SpineSpikesVars.MaxNumScales(type)) { }
 
         public float Distance(SpineSpikesVars vars)
         {
             if (Active)
             {
                 return Option.DistanceIf(vars.spineLength, LengthInput)
+                    + Option.DistanceIf(vars.spinesFlipped, FlippedInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f);
+                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
+                    + (ColoredInput != null && ColoredInput.enabled && ColoredInput.value != vars.colorMode ? ColoredInput.bias : 0f);
             }
             else if (Enabled && !Toggled)
             {
@@ -499,7 +514,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         {
             children.Add(NumScalesInput = new("Number of scales", minScales, maxScales) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 6) { enabled = false });
-            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.TwoLines) { enabled = false, excludeOptions = [LizardBodyScaleType.Segments] });
+            children.Add(ScaleTypeInput = new("Scale type", LizardBodyScaleType.TwoLines) { enabled = false, hasBias = true, excludeOptions = [LizardBodyScaleType.Segments] });
             children.Add(ColoredInput = new("Is colored") { enabled = false });
         }
 

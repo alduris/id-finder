@@ -121,7 +121,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                                 float b = mainLongShoulderScalesCosmetic.Distance(longShoulderScalesVars);
 
-                                if (a <= b && longShoulderScalesCosmetic.Enabled)
+                                if ((a <= b && longShoulderScalesCosmetic.Enabled) || !mainLongShoulderScalesCosmetic.Enabled)
                                 {
                                     otherLSS = mainLongShoulderScalesCosmetic;
                                     r += a;
@@ -157,7 +157,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                                 float b = mainShortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                                 
-                                if (a <= b && shortBodyScalesCosmetic.Enabled)
+                                if ((a <= b && shortBodyScalesCosmetic.Enabled) || !mainShortBodyScalesCosmetic.Enabled)
                                 {
                                     otherSBS = mainShortBodyScalesCosmetic;
                                     r += a;
@@ -201,7 +201,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = tailTuftCosmetic.Distance(tailTuftVars);
                                 float b = mainTailTuftCosmetic.Distance(tailTuftVars);
 
-                                if (a <= b && tailTuftCosmetic.Enabled)
+                                if ((a <= b && tailTuftCosmetic.Enabled) || !mainTailTuftCosmetic.Enabled)
                                 {
                                     otherTT = mainTailTuftCosmetic;
                                     r += a;

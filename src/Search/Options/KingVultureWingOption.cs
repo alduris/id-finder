@@ -16,8 +16,8 @@ namespace FinderMod.Search.Options
         {
             RepresentedCreature = CreatureTemplate.Type.KingVulture;
             elements = [
-                ColorAInput = new ColorHSLInput("Color A", true, 0f, 1f, true, 0.5f, 0.7f, true, 0.7f, 0.8f),
-                ColorBInput = new ColorHSLInput("Color B", true, 0f, 1f, true, 0.8f, 1f, true, 0.45f, 1f),
+                ColorAInput = new ColorHSLInput("Color A", 0.68f, 1.33f, 0.5f, 0.7f, 0.7f, 0.8f) { fixColors = true },
+                ColorBInput = new ColorHSLInput("Color B", 0.93f, 1.07f, 0.8f, 1f, 0.45f, 1f) { fixColors = true },
                 FeathersInput = new IntInput("Feather count", 15, 24)
             ];
         }

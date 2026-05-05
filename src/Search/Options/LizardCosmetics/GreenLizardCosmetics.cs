@@ -82,7 +82,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                                 float a = longShoulderScalesCosmetic1.Distance(longShoulderScalesVars);
                                 float b = longShoulderScalesCosmetic2.Distance(longShoulderScalesVars);
 
-                                if (a <= b && longShoulderScalesCosmetic1.Enabled)
+                                if ((a <= b && longShoulderScalesCosmetic1.Enabled) || !longShoulderScalesCosmetic2.Enabled)
                                 {
                                     otherLSS = longShoulderScalesCosmetic2;
                                     r += a;

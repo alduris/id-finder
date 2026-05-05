@@ -858,8 +858,10 @@ namespace FinderMod.Search.Util
         public struct SpineSpikesVars : ILizardCosmeticVars
         {
             public float spineLength;
+            public bool spinesFlipped;
             public int numScales;
             public int graphic;
+            public ColorMode colorMode;
 
             public SpineSpikesVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
@@ -870,23 +872,25 @@ namespace FinderMod.Search.Util
                 numScales = (int)(spineLength / bumpDiv);
 
                 Random.Shift(4);
-                if (type != LizardType.Blue) Random.Shift();
-                // Random.value in the else-if chain is guaranteed to be called exactly once if it's not a blue lizor
-                // if it's not a green lizor, it might fail the random value check, but then it's still not a green lizor in the next else if
+                if (type != LizardType.Blue) Random.Shift(); // this is a heavily reduced if-else statement but has the same outcome
 
+                spinesFlipped = false;
                 graphic = Random.Range(0, 5);
                 if (graphic == 1) graphic = 0;
                 if (graphic == 4) graphic = 3;
-                else if (graphic != 3 || Random.Value >= 0.5f) Random.Shift();
+                else if (graphic == 3 && Random.Value < 0.5f) spinesFlipped = true;
+                else if (Random.Value < 0.06666667f) spinesFlipped = true;
 
                 if (type == LizardType.Pink && Random.Value < 0.7f) graphic = 0;
                 else if (type == LizardType.Green && Random.Value < 0.5f) graphic = 3;
 
                 graphicCalculation ??= new(this);
 
-                Random.Shift();
-                if (type == LizardType.Pink) Random.Shift();
-                else if (type == LizardType.Green && Random.Value >= 0.5f) Random.Shift();
+                colorMode = (ColorMode)Random.Range(0, 3);
+                if (type == LizardType.Pink && Random.Value < 0.5f) colorMode = ColorMode.None;
+                else if (type == LizardType.Green && Random.Value < 0.5f) colorMode = ColorMode.Gradient;
+                else if (type == LizardType.Green && Random.Value < 0.5f) colorMode = ColorMode.Full;
+                if (type == LizardType.Train) colorMode = ColorMode.Full;
             }
 
             public static float MinSpineLength(LizardType type) => 0.2f * GetMinBodyAndTailLength(type);
@@ -900,6 +904,13 @@ namespace FinderMod.Search.Util
                 yield return $"  Spine length: {spineLength}";
                 yield return $"  Graphic: {graphic}";
                 yield return $"  Number of spines: {numScales}";
+            }
+
+            public enum ColorMode
+            {
+                None = 0,
+                Full = 1,
+                Gradient = 2
             }
         }
 
@@ -1003,7 +1014,7 @@ namespace FinderMod.Search.Util
 
             public TailTuftVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftGraphicCalculation? graphicCalculation)
             {
-                if (Random.Value < 0.14285715f || Random.Value < 0.9f && type == LizardType.Blue || type == LizardType.Red || type == LizardType.Zoop)
+                if (Random.Value < 0.14285715f || (Random.Value < 0.9f && type == LizardType.Blue) || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     scaleType = LizardBodyScaleType.TwoLines;
 
@@ -1025,18 +1036,20 @@ namespace FinderMod.Search.Util
                     GeneratePatchPattern(Random, numScales);
                 }
 
-                // Offset for future endeavors
+                // Offset
                 Random.Shift(3);
+
+                // More calculations
                 colored = Random.Value < 0.8f;
                 graphic = Random.Range(3, 7);
                 if (graphic == 3) graphic = 1;
-                if (Random.Value < 0.033333335f) Random.Range(0, 7);
+                if (Random.Value < 0.033333335f) graphic = Random.Range(0, 7);
                 if (Random.Value < 0.8f || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     if (graphicCalculation.HasValue) graphic = graphicCalculation.Value.graphic;
                 }
                 graphicCalculation ??= new(this);
-                Random.Shift(2);
+                Random.Shift();
             }
 
             public static int MinNumScales(LizardType type) =>

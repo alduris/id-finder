@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
+using Unity.Burst;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -21,6 +22,7 @@ namespace FinderMod.Search.Options
             ];
         }
 
+        [BurstCompile]
         private (HSLColor, HSLColor, HSLColor) GetColors(XORShift128 Random)
         {
             Personality p = new(Random);
@@ -42,12 +44,9 @@ namespace FinderMod.Search.Options
             HSLColor bodyColor, headColor, decoColor;
             float bodyColorBlack, headColorBlack;
 
-            float bodyHue = Random.Value * 0.1f;
-            if (Random.Value < 0.025f)
-            {
-                bodyHue = Mathf.Pow(Random.Value, 0.4f);
-            }
-            bodyHue = Mathf.Pow(Random.Value, 5f);
+            Random.Shift();
+            if (Random.Value < 0.025f) Random.Shift();
+            float bodyHue = Mathf.Pow(Random.Value, 5f);
             float accentHue1 = bodyHue + Mathf.Lerp(-1f, 1f, Random.Value) * 0.3f * Mathf.Pow(Random.Value, 2f);
             if (accentHue1 > 1f)
             {
@@ -62,7 +61,9 @@ namespace FinderMod.Search.Options
             bodyColor = new HSLColor(bodyHue, Mathf.Lerp(0.05f, 1f, Mathf.Pow(Random.Value, 0.85f)), Mathf.Lerp(0.05f, 0.8f, Random.Value));
             bodyColor.saturation *= (1f - generalMelanin);
             bodyColor.lightness = Mathf.Lerp(bodyColor.lightness, 0.5f + 0.5f * Mathf.Pow(Random.Value, 0.8f), 1f - generalMelanin);
-            bodyColorBlack = Custom.LerpMap((bodyColor.rgb.r + bodyColor.rgb.g + bodyColor.rgb.b) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
+
+            var bodyColorRGB = bodyColor.rgb;
+            bodyColorBlack = Custom.LerpMap((bodyColorRGB.r + bodyColorRGB.g + bodyColorRGB.b) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
             bodyColorBlack = Mathf.Lerp(bodyColorBlack, Mathf.Lerp(0.5f, 1f, Random.Value), Random.Value * Random.Value * Random.Value);
             bodyColorBlack *= generalMelanin;
             Vector2 vector = new(bodyColor.saturation, Mathf.Lerp(-1f, 1f, bodyColor.lightness * (1f - bodyColorBlack)));
@@ -70,7 +71,9 @@ namespace FinderMod.Search.Options
             {
                 vector = Vector2.Lerp(vector, vector.normalized, Mathf.InverseLerp(0.5f, 0.3f, vector.magnitude));
                 bodyColor = new HSLColor(bodyColor.hue, Mathf.InverseLerp(-1f, 1f, vector.x), Mathf.InverseLerp(-1f, 1f, vector.y));
-                bodyColorBlack = Custom.LerpMap((bodyColor.rgb.r + bodyColor.rgb.g + bodyColor.rgb.b) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
+
+                bodyColorRGB = bodyColor.rgb;
+                bodyColorBlack = Custom.LerpMap((bodyColorRGB.r + bodyColorRGB.g + bodyColorRGB.b) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
                 bodyColorBlack = Mathf.Lerp(bodyColorBlack, Mathf.Lerp(0.5f, 1f, Random.Value), Random.Value * Random.Value * Random.Value);
                 bodyColorBlack *= generalMelanin;
             }
