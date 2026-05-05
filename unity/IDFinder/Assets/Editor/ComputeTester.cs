@@ -291,6 +291,41 @@ public class ComputeTester : EditorWindow
             new Input("Has busted wing?", 0, 1, 1),
             new Input("Busted wing", 0, 3, 1)
         },
+        ["BarnacleVars"] = new List<Input>()
+        {
+            new Input("Body size", 0.6f, 1f),
+            new Input("Eye size", 0.7f, 1f),
+            new Input("Leg thickness", 0.7f ,1.3f),
+            new Input("Number of cones", 13, 19, 1),
+            new Input("Cone radius variance"),
+            new Input("Cone length variance"),
+            new Input("Cone color variance"),
+            new Input("Cone base color H", -0.06f, 0.14f),
+            new Input("Cone base color S", 0.3f, 0.7f),
+            new Input("Cone base color L", 0.55f, 0.95f),
+            new Input("Low-end lighness offset", -0.2f, -0.1f),
+            new Input("Hi-end lightness offset", 0f, 0.1f)
+        },
+        ["DrillCrabVars"] = new List<Input>()
+        {
+            new Input("Leg thickness"),
+            new Input("Leg length"),
+            new Input("Body size"),
+            new Input("Drill size"),
+            new Input("Eyestalk length"),
+            new Input("Eye lightness"),
+        },
+        ["FrogVars"] = new List<Input>()
+        {
+            new Input("Horn count", 0, 3),
+            new Input("Horn scale", 0.8f, 1.2f),
+            new Input("Body color H", -0.04f, 0.3f),
+            new Input("Body color S", 0.07f, 0.57f, value: 0.57f),
+            new Input("Body color L", 0f, 0.58f, value: 0.58f),
+            new Input("Belly color H", -0.01f, 0.22f),
+            new Input("Belly color S", 0f, 0.55f, value: 0.55f),
+            new Input("Belly color L", 0.2f, 0.94f, value: 0.94f)
+        },
     };
 
     [SerializeField] private int startingId;

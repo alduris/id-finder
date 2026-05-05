@@ -66,9 +66,6 @@ namespace FinderMod
                 // Register Dev Console interactions
                 if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
                     Commands.Register();
-
-                // Import built-in compute shaders
-                InternalShaders.LoadShaders();
             }
             catch (Exception ex)
             {

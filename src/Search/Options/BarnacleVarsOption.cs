@@ -7,7 +7,7 @@ using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class BarnacleVarsOption : Option
+    internal class BarnacleVarsOption : Option, ICanGPU
     {
         private readonly FloatInput BodySizeInput;
         private readonly FloatInput EyeSizeInput;
@@ -21,6 +21,8 @@ namespace FinderMod.Search.Options
         private readonly ColorHSLInput ConeColorInput;
         private readonly FloatInput DarkColorInput;
         private readonly FloatInput LightColorInput;
+
+        public ComputeShader Shader => InternalShaders.barnacleVarsShader;
 
         public BarnacleVarsOption()
         {
@@ -102,6 +104,22 @@ namespace FinderMod.Search.Options
             yield return $"Cone base color: hsl({results.coneColor.hue}, {results.coneColor.saturation}, {results.coneColor.lightness})";
             yield return $"Low-end lightness offset: {results.darkColor}";
             yield return $"High-end lightness offset: {results.lightColor}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                BodySizeInput.AsGPUInput(),
+                EyeSizeInput.AsGPUInput(),
+                LegThicknessInput.AsGPUInput(),
+                NumConesInput.AsGPUInput(),
+                ConeRadVarianceInput.AsGPUInput(),
+                ConeLengthVarianceInput.AsGPUInput(),
+                ConeColorVarianceInput.AsGPUInput(),
+                .. ConeColorInput.GetGPUInputs(),
+                DarkColorInput.AsGPUInput(),
+                LightColorInput.AsGPUInput(),
+                ];
         }
 
         private struct BarnacleResults

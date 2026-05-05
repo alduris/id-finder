@@ -1,0 +1,30 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "Personality.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    float d = 0;
+    
+    Shift(random);
+    Shift(random);
+    
+    d += Distance(lerp(p.dominance, RandomValue(random), RandomValue(random)), inputs[0]); // leg thickness
+    Shift(random);
+    Shift(random);
+    d += Distance(lerp(p.dominance, RandomValue(random), RandomValue(random)), inputs[1]); // leg length
+    d += Distance(lerp(max(1.0 - p.energy, p.dominance), RandomValue(random), RandomValue(random)), inputs[2]); // body size
+    d += Distance(lerp(max(p.aggression, p.dominance), RandomValue(random), RandomValue(random)), inputs[3]); // drill size
+    d += Distance(RandomValue(random), inputs[4]); // eyestalk length
+    
+    bool skip = RandomValue(random) < 0.25;
+    ShiftIf(random, skip);
+    ShiftIf(random, skip);
+    ShiftIf(random, skip);
+    
+    d += Distance(RandomValue(random), inputs[5]); // eye lightness
+    
+    return d;
+}

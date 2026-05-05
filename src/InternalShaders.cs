@@ -5,6 +5,8 @@ namespace FinderMod
 {
     internal static class InternalShaders
     {
+        private static AssetBundle assetBundle;
+
         public static ComputeShader personalityShader;
         public static ComputeShader slugpupBehaviorShader;
         public static ComputeShader slugpupFoodShader;
@@ -31,43 +33,50 @@ namespace FinderMod
         public static ComputeShader lanternMouseVarsShader;
         public static ComputeShader snailVarsShader;
         public static ComputeShader squidcadaVarsShader;
+        public static ComputeShader barnacleVarsShader;
+        public static ComputeShader drillCrabVarsShader;
+        public static ComputeShader frogVarsShader;
 
         public static void LoadShaders()
         {
-            var bundle = AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("shaders/idfinder", false));
+            assetBundle?.Unload(true);
+            assetBundle = AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("shaders/idfinder", false));
 
-            var assets = bundle.LoadAllAssets();
+            var assets = assetBundle.LoadAllAssets();
             foreach (var asset in assets)
             {
                 Plugin.logger.LogDebug($"Found asset: {asset.name} (type: {asset.GetType().FullName})");
             }
 
-            personalityShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/Personality.compute");
-            slugpupBehaviorShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupBehavior.compute");
-            slugpupFoodShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupFood.compute");
-            slugpupStatsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupStats.compute");
-            slugpupVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupVars.compute");
-            scavengerVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerVars.compute");
-            scavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerSkills.compute");
-            scavengerColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerColors.compute");
-            eliteScavengerSkillsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerSkills.compute");
-            eliteScavengerColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerColors.compute");
-            lizardColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardColors.compute");
-            lizardVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardVars.compute");
-            vultureWingShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/VultureWings.compute");
-            vultureKingWingShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/VultureKingWings.compute");
-            noodleflyAdultVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/NoodleflyAdultVars.compute");
-            noodleflyBabyVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/NoodleflyBabyVars.compute");
-            bigSpiderVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/BigSpiderVars.compute");
-            centipedeVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/CentipedeVars.compute");
-            coalescipedeSizeShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/CoalescipedeSize.compute");
-            dropwigVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/DropwigVars.compute");
-            eggbugColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/EggbugColors.compute");
-            grappleWormColorsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/GrappleWormColors.compute");
-            jetfishVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/JetfishVars.compute");
-            lanternMouseVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/LanternMouseVars.compute");
-            snailVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SnailVars.compute");
-            squidcadaVarsShader = bundle.LoadAsset<ComputeShader>("Assets/IDFinder/SquidcadaVars.compute");
+            personalityShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/Personality.compute");
+            slugpupBehaviorShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupBehavior.compute");
+            slugpupFoodShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupFood.compute");
+            slugpupStatsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupStats.compute");
+            slugpupVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SlugpupVars.compute");
+            scavengerVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerVars.compute");
+            scavengerSkillsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerSkills.compute");
+            scavengerColorsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/ScavengerColors.compute");
+            eliteScavengerSkillsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerSkills.compute");
+            eliteScavengerColorsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/EliteScavengerColors.compute");
+            lizardColorsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardColors.compute");
+            lizardVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardVars.compute");
+            vultureWingShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/VultureWings.compute");
+            vultureKingWingShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/VultureKingWings.compute");
+            noodleflyAdultVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/NoodleflyAdultVars.compute");
+            noodleflyBabyVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/NoodleflyBabyVars.compute");
+            bigSpiderVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/BigSpiderVars.compute");
+            centipedeVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/CentipedeVars.compute");
+            coalescipedeSizeShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/CoalescipedeSize.compute");
+            dropwigVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/DropwigVars.compute");
+            eggbugColorsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/EggbugColors.compute");
+            grappleWormColorsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/GrappleWormColors.compute");
+            jetfishVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/JetfishVars.compute");
+            lanternMouseVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LanternMouseVars.compute");
+            snailVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SnailVars.compute");
+            squidcadaVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SquidcadaVars.compute");
+            barnacleVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/BarnacleVars.compute");
+            drillCrabVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/DrillCrabVars.compute");
+            frogVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/FrogVars.compute");
         }
     }
 }

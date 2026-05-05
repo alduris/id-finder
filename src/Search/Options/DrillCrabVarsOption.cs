@@ -6,7 +6,7 @@ using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class DrillCrabVarsOption : Option
+    internal class DrillCrabVarsOption : Option, ICanGPU
     {
         private readonly FloatInput LegThicknessInput;
         private readonly FloatInput LegLengthInput;
@@ -14,6 +14,8 @@ namespace FinderMod.Search.Options
         private readonly FloatInput DrillSizeInput;
         private readonly FloatInput EyestalkLengthInput;
         private readonly FloatInput EyeLightnessInput;
+
+        public ComputeShader Shader => InternalShaders.drillCrabVarsShader;
 
         public DrillCrabVarsOption()
         {
@@ -82,6 +84,18 @@ namespace FinderMod.Search.Options
             yield return $"Drill size: {results.drillSize}";
             yield return $"Eyestalk length: {results.eyestalkLength}";
             yield return $"Eye lightness: {results.eyeLightness}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                LegThicknessInput.AsGPUInput(),
+                LegLengthInput.AsGPUInput(),
+                BodySizeInput.AsGPUInput(),
+                DrillSizeInput.AsGPUInput(),
+                EyestalkLengthInput.AsGPUInput(),
+                EyeLightnessInput.AsGPUInput(),
+                ];
         }
 
         private struct DrillCrabResults

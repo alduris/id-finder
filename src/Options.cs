@@ -16,6 +16,9 @@ namespace FinderMod
         {
             base.Initialize();
 
+            // Import built-in compute shaders
+            InternalShaders.LoadShaders();
+
             // Initialize tabs
             Tabs =
             [

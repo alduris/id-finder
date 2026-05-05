@@ -5,7 +5,7 @@ using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class FrogVarsOption : Option
+    internal class FrogVarsOption : Option, ICanGPU
     {
         private readonly IntInput HornCountInput;
         private readonly FloatInput HornScaleInput;
@@ -13,6 +13,8 @@ namespace FinderMod.Search.Options
         private readonly Alternatable<FrogColorGroup> ColorGroup;
         private ColorHSLInput BodyColorInput => ColorGroup.Element.BodyColorInput;
         private ColorHSLInput BellyColorInput => ColorGroup.Element.BellyColorInput;
+
+        public ComputeShader Shader => InternalShaders.frogVarsShader;
 
         public FrogVarsOption()
         {
@@ -32,7 +34,8 @@ namespace FinderMod.Search.Options
                         new ColorHSLInput("Belly Color", 0.02f, 0.22f, 0f, 0.19f, 0.21f, 0.61f)
                         )
                     ) { ForceEnabled = true, HasBias = false },
-                new Label("Note: frog colors are heavily affected by room palette.")
+                new Label("Note: frog colors are heavily affected by room palette."),
+                new Label("The hue of the body and belly color are 1:1 correlated.")
                 ];
         }
 
@@ -90,6 +93,16 @@ namespace FinderMod.Search.Options
             yield return null!;
             yield return $"Body color: hsl({results.bodyColor.hue}, {results.bodyColor.saturation}, {results.bodyColor.lightness})";
             yield return $"Belly color: hsl({results.bellyColor.hue}, {results.bellyColor.saturation}, {results.bellyColor.lightness})";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                HornCountInput.AsGPUInput(),
+                HornScaleInput.AsGPUInput(),
+                .. BodyColorInput.GetGPUInputs(),
+                .. BellyColorInput.GetGPUInputs(),
+                ];
         }
 
         private struct FrogResults

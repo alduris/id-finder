@@ -64,6 +64,11 @@ namespace FinderMod.Search.Options
             if (HueInput != null) elements.Add(HueInput);
             if (ColorInput != null) elements.Add(ColorInput);
             if (SizeInput != null) elements.Add(SizeInput);
+
+            if (type == CentipedeType.Centiwing)
+            {
+                elements.Add(new Label("Note: for centiwings, hue and size are 1:1 correlated. Only one option should be used."));
+            }
         }
 
         private (float hue, float saturation, float size) GetResults(XORShift128 Random)
