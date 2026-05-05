@@ -5,15 +5,17 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class YeekColorsOption : Option
+    internal class YeekColorsOption : Option, ICanGPU
     {
         private readonly ColorRGBInput FeatherColorInput = new("Feather color", new Color(0.9f, 0f, 0f)) { forceEnabled = true };
+
+        public ComputeShader Shader => InternalShaders.yeekVarsShader;
 
         public YeekColorsOption()
         {
             RepresentedCreature = DLCSharedEnums.CreatureTemplateType.Yeek;
             elements = [
-                new Label("All other colors are based on the feather color. Cannot be yellow or green."),
+                new Label("All other colors are based on the feather color. Cannot be orange, yellow, or green."),
                 FeatherColorInput
                 ];
         }
@@ -36,5 +38,7 @@ namespace FinderMod.Search.Options
             var color = GetFeatherColor(Random);
             yield return $"Feather color: rgb({color.r}, {color.g}, {color.b})";
         }
+
+        public ICanGPU.GPUInput[] GetGPUInputs() => FeatherColorInput.GetGPUInputs();
     }
 }

@@ -1,0 +1,15 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "Personality.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    
+    float groupLeaderPotential = (p.energy + p.sympathy + p.bravery) * saturate(p.dominance);
+    float3 color = float3((1.0 - groupLeaderPotential) * RandomRange(0.4, 0.9, random), saturate(RandomValue(random) * groupLeaderPotential), saturate(groupLeaderPotential));
+    float d = DistanceColor(color, inputs[0], inputs[1], inputs[2]);
+    
+    return d;
+}

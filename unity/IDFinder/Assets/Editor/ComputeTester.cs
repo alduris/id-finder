@@ -291,6 +291,12 @@ public class ComputeTester : EditorWindow
             new Input("Has busted wing?", 0, 1, 1),
             new Input("Busted wing", 0, 3, 1)
         },
+        ["YeekVars"] = new List<Input>()
+        {
+            new Input("Red"),
+            new Input("Green"),
+            new Input("Blue"),
+        },
         ["BarnacleVars"] = new List<Input>()
         {
             new Input("Body size", 0.6f, 1f),
@@ -325,6 +331,33 @@ public class ComputeTester : EditorWindow
             new Input("Belly color H", -0.01f, 0.22f),
             new Input("Belly color S", 0f, 0.55f, value: 0.55f),
             new Input("Belly color L", 0.2f, 0.94f, value: 0.94f)
+        },
+        ["RatVars"] = new List<Input>()
+        {
+            new Input("Has big eyes", 0, 1, 1),
+            new Input("Whisker length", 20f, 35f),
+            new Input("Coat darkness", 0.6f, 1f),
+            new Input("Coat color"),
+            new Input("Head color H", -0.1f, 0.1f),
+            new Input("Head color S", 0f, 0.4f),
+            new Input("Head color L", 0.2f, 0.4f)
+        },
+        ["TardigradeVars"] = new List<Input>
+        {
+            new Input("Body color H", 0.3f, 0.9f),
+            new Input("Body color S", 0.3f, 0.47f),
+            new Input("Body color L", 0.5f, 0.8f),
+            new Input("Seconary color H"),
+            new Input("Secondary color S", 0.75f, 1f),
+            new Input("Secondary color L", 0.5f, 0.7f),
+            new Input("General scale", 0.46f, 0.7f),
+            new Input("Spikes per side", 2, 6, 1),
+            new Input("Spike width"),
+            new Input("Spike length"),
+            new Input("SPike lay back", 0.3f, 1f),
+            new Input("Spike puff out", 0f, 0.8f),
+            new Input("Ear width"),
+            new Input("Ear length")
         },
     };
 

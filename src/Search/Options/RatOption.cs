@@ -5,7 +5,7 @@ using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class RatOption : Option
+    internal class RatOption : Option, ICanGPU
     {
         private static readonly Color coatStartColor = new(0.29f, 0.31f, 0.33f), coatEndColor = new(0.42f, 0.26f, 0.07f);
 
@@ -14,6 +14,8 @@ namespace FinderMod.Search.Options
         private readonly FloatInput coatDarknessInput;
         private readonly ColorLerpInput coatColorInput;
         private readonly ColorHSLInput headColorInput;
+
+        public ComputeShader Shader => InternalShaders.ratVarsShader;
 
         public RatOption()
         {
@@ -69,6 +71,17 @@ namespace FinderMod.Search.Options
             var coatColor = Color.Lerp(coatStartColor, coatEndColor, vars.coatColor);
             yield return $"Coat color: rgb({coatColor.r}, {coatColor.g}, {coatColor.b})";
             yield return $"Head color: hsl({vars.headColor.hue}, {vars.headColor.saturation}, {vars.headColor.lightness})";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                bigEyesInput.AsGPUInput(),
+                whiskerLengthInput.AsGPUInput(),
+                coatDarknessInput.AsGPUInput(),
+                coatColorInput.AsGPUInput(),
+                .. headColorInput.GetGPUInputs()
+                ];
         }
 
         private struct Variations

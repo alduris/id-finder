@@ -33,9 +33,12 @@ namespace FinderMod
         public static ComputeShader lanternMouseVarsShader;
         public static ComputeShader snailVarsShader;
         public static ComputeShader squidcadaVarsShader;
+        public static ComputeShader yeekVarsShader;
         public static ComputeShader barnacleVarsShader;
         public static ComputeShader drillCrabVarsShader;
         public static ComputeShader frogVarsShader;
+        public static ComputeShader ratVarsShader;
+        public static ComputeShader tardigradeVarsShader;
 
         public static void LoadShaders()
         {
@@ -74,9 +77,12 @@ namespace FinderMod
             lanternMouseVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LanternMouseVars.compute");
             snailVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SnailVars.compute");
             squidcadaVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/SquidcadaVars.compute");
+            yeekVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/YeekVars.compute");
             barnacleVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/BarnacleVars.compute");
             drillCrabVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/DrillCrabVars.compute");
             frogVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/FrogVars.compute");
+            ratVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/RatVars.compute");
+            tardigradeVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/TardigradeVars.compute");
         }
     }
 }

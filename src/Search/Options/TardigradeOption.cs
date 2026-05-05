@@ -6,7 +6,7 @@ using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class TardigradeOption : Option
+    internal class TardigradeOption : Option, ICanGPU
     {
         private readonly ColorHSLInput bodyColorInput;
         private readonly ColorHSLInput secondaryColorInput;
@@ -40,6 +40,8 @@ namespace FinderMod.Search.Options
             ];
         }
 
+        public ComputeShader Shader => InternalShaders.tardigradeVarsShader;
+
         public override float Execute(XORShift128 Random)
         {
             var vars = new Variations(Random);
@@ -57,6 +59,22 @@ namespace FinderMod.Search.Options
             r += DistanceIf(vars.earLength, earLenghtInput);
 
             return r;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. bodyColorInput.GetGPUInputs(),
+                .. secondaryColorInput.GetGPUInputs(),
+                scaleInput.AsGPUInput(),
+                spikesPerSideInput.AsGPUInput(),
+                spikeWidthInput.AsGPUInput(),
+                spikeLengthInput.AsGPUInput(),
+                spikeLayBackInput.AsGPUInput(),
+                spikePuffOutInput.AsGPUInput(),
+                earWidthInput.AsGPUInput(),
+                earLenghtInput.AsGPUInput(),
+                ];
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
