@@ -17,7 +17,7 @@ namespace FinderMod
     [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
     internal sealed class Plugin : BaseUnityPlugin
     {
-        private readonly Options Options;
+        private readonly Interface Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
         public const string VERSION = "2.3";
@@ -29,7 +29,7 @@ namespace FinderMod
             {
                 instance = this;
                 logger = base.Logger;
-                Options = new Options(this, base.Logger);
+                Options = new Interface(this, base.Logger);
             }
             catch (Exception ex)
             {
@@ -43,6 +43,7 @@ namespace FinderMod
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
             On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
+            On.OptionInterface.ErrorScreen += OptionInterface_ErrorScreen;
         }
 
         private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
@@ -77,6 +78,15 @@ namespace FinderMod
         {
             orig(self, ID, fadeOutSeconds);
             ClearMemory();
+        }
+
+        private void OptionInterface_ErrorScreen(On.OptionInterface.orig_ErrorScreen orig, OptionInterface self, Exception ex, bool isInit)
+        {
+            orig(self, ex, isInit);
+            if (self is Interface options)
+            {
+                options.CustomErrorScreen(ex);
+            }
         }
 
         private void ClearMemory()

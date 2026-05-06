@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using Menu.Remix.MixedUI;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
@@ -13,6 +14,10 @@ namespace FinderMod.Search.Options
         {
             elements = [
                 new Label("This is a test option. It does nothing."),
+
+                new Whitespace(),
+
+                new CrashButton(),
 
                 new Whitespace(),
 
@@ -72,6 +77,27 @@ namespace FinderMod.Search.Options
             Carrot,
             Donut,
             Egg
+        }
+
+        private class CrashButton : IElement
+        {
+            public float Height => 30f;
+
+            public void Create(float x, ref float y, List<UIelement> elements)
+            {
+                y -= Height;
+                var button = new OpSimpleButton(new Vector2(x, y), new Vector2(120f, Height), "Press to explode")
+                {
+                    colorFill = Color.red
+                };
+                button.OnClick += Explodey_McBoomface;
+                elements.Add(button);
+            }
+
+            private void Explodey_McBoomface(UIfocusable trigger)
+            {
+                throw new System.Exception("Test exception");
+            }
         }
     }
 }

@@ -10,8 +10,6 @@ namespace FinderMod.Tabs
 {
     internal class HelpTab : BaseTab
     {
-        private static Texture2D? logoTex;
-
         public HelpTab(OptionInterface option) : base(option, "Help") { }
         private const string TEXT_INTRO = "Welcome to ID Finder! This mod can help you find the id of any supported creature or object so long as you know " +
             "what properties you're looking for. It can also tell you values of properties for specific ids. This tab contains detailed instructions on the " +
@@ -90,7 +88,6 @@ namespace FinderMod.Tabs
             var box = new OpScrollBox(this, 0f);
 
             // Logo
-            LoadFile("idfinder-logo", ref logoTex);
             FAtlasElement logoElement = Futile.atlasManager.GetElementWithName("idfinder-logo");
 
             y -= logoElement.sourcePixelSize.y;
@@ -180,15 +177,6 @@ namespace FinderMod.Tabs
         }
 
         public override void Update() { }
-
-        private void LoadFile(string fileName, ref Texture2D? tex)
-        {
-            if (Futile.atlasManager.GetAtlasWithName(fileName) != null) return;
-            string path = AssetManager.ResolveFilePath(Path.Combine("Illustrations", fileName + ".png"));
-            tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            AssetManager.SafeWWWLoadTexture(ref tex, "file:///" + path, true, true);
-            Futile.atlasManager.LoadAtlasFromTexture(fileName, tex, false);
-        }
 
         private void WorkshopButton_OnClick(UIfocusable trigger)
         {
