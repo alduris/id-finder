@@ -18,7 +18,7 @@ namespace FinderMod
             logger = loggerSource;
         }
 
-        private void LoadFile(string fileName, ref Texture2D? tex)
+        internal static void LoadFile(string fileName, ref Texture2D? tex)
         {
             if (Futile.atlasManager.GetAtlasWithName(fileName) != null) return;
             string path = AssetManager.ResolveFilePath(Path.Combine("Illustrations", fileName + ".png"));

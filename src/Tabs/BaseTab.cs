@@ -1,5 +1,6 @@
 ﻿using Menu.Remix.MixedUI;
 using RWCustom;
+using UnityEngine;
 
 namespace FinderMod.Tabs
 {
@@ -12,5 +13,7 @@ namespace FinderMod.Tabs
         public virtual void ClearMemory() { }
 
         public static string Translate(string text) => Custom.rainWorld.inGameTranslator.TryTranslate(text, out var translated) ? translated : text;
+
+        protected internal void LoadFile(string fileName, ref Texture2D? texture) => Interface.LoadFile(fileName, ref texture);
     }
 }

@@ -11,6 +11,7 @@ namespace FinderMod.Tabs
     internal class HelpTab : BaseTab
     {
         public HelpTab(OptionInterface option) : base(option, "Help") { }
+
         private const string TEXT_INTRO = "Welcome to ID Finder! This mod can help you find the id of any supported creature or object so long as you know " +
             "what properties you're looking for. It can also tell you values of properties for specific ids. This tab contains detailed instructions on the " +
             "operation of ID Finder. If you ever find any issues, please report them on the GitHub! Click the REPORT ISSUES button above to take you to the " +
@@ -36,9 +37,9 @@ namespace FinderMod.Tabs
             "distance. But what is distance?";
         private const string TEXT_SEARCH_DISTANCE = "Distance is ID Finder's measure of how far away a particular id is from your search item. Lower is better, and " +
             "an ideal search result has a distance of less than one. A distance of 0 means a perfect match. But how does it measure it? Distance measures the " +
-            "difference between each search input in your search item and the corresponding property in the id, and each input can give a maximum distance of " +
-            "1. However, there is a way to influence particular inputs: bias. Bias multiplies the distance of its corresponding input, thus giving it greater " +
-            "weight and increasing its maximum possible distance.";
+            "difference between each search input in your search item and the corresponding property in the id, and each input can give a maximum distance of 1.";
+        private const string TEXT_SEARCH_BIAS = "However, there is a way to influence particular inputs: bias. Bias multiplies the distance of its corresponding " +
+            "input, thus giving it greater weight and increasing its maximum possible distance.";
 
         private const string TEXT_VALUES_OVERVIEW = "The VALUES tab is where you can look at the actual properties of specific ids. This is useful if you have " +
             "a reference image of the specific id, so you can compare how it looks to the values of the actual searchable properties. Its operation is simple: " +
@@ -77,6 +78,22 @@ namespace FinderMod.Tabs
             "report the issue on the GitHub using the REPORT ISSUES button listed above. Numbers being slightly different between CPU and GPU searches in the " +
             "very least significant digits are to be expected, and an issue does not need to be reported for them.";
 
+        private const string TEXT_TIPS_MODS = "Some mods that go well with ID Finder include Visible ID, Mouse Drag, and/or Dev Console. These can all be found " +
+            "on the Steam Workshop or on RainDB.";
+        private const string TEXT_TIPS_MODS2 = "Visible ID and Mouse Drag are both useful for their ability to tell you the ID of a particular creature, which " +
+            "is useful to be able to save them for later so you don't have to search for them instead! Visible ID also lets you name particular IDs, so if that " +
+            "creature pops up again, you will be able to see the name you wrote for it in the past.";
+        private const string TEXT_TIPS_MODS3 = "Dev Console is another useful mod, as it allows you to spawn creatures with specific IDs. To do this, you can " +
+            "use the `spawn` command. An example of the spawn command that spawns a Green Lizard with the id 1234 is `spawn GreenLizard ID.-1.1234`.";
+        private const string TEXT_TIPS_MODS4 = "ID Finder has compatibility with Dev Console! It adds a command named `id_finder`, which allows you to retrieve " +
+            "past searches, view values of specific ids, and quickly spawn creatures from past searches.";
+
+        private static Texture2D? searchTabImage;
+        private static Texture2D? searchOptionsImage;
+        private static Texture2D? searchResultsImage;
+        private static Texture2D? valuesTabImage;
+        private static Texture2D? historyTabImage;
+
 
         public override void Initialize()
         {
@@ -109,6 +126,13 @@ namespace FinderMod.Tabs
             workshopButton.OnClick += WorkshopButton_OnClick;
             issueButton.OnClick += IssueButton_OnClick;
 
+            // Load resources
+            LoadFile("idfinder-search", ref searchTabImage);
+            LoadFile("idfinder-searchoptions", ref searchOptionsImage);
+            LoadFile("idfinder-results", ref searchResultsImage);
+            LoadFile("idfinder-values", ref valuesTabImage);
+            LoadFile("idfinder-history", ref historyTabImage);
+
             // Horizontal line
             AddHorizontalRule();
 
@@ -118,17 +142,23 @@ namespace FinderMod.Tabs
 
             AddHeading("SEARCH TAB");
             AddLongLabel(10f, 580f, TEXT_SEARCH_OVERVIEW);
+            AddImage("idfinder-search");
             AddLongLabel(10f, 580f, TEXT_SEARCH_INPUTS);
+            AddImage("idfinder-searchoptions");
             AddLongLabel(10f, 580f, TEXT_SEARCH_ACTUAL);
             AddLongLabel(10f, 580f, TEXT_SEARCH_RESULTS);
+            AddImage("idfinder-results");
             AddLongLabel(10f, 580f, TEXT_SEARCH_DISTANCE);
+            AddLongLabel(10f, 580f, TEXT_SEARCH_BIAS);
 
             AddHeading("VALUES TAB");
             AddLongLabel(10f, 580f, TEXT_VALUES_OVERVIEW);
+            AddImage("idfinder-values");
 
             AddHeading("HISTORY TAB");
             AddLongLabel(10f, 580f, TEXT_HISTORY_OVERVIEW);
             AddLongLabel(10f, 580f, TEXT_HISTORY_BUTTONS);
+            AddImage("idfinder-history");
 
             AddHorizontalRule();
             AddHeading("TIPS AND TRICKS");
@@ -143,6 +173,12 @@ namespace FinderMod.Tabs
             AddHeading("GPU SEARCHING");
             AddLongLabel(10f, 580f, TEXT_TIPS_GPU);
             AddLongLabel(10f, 580f, TEXT_TIPS_GPU2);
+
+            AddHeading("COMPLIMENTARY MODS");
+            AddLongLabel(10f, 580f, TEXT_TIPS_MODS);
+            AddLongLabel(10f, 580f, TEXT_TIPS_MODS2);
+            AddLongLabel(10f, 580f, TEXT_TIPS_MODS3);
+            AddLongLabel(10f, 580f, TEXT_TIPS_MODS4);
 
 
             // Set scrollbox size
@@ -173,6 +209,22 @@ namespace FinderMod.Tabs
                 label.PosY -= height;
                 box.AddItems(label);
                 y -= height;
+            }
+
+            void AddImage(string element)
+            {
+                var rectPadding = new Vector2(4f, 4f);
+                try
+                {
+                    FAtlasElement atlas = Futile.atlasManager.GetElementWithName(element);
+
+                    y -= 10f + atlas.sourcePixelSize.y + rectPadding.y;
+                    var imagePos = new Vector2(300f - atlas.sourcePixelSize.x / 2f, y);
+                    box.AddItems(new OpImage(imagePos, element));
+                    box.AddItems(new OpRect(imagePos - rectPadding, atlas.sourcePixelSize + rectPadding * 2f, 0f));
+                    y -= rectPadding.y;
+                }
+                catch { }
             }
         }
 
