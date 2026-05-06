@@ -31,8 +31,13 @@ namespace FinderMod
         {
             base.Initialize();
 
-            // Import built-in compute shaders
+#if DEBUG
+            // While testing, it's convenient to have an easy way to reload the shaders
+            // In production they only need to be loaded once
             InternalShaders.LoadShaders();
+#endif
+
+            // Load resources
             LoadFile("idfinder-logo", ref logoTex);
 
             // Initialize tabs

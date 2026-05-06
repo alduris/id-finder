@@ -28,6 +28,19 @@ namespace FinderMod.Tabs
             AddItems(logoImage = new OpImage(new Vector2(300f - logoElement.sourcePixelSize.x / 2, y), "idfinder-logo"));
             logoImage.sprite.shader = Custom.rainWorld.Shaders["MenuText"];
 
+            // Frowny faces
+            float frownyY = logoImage.PosY + logoElement.sourcePixelSize.y / 2f - 15f;
+            AddItems([
+                new OpLabel(new Vector2(40f, frownyY), new Vector2(30f, 30f), ":(", FLabelAlignment.Center, true)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center
+                },
+                new OpLabel(new Vector2(530f, frownyY), new Vector2(30f, 30f), ":(", FLabelAlignment.Center, true)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center
+                },
+                ]);
+
             // Version text
             y -= 24f;
             string versionText = ModdingMenu.instance.Translate("Version") + ": " + owner.mod.version;
@@ -59,12 +72,16 @@ namespace FinderMod.Tabs
 
             // Error text
             y -= 10f;
-            var rect = new OpRect(new Vector2(20f, 20f), new Vector2(560f, y - 20f));
+            var rect = new OpRect(new Vector2(20f, 20f), new Vector2(560f, y - 20f), 0.7f)
+            {
+                colorFill = OptionInterface.errorBlue
+            };
             AddItems(rect);
             var exceptionText = new OpLabelLong(new Vector2(40f, 30f), new Vector2(rect.size.x - 40f, rect.size.y - 20f), ex.ToString(), true, FLabelAlignment.Left)
             {
                 verticalAlignment = OpLabel.LabelVAlignment.Top,
-                allowOverflow = true
+                allowOverflow = true,
+                color = MenuColorEffect.rgbWhite,
             };
 
             if (exceptionText.GetDisplaySize().y > rect.size.y - 20f)
