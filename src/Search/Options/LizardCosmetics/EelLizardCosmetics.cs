@@ -74,18 +74,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
         public override float Execute(XORShift128 Random)
         {
             float r = 0f;
-            bool foundEelGroup = false;
             bool wasLSSGroup = false;
-            bool finishedEelGroup = false;
             bool body = false;
             bool tail = false;
             bool lhs = false;
-
-            // Tracking variables so we know which inputs to poll for distance if we already encountered them once.
-            // This is necessary because the user does not necessarily know which order they may come in.
-            LongShoulderScalesCosmetic otherLSS = null!;
-            ShortBodyScalesCosmetic otherSBS = null!;
-            TailTuftCosmetic otherTT = null!;
 
             foreach (var result in GetResults(Random))
             {
@@ -100,117 +92,49 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
                     case LongShoulderScalesVars longShoulderScalesVars:
                         {
-                            bool tryBoth = true;
-                            if (!foundEelGroup)
+                            if (longShoulderScalesVars.id == 0)
                             {
-                                foundEelGroup = true;
+                                r += mainLongShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                                 wasLSSGroup = true;
                             }
                             else
                             {
+                                r += longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                                 body = true;
-                                if (otherLSS != null)
-                                {
-                                    r += otherLSS.Distance(longShoulderScalesVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
-                                float b = mainLongShoulderScalesCosmetic.Distance(longShoulderScalesVars);
-
-                                if ((a <= b && longShoulderScalesCosmetic.Enabled) || !mainLongShoulderScalesCosmetic.Enabled)
-                                {
-                                    otherLSS = mainLongShoulderScalesCosmetic;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherLSS = longShoulderScalesCosmetic;
-                                    r += b;
-                                }
                             }
                         }
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         {
-                            bool tryBoth = true;
-                            if (!foundEelGroup)
+                            if (shortBodyScalesVars.id == 0)
                             {
-                                foundEelGroup = true;
+                                r += mainShortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                                 wasLSSGroup = false;
                             }
                             else
                             {
+                                r += shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
                                 body = true;
-                                if (otherSBS != null)
-                                {
-                                    r += otherSBS.Distance(shortBodyScalesVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = shortBodyScalesCosmetic.Distance(shortBodyScalesVars);
-                                float b = mainShortBodyScalesCosmetic.Distance(shortBodyScalesVars);
-                                
-                                if ((a <= b && shortBodyScalesCosmetic.Enabled) || !mainShortBodyScalesCosmetic.Enabled)
-                                {
-                                    otherSBS = mainShortBodyScalesCosmetic;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherSBS = shortBodyScalesCosmetic;
-                                    r += b;
-                                }
                             }
                         }
                         break;
 
                     case TailFinVars tailFinVars:
                         {
-                            finishedEelGroup = true;
                             TailFinCosmetic input = wasLSSGroup ? lssTailFinCosmetic : sbsTailFinCosmetic;
                             r += input.Distance(tailFinVars);
                         }
                         break;
                     case TailTuftVars tailTuftVars:
                         {
-                            bool tryBoth = true;
-                            if (!finishedEelGroup)
+                            if (tailTuftVars.id == 0)
                             {
-                                finishedEelGroup = true;
+                                r += mainTailTuftCosmetic.Distance(tailTuftVars);
                             }
                             else
                             {
+                                r += tailTuftCosmetic.Distance(tailTuftVars);
                                 tail = true;
-                                
-                                if (otherTT != null)
-                                {
-                                    r += otherTT.Distance(tailTuftVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = tailTuftCosmetic.Distance(tailTuftVars);
-                                float b = mainTailTuftCosmetic.Distance(tailTuftVars);
-
-                                if ((a <= b && tailTuftCosmetic.Enabled) || !mainTailTuftCosmetic.Enabled)
-                                {
-                                    otherTT = mainTailTuftCosmetic;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherTT = tailTuftCosmetic;
-                                    r += b;
-                                }
                             }
                         }
                         break;

@@ -45,8 +45,6 @@ namespace FinderMod.Search.Options.LizardCosmetics
             bool tail = false;
             bool lhs = false;
 
-            LongShoulderScalesCosmetic otherLSS = null!;
-
             foreach (var result in GetResults(Random))
             {
                 switch (result)
@@ -61,37 +59,15 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
                         {
-                            // This code is more complex to account for the fact that the user does not necessarily know which order these will come in
-                            bool tryBoth = true;
-                            if (!body)
+                            if (longShoulderScalesVars.id == 3)
                             {
-                                body = true;
+                                r += longShoulderScalesCosmetic2.Distance(longShoulderScalesVars);
+                                tail = true;
                             }
                             else
                             {
-                                tail = true;
-                                if (otherLSS != null)
-                                {
-                                    r += otherLSS.Distance(longShoulderScalesVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = longShoulderScalesCosmetic1.Distance(longShoulderScalesVars);
-                                float b = longShoulderScalesCosmetic2.Distance(longShoulderScalesVars);
-
-                                if ((a <= b && longShoulderScalesCosmetic1.Enabled) || !longShoulderScalesCosmetic2.Enabled)
-                                {
-                                    otherLSS = longShoulderScalesCosmetic2;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherLSS = longShoulderScalesCosmetic1;
-                                    r += b;
-                                }
+                                r += longShoulderScalesCosmetic1.Distance(longShoulderScalesVars);
+                                body = true;
                             }
                         }
                         break;

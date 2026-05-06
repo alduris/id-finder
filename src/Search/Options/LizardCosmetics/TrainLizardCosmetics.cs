@@ -54,42 +54,32 @@ namespace FinderMod.Search.Options.LizardCosmetics
             bool body = false;
             bool tail = false;
             bool lhs = false;
-            bool foundLSS = false;
-            LongShoulderScalesVars specificLSS = default;
 
             foreach (var result in GetResults(Random))
             {
                 switch (result)
                 {
                     case SpineSpikesVars spineSpikesVars:
-                        if (body || foundLSS)
+                        if (spineSpikesVars.id == 2)
                         {
-                            // We found the LSS prior so we know that this is the type-specific one
                             r += mainSpineSpikesCosmetic.Distance(spineSpikesVars);
                         }
                         else
                         {
-                            // We know it's body here because the type-specific LSS comes before the type-specific spinespikes
-                            // which means that either body or foundLSS must be true prior
-                            body = true;
                             r += spineSpikesCosmetic.Distance(spineSpikesVars);
+                            body = true;
                         }
                         break;
                     case LongShoulderScalesVars longShoulderScalesVars:
-                        if (foundLSS)
+                        if (longShoulderScalesVars.id == 4)
                         {
-                            // We found an LSS prior so we know this one is the type-specific one.
-                            // Since we deal with the type-specific one afterwards, we deal with the previous one now
-                            body = true;
-                            r += longShoulderScalesCosmetic.Distance(specificLSS);
+                            r += mainLongShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                         }
                         else
                         {
-                            // Either this is the type-specific one or it isn't, if it isn't then we deal with this when we reach the type-specific one in the if block.
-                            foundLSS = true;
+                            body = true;
+                            r += longShoulderScalesCosmetic.Distance(longShoulderScalesVars);
                         }
-                        // You may have noticed we don't deal with the type-specific cosmetic. This is done after the foreach and is kept with this.
-                        specificLSS = longShoulderScalesVars;
                         break;
                     case ShortBodyScalesVars shortBodyScalesVars:
                         body = true;
@@ -104,10 +94,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         r += mainTailFinCosmetic.Distance(tailFinVars);
                         break;
                     case TailTuftVars tailTuftVars:
+                        if (tailTuftVars.id == 7)
                         {
-                            var cosmetic = foundLSS ? mainTailTuftCosmetic : tailTuftCosmetic;
-                            if (!foundLSS) tail = true;
-                            r += cosmetic.Distance(tailTuftVars);
+                            r += mainTailTuftCosmetic.Distance(tailTuftVars);
+                        }
+                        else
+                        {
+                            r += tailTuftCosmetic.Distance(tailTuftVars);
                         }
                         break;
 
@@ -124,9 +117,6 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         throw new InvalidOperationException("Unexpected result! " + result.GetType().Name);
                 }
             }
-
-            // Deal with type-specific LSS. We know that this is not default because the type-specific LSS is guaranteed.
-            r += mainLongShoulderScalesCosmetic.Distance(specificLSS);
 
             bool wantedBodyCosmetic = spineSpikesCosmetic.Enabled && spineSpikesCosmetic.Toggled;
             wantedBodyCosmetic |= bumpHawkCosmetic.Enabled && bumpHawkCosmetic.Toggled;

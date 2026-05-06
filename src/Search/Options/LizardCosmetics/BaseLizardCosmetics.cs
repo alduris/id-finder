@@ -134,24 +134,24 @@ namespace FinderMod.Search.Options.LizardCosmetics
             TailTuftVars.TailTuftGraphicCalculation? tailTuftGraphic = null;
             if (type == LizardType.Eel)
             {
-                yield return new AxolotlGillsVars(Random, ref tailTuftGraphic);
+                yield return new AxolotlGillsVars(0, Random, ref tailTuftGraphic);
 
-                yield return new TailGeckoScalesVars(Random, tailColor, null);
+                yield return new TailGeckoScalesVars(0, Random, tailColor, null);
                 if (Random.Value < 0.75f)
                 {
-                    yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
-                    yield return new TailFinVars(Random, tailLength, type);
+                    yield return new LongShoulderScalesVars(0, Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new TailFinVars(0, Random, tailLength, type);
                 }
                 else
                 {
-                    yield return new ShortBodyScalesVars(Random, tailLength, type);
+                    yield return new ShortBodyScalesVars(0, Random, tailLength, type);
                     if (Random.Value < 0.75f)
                     {
-                        yield return new TailFinVars(Random, tailLength, type);
+                        yield return new TailFinVars(1, Random, tailLength, type);
                     }
                     else
                     {
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new TailTuftVars(0, Random, tailLength, type, ref tailTuftGraphic);
                     }
                 }
             }
@@ -159,13 +159,13 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 if (Random.Value < 0.175f)
                 {
-                    yield return new WingScalesVars(Random);
+                    yield return new WingScalesVars(0, Random);
                 }
                 else
                 {
-                    yield return new SpineSpikesVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new SpineSpikesVars(0, Random, tailLength, type, ref tailTuftGraphic);
                 }
-                yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                yield return new TailTuftVars(1, Random, tailLength, type, ref tailTuftGraphic);
             }
 
             if (type == LizardType.Cyan)
@@ -173,39 +173,39 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 WingScalesVars? wingScalesVars = null;
                 if (Random.Value < 0.75f)
                 {
-                    yield return wingScalesVars = new WingScalesVars(Random);
+                    yield return wingScalesVars = new WingScalesVars(1, Random);
                 }
                 if (Random.Value < 0.5f && tailColor == 0f)
                 {
-                    yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new TailTuftVars(2, Random, tailLength, type, ref tailTuftGraphic);
                 }
                 else
                 {
-                    yield return new TailGeckoScalesVars(Random, tailColor, wingScalesVars);
+                    yield return new TailGeckoScalesVars(1, Random, tailColor, wingScalesVars);
                 }
-                yield return new JumpRingsVars();
+                yield return new JumpRingsVars(0);
             }
             else if (type == LizardType.White)
             {
                 if (Random.Value < 0.4f)
                 {
-                    yield return new BumpHawkVars(Random, tailLength, type);
+                    yield return new BumpHawkVars(0, Random, tailLength, type);
                 }
                 else if (Random.Value < 0.4f)
                 {
-                    yield return new ShortBodyScalesVars(Random, tailLength, type);
+                    yield return new ShortBodyScalesVars(1, Random, tailLength, type);
                 }
                 else if (Random.Value < 0.2f)
                 {
-                    yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new LongShoulderScalesVars(1, Random, tailLength, type, ref tailTuftGraphic);
                 }
                 else if (Random.Value < 0.2f)
                 {
-                    yield return new LongHeadScalesVars(Random, type, ref tailTuftGraphic);
+                    yield return new LongHeadScalesVars(0, Random, type, ref tailTuftGraphic);
                 }
                 if (Random.Value < 0.5f)
                 {
-                    yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new TailTuftVars(3, Random, tailLength, type, ref tailTuftGraphic);
                 }
             }
             else
@@ -216,39 +216,39 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
                 if (type == LizardType.Indigo)
                 {
-                    yield return new SkinkStripesVars();
-                    yield return new SkinkSpecklesVars(Random);
+                    yield return new SkinkStripesVars(0);
+                    yield return new SkinkSpecklesVars(0, Random);
                 }
                 else if (type == LizardType.Caramel && Random.Value < 0.6f)
                 {
-                    yield return new BodyStripesVars(Random, tailLength, type);
+                    yield return new BodyStripesVars(0, Random, tailLength, type);
                     backDecals++;
                 }
                 else if (Random.Value < 0.06666667f || (Random.Value < 0.8f && type == LizardType.Green) || (Random.Value < 0.7f && type == LizardType.Black))
                 {
-                    yield return new SpineSpikesVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new SpineSpikesVars(1, Random, tailLength, type, ref tailTuftGraphic);
                     backDecals++;
                 }
                 else if (Random.Value < 0.033333335f && type != LizardType.Caramel)
                 {
-                    yield return new BumpHawkVars(Random, tailLength, type);
+                    yield return new BumpHawkVars(1, Random, tailLength, type);
                     backDecals++;
                 }
                 else if ((Random.Value < 0.04761905f || (type == LizardType.Pink && Random.Value < 0.5f) || (type == LizardType.Red && Random.Value < 0.9f)) && type != LizardType.Salamander)
                 {
-                    yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new LongShoulderScalesVars(2, Random, tailLength, type, ref tailTuftGraphic);
                     longShoulderScales = true;
                     backDecals++;
                 }
                 else if ((Random.Value < 0.0625f || (type == LizardType.Blue && Random.Value < 0.5f)) && type != LizardType.Salamander)
                 {
-                    yield return new ShortBodyScalesVars(Random, tailLength, type);
+                    yield return new ShortBodyScalesVars(2, Random, tailLength, type);
                     shortBodyScales = true;
                     backDecals++;
                 }
                 else if (type == LizardType.Green && Random.Value < 0.5f)
                 {
-                    yield return new ShortBodyScalesVars(Random, tailLength, type);
+                    yield return new ShortBodyScalesVars(3, Random, tailLength, type);
                     shortBodyScales = true;
                     backDecals++;
                 }
@@ -257,21 +257,21 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 {
                     if (type == LizardType.Caramel && Random.Value < 0.5f)
                     {
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new TailTuftVars(4, Random, tailLength, type, ref tailTuftGraphic);
                     }
                     else if (Random.Value < 0.11111111f || (backDecals == 0 && Random.Value < 0.7f) || (type == LizardType.Pink && Random.Value < 0.6f)  || (type == LizardType.Blue && Random.Value < 0.96f))
                     {
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new TailTuftVars(5, Random, tailLength, type, ref tailTuftGraphic);
                     }
                     else if (backDecals < 2 && type == LizardType.Green && Random.Value < 0.7f)
                     {
                         if (Random.Value < 0.5f || longShoulderScales || shortBodyScales)
                         {
-                            yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                            yield return new TailTuftVars(6, Random, tailLength, type, ref tailTuftGraphic);
                         }
                         else
                         {
-                            yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
+                            yield return new LongShoulderScalesVars(3, Random, tailLength, type, ref tailTuftGraphic);
                             longShoulderScales = true;
                             backDecals++;
                         }
@@ -280,114 +280,114 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
                 if (Random.Value < (backDecals == 0 ? 0.7f : 0.1f) && type != LizardType.Salamander && type != LizardType.Yellow && type != LizardType.Indigo && (!longShoulderScales && Random.Value < 0.9f || Random.Value < 0.033333335f))
                 {
-                    yield return new LongHeadScalesVars(Random, type, ref tailTuftGraphic);
+                    yield return new LongHeadScalesVars(1, Random, type, ref tailTuftGraphic);
                 }
 
                 if (type == LizardType.Salamander)
                 {
-                    yield return new AxolotlGillsVars(Random, ref tailTuftGraphic);
-                    yield return new TailFinVars(Random, tailLength, type);
+                    yield return new AxolotlGillsVars(1, Random, ref tailTuftGraphic);
+                    yield return new TailFinVars(2, Random, tailLength, type);
                 }
                 else if (type == LizardType.Black)
                 {
-                    yield return new WhiskersVars(Random);
+                    yield return new WhiskersVars(0, Random);
                 }
                 else if (type == LizardType.Yellow)
                 {
-                    yield return new AntennaeVars(Random);
+                    yield return new AntennaeVars(0, Random);
                     if (backDecals == 0 && Random.Value < 0.6f)
                     {
-                        yield return new ShortBodyScalesVars(Random, tailLength, type);
+                        yield return new ShortBodyScalesVars(4, Random, tailLength, type);
                         backDecals++;
                     }
                 }
                 else if (type == LizardType.Red || type == LizardType.Train)
                 {
-                    yield return new LongShoulderScalesVars(Random, tailLength, type, ref tailTuftGraphic);
-                    yield return new SpineSpikesVars(Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new LongShoulderScalesVars(4, Random, tailLength, type, ref tailTuftGraphic);
+                    yield return new SpineSpikesVars(2, Random, tailLength, type, ref tailTuftGraphic);
                     backDecals += 2;
                     if (Random.Value < 0.5f)
                     {
-                        yield return new TailFinVars(Random, tailLength, type);
+                        yield return new TailFinVars(3, Random, tailLength, type);
                     }
                     else
                     {
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new TailTuftVars(7, Random, tailLength, type, ref tailTuftGraphic);
                     }
                 }
                 else if (type == LizardType.Basilisk)
                 {
-                    yield return new BumpHawkVars(Random, tailLength, type);
-                    yield return new TailGeckoScalesVars(Random, tailColor, null);
-                    yield return new TailGeckoScalesVars(Random, tailColor, null);
+                    yield return new BumpHawkVars(2, Random, tailLength, type);
+                    yield return new TailGeckoScalesVars(2, Random, tailColor, null);
+                    yield return new TailGeckoScalesVars(3, Random, tailColor, null);
                     for (int i = 0; i < 9; i++)
                     {
-                        yield return new ShortBodyScalesVars(Random, tailLength, type);
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new ShortBodyScalesVars(5, Random, tailLength, type);
+                        yield return new TailTuftVars(8, Random, tailLength, type, ref tailTuftGraphic);
                     }
-                    yield return new LongHeadScalesVars(Random, type, ref tailTuftGraphic);
+                    yield return new LongHeadScalesVars(2, Random, type, ref tailTuftGraphic);
                     // BasiliskSlowField
-                    yield return new SkinkSpecklesVars(Random);
+                    yield return new SkinkSpecklesVars(1, Random);
                 }
                 else if (type == LizardType.Blizzard)
                 {
-                    for (int num10 = 0; num10 < 5; num10++)
+                    for (int i = 0; i < 5; i++)
                     {
                         if ((double)Random.Value + 1E-05 < 0.5)
                         {
-                            yield return new AxolotlGillsVars(Random, ref tailTuftGraphic);
+                            yield return new AxolotlGillsVars(2, Random, ref tailTuftGraphic);
                         }
                     }
-                    for (int num11 = 0; num11 < 5; num11++)
+                    for (int i = 0; i < 5; i++)
                     {
                         if ((double)Random.Value + 1E-05 < 0.5)
                         {
-                            yield return new AxolotlGillsVars(Random, ref tailTuftGraphic);
+                            yield return new AxolotlGillsVars(3, Random, ref tailTuftGraphic);
                         }
                     }
-                    yield return new LongHeadScalesVars(Random, type, ref tailTuftGraphic);
-                    for (int num12 = 0; num12 < 8; num12++)
+                    yield return new LongHeadScalesVars(3, Random, type, ref tailTuftGraphic);
+                    for (int i = 0; i < 8; i++)
                     {
                         if ((double)Random.Value + 1E-05 < 0.5)
                         {
-                            yield return new ShortBodyScalesVars(Random, tailLength, type);
+                            yield return new ShortBodyScalesVars(6, Random, tailLength, type);
                         }
                     }
-                    for (int num13 = 0; num13 < 5; num13++)
+                    for (int i = 0; i < 5; i++)
                     {
                         if ((double)Random.Value + 1E-05 < 0.800000011920929)
                         {
-                            yield return new SpineSpikesVars(Random, tailLength, type, ref tailTuftGraphic);
+                            yield return new SpineSpikesVars(3, Random, tailLength, type, ref tailTuftGraphic);
                         }
                     }
-                    for (int num14 = 0; num14 < 10; num14++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        yield return new TailTuftVars(Random, tailLength, type, ref tailTuftGraphic);
+                        yield return new TailTuftVars(9, Random, tailLength, type, ref tailTuftGraphic);
                     }
                     if ((double)Random.Value + 1E-05 < 0.05000000074505806)
                     {
-                        yield return new WhiskersVars(Random);
+                        yield return new WhiskersVars(1, Random);
                     }
                     // BlizzardBeam
                     // BlizzardSteam
                 }
                 else if (type == LizardType.Peach)
                 {
-                    yield return new PeachHeadStripesVars(Random);
-                    yield return new TailFinVars(Random, tailLength, type);
-                    yield return new PeachBackFinVars(Random);
+                    yield return new PeachHeadStripesVars(0, Random);
+                    yield return new TailFinVars(4, Random, tailLength, type);
+                    yield return new PeachBackFinVars(0, Random);
                 }
 
                 if (backDecals == 0 && type == LizardType.Caramel)
                 {
-                    yield return new BumpHawkVars(Random, tailLength, type);
+                    yield return new BumpHawkVars(3, Random, tailLength, type);
                     // backDecals++;
                 }
             }
 
             if (type == LizardType.Zoop)
             {
-                yield return new SnowAccumulationVars(Random);
+                yield return new SnowAccumulationVars(0, Random);
             }
 
             if (rotType != RotType.None)
