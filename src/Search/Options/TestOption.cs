@@ -8,7 +8,7 @@ namespace FinderMod.Search.Options
     internal class TestOption : Option
     {
         public override CreatureTemplate.Type? RepresentedCreature =>
-            new CreatureTemplate.Type(CreatureTemplate.Type.values.GetEntry(Random.Range(0, CreatureTemplate.Type.values.Count)), false);
+            new(CreatureTemplate.Type.values.GetEntry(Random.Range(0, CreatureTemplate.Type.values.Count)), false);
 
         public TestOption()
         {
@@ -90,13 +90,24 @@ namespace FinderMod.Search.Options
                 {
                     colorFill = Color.red
                 };
+                var button2 = new OpSimpleButton(new Vector2(x + 130f, y), new Vector2(120f, Height), "Obliterate game")
+                {
+                    colorFill = Color.red
+                };
                 button.OnClick += Explodey_McBoomface;
+                button2.OnClick += Gameus_Obliteratus;
                 elements.Add(button);
+                elements.Add(button2);
             }
 
             private void Explodey_McBoomface(UIfocusable trigger)
             {
                 throw new System.Exception("Test exception");
+            }
+
+            private void Gameus_Obliteratus(UIfocusable trigger)
+            {
+                throw new Joar();
             }
         }
     }
