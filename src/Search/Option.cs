@@ -27,6 +27,11 @@ namespace FinderMod.Search.Options
         public virtual CreatureTemplate.Type? RepresentedCreature { get; protected set; } = null;
 
         /// <summary>
+        /// Object type represented by this search option. Leave as null (default) if it does not represent a singular object.
+        /// </summary>
+        public virtual AbstractPhysicalObject.AbstractObjectType? RepresentedObject { get; protected set; } = null;
+
+        /// <summary>
         /// The elements to show in the space. Must be added to in the constructor.
         /// </summary>
         protected List<IElement> elements = null!;

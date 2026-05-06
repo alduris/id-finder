@@ -114,6 +114,7 @@ namespace FinderMod.Search
                 "Rat Variations",
                 "Sky Whale Variations",
                 "Tardigrade Variations",
+                "Graffiti Bomb Variations",
             ];
             foreach (var option in DLCOptions)
             {
@@ -134,6 +135,9 @@ namespace FinderMod.Search
                 Options.Add("Centipede Variations (Aqua)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
                 Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
                 Options.Add("Yeek Color", () => new YeekColorsOption());
+
+                // Objects
+                Options.Add("Lilypuck Variations", () => new LilypuckVarsOption());
             }
 
             if (ModManager.MSC)
@@ -180,6 +184,9 @@ namespace FinderMod.Search
                 Options.Add("Rat Variations", () => new RatOption());
                 Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
                 Options.Add("Tardigrade Variations", () => new TardigradeOption());
+
+                // Objects
+                Options.Add("Graffiti Bomb Variations", () => new GraffitiBombVarsOption());
             }
         }
 
