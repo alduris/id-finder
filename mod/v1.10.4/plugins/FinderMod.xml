@@ -1,0 +1,2008 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FinderMod</name>
+    </assembly>
+    <members>
+        <member name="T:FinderMod.API">
+            <summary>
+            Public API for ID Finder. Contains methods to register your own search options.
+            </summary>
+        </member>
+        <member name="M:FinderMod.API.Register(System.String,System.Func{FinderMod.Search.Options.Option})">
+            <summary>
+            Registers a new option using a factory method to initialize an <c><see cref="T:FinderMod.Search.Options.Option"/></c> class.
+            </summary>
+            <param name="name">Name of the search option as it will appear in the dropdown and on the menu.</param>
+            <param name="factory">A factory method that initializes your search option.</param>
+        </member>
+        <member name="M:FinderMod.API.Register(System.String,System.Func{System.Collections.Generic.List{FinderMod.Inputs.IElement}},FinderMod.Search.Options.APIBasicOption.APIExecute)">
+            <summary>
+            Registers a new option without having to create a custom Option class.
+            
+            Useful if you don't want to require ID Finder as a hard dependency, but comes with the downside of less flexibility.
+            
+            Replaces the <see cref="T:FinderMod.Search.Options.Option"/> element that would otherwise be required with a function that has:
+            <list type="bullet">
+            <item><description>Input <c><see cref="T:FinderMod.Search.XORShift128"/></c> - The initial random state that would be in the code after calling Random.InitState()</description></item>
+            <item><description>Input <c>List&lt;<see cref="T:FinderMod.Inputs.IElement"/>&gt;</c> - The elements that appear on the menu, with end user-set values in the inputs.</description></item>
+            <item><description>Returns a <c>float</c> representing the distance from what the code for the id generates is compared to the desired <see cref="T:FinderMod.Inputs.Input`1"/> values.</description></item>
+            </list>
+            </summary>
+            <param name="name">Name of the search option as it will appear in the dropdown and on the menu.</param>
+            <param name="elementsFactory">Factory to create new menu elements.</param>
+            <param name="executeFunc">Method that will return the distance for a particular id. Parameters are: 
+            </param>
+        </member>
+        <member name="T:FinderMod.Inputs.Alternatable`1">
+            <summary>
+            Alternates between two elements using a Yes/No button.
+            </summary>
+            <typeparam name="E">Element type to alternate between</typeparam>
+        </member>
+        <member name="F:FinderMod.Inputs.Alternatable`1.name">
+            <summary>Label used in switch input</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Alternatable`1.SwitchInput">
+            <summary>Input used to switch between two elements</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Alternatable`1.elementA">
+            <summary>Element when no</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Alternatable`1.elementB">
+            <summary>Element when yes</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable`1.#ctor(System.String,System.Boolean,`0,`0)">
+            <summary>
+            Creates an input holder that switches between two inputs using a Yes/No button.
+            </summary>
+            <param name="name">Name to display on switch input</param>
+            <param name="alternated">Default value of switch input</param>
+            <param name="elementA">Element to show when "No"</param>
+            <param name="elementB">Element to show when "Yes"</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.ForceEnabled">
+            <summary>Whether to force the switch input to be force enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.Enabled">
+            <summary>Whether the switch input itself is enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.HasBias">
+            <summary>Whether the switch input has bias</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.Bias">
+            <summary>The bias of the switch input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.Switch">
+            <summary>Whether or not the switch input is set to "Yes"</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.Element">
+            <summary>The active element according to the value of <see cref="P:FinderMod.Inputs.Alternatable`1.Switch"/></summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Alternatable`1.SaveKey">
+            <summary>Save Key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable`1.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable`1.ToSaveData">
+            <summary>Converts the input into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable`1.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Returns the input to the state it was given the save state data.</summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable`1.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Alternatable">
+            <summary>
+            Version of <see cref="T:FinderMod.Inputs.Alternatable`1"/> without type argument. (Internally uses with <see cref="T:FinderMod.Inputs.IElement"/>)
+            </summary>
+            <param name="name">Display name of the switcher</param>
+            <param name="alternated">Default configuration</param>
+            <param name="elementA">Element when not alternated</param>
+            <param name="elementB">Element when alternated</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Alternatable.#ctor(System.String,System.Boolean,FinderMod.Inputs.IElement,FinderMod.Inputs.IElement)">
+            <summary>
+            Version of <see cref="T:FinderMod.Inputs.Alternatable`1"/> without type argument. (Internally uses with <see cref="T:FinderMod.Inputs.IElement"/>)
+            </summary>
+            <param name="name">Display name of the switcher</param>
+            <param name="alternated">Default configuration</param>
+            <param name="elementA">Element when not alternated</param>
+            <param name="elementB">Element when alternated</param>
+        </member>
+        <member name="T:FinderMod.Inputs.BoolInput">
+            <summary>
+            Yes/No input
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.BoolInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.BoolInput.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a yes/no input
+            </summary>
+            <param name="name">Name to display</param>
+            <param name="init">Initial value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.BoolInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.BoolInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.BoolInput.OpLabelCheckbox">
+            <summary>
+            Variant of <see cref="T:Menu.Remix.MixedUI.OpCheckBox"/> that displays "Yes" or "No" as text
+            </summary>
+        </member>
+        <member name="F:FinderMod.Inputs.BoolInput.OpLabelCheckbox.boolValue">
+            <summary>Current bool value, without needing the extension method in <see cref="T:Menu.Remix.MixedUI.ValueTypes.IValueBool"/></summary>
+        </member>
+        <member name="M:FinderMod.Inputs.BoolInput.OpLabelCheckbox.#ctor(Configurable{System.Boolean},UnityEngine.Vector2)">
+            <summary>
+            Creates a checkbox element with Yes/No instead of a symbol
+            </summary>
+            <param name="config">Configurable</param>
+            <param name="pos">Position of bottom left</param>
+        </member>
+        <member name="M:FinderMod.Inputs.BoolInput.OpLabelCheckbox.GrafUpdate(System.Single)">
+            <summary>Performs a graphics update</summary>
+            <param name="timeStacker">Time between physics ticks, range 0 to 1</param>
+        </member>
+        <member name="T:FinderMod.Inputs.ColorHSLInput">
+            <summary>
+            Group containing inputs representing an HSL color
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorHSLInput.HueInput">
+            <summary>Hue input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorHSLInput.SatInput">
+            <summary>Saturation input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorHSLInput.LightInput">
+            <summary>Lightness input</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.ColorHSLInput.defaultHue">
+            <summary>Default value if input is missing</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.ColorHSLInput.defaultSat">
+            <summary>Default value if input is missing</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.ColorHSLInput.defaultLight">
+            <summary>Default value if input is missing</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.ColorHSLInput.fixColors">
+            <summary>Whether to simulate the bugged calculations done by <see cref="M:RWCustom.Custom.HSL2RGB(System.Single,System.Single,System.Single)"/> in display preview</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorHSLInput.description">
+            <summary>
+            Sets the descriptions of all inputs
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.#ctor(System.String)">
+            <summary>
+            Creates an HSL input group with all sliders present and all values possible
+            </summary>
+            <param name="name">Name of group</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Creates an HSL input group with specific sliders present and all values possible within the present sliders.
+            </summary>
+            <param name="name">Name of group</param>
+            <param name="h">Whether the hue slider is present</param>
+            <param name="s">Whether the saturation slider is present</param>
+            <param name="l">Whether the lightness slider is present</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.#ctor(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates an HSL input group with all sliders present and specific ranges
+            </summary>
+            <param name="name">Name of group</param>
+            <param name="hMin">Minimum value of hue slider</param>
+            <param name="hMax">Maximum value of hue slider</param>
+            <param name="sMin">Minimum value of saturation slider</param>
+            <param name="sMax">Maximum value of saturation slider</param>
+            <param name="lMin">Minimum value of lightness slider</param>
+            <param name="lMax">Maximum value of lightness slider</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.#ctor(System.String,System.Boolean,System.Single,System.Single,System.Boolean,System.Single,System.Single,System.Boolean,System.Single,System.Single)">
+            <summary>
+            Creates an HSL input group with specific sliders present as well as their ranges.
+            If a slider is not present, it is still recommended to put the min and maximum values as some replacement value for the display color.
+            </summary>
+            <param name="name">Name of group</param>
+            <param name="h">Whether the hue slider is present</param>
+            <param name="hMin">Minimum value of hue slider, or default value if not present</param>
+            <param name="hMax">Maximum value of hue slider, or default value if not present</param>
+            <param name="s">Whether the saturation slider is present</param>
+            <param name="sMin">Minimum value of saturation slider, or default value if not present</param>
+            <param name="sMax">Maximum value of saturation slider, or default value if not present</param>
+            <param name="l">Whether the lightness slider is present</param>
+            <param name="lMin">Minimum value of lightness slider, or default value if not present</param>
+            <param name="lMax">Maximum value of lightness slider, or default value if not present</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element.
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.ForceUpdateColor">
+            <summary>
+            Forces a color update
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorHSLInput.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.ColorHSLInput.ValueChanged">
+            <summary>
+            Event delegate for when the value of the sliders change
+            </summary>
+            <param name="input"></param>
+            <param name="value"></param>
+            <param name="oldValue"></param>
+        </member>
+        <member name="E:FinderMod.Inputs.ColorHSLInput.OnValueChanged">
+            <summary>
+            Event called when the value of any internal slider changes
+            </summary>
+        </member>
+        <member name="T:FinderMod.Inputs.ColorLerpInput">
+            <summary>
+            Creates a slider input that moves between two preset colors
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="end1">Left end color</param>
+            <param name="end2">Right end color</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.#ctor(System.String,UnityEngine.Color,UnityEngine.Color)">
+            <summary>
+            Creates a slider input that moves between two preset colors
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="end1">Left end color</param>
+            <param name="end2">Right end color</param>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorLerpInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.ColorLerpInput.OpFloatColorSlider">
+            <summary>
+            Special variant of <see cref="T:Menu.Remix.MixedUI.OpFloatSlider"/> that slides between two colors, complete with a color preview box
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.OpFloatColorSlider.#ctor(ConfigurableBase,UnityEngine.Vector2,System.Int32,UnityEngine.Color,UnityEngine.Color)">
+            <summary>
+            Creates a special slider that slides between two colors with a color preview box
+            </summary>
+            <param name="configFloat">Configurable</param>
+            <param name="pos">Position of bottom left</param>
+            <param name="length">Length of slider</param>
+            <param name="end1">Left end color</param>
+            <param name="end2">Right end color</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.OpFloatColorSlider.GrafUpdate(System.Single)">
+            <summary>Performs a graphics update</summary>
+            <param name="timeStacker">Time between physics ticks, range 0 to 1</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorLerpInput.OpFloatColorSlider.Update">
+            <summary>Physics update tick</summary>
+        </member>
+        <member name="T:FinderMod.Inputs.ColorRGBInput">
+            <summary>
+            RGB color input
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ColorRGBInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.#ctor(System.String,UnityEngine.Color)">
+            <summary>
+            Creates an RGB color input with a preset initial color
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="color">Initial value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.#ctor(System.String)">
+            <summary>
+            Creates an RGB color input with a random initial color
+            </summary>
+            <param name="name">Name of input</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.ToSaveData">
+            <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ColorRGBInput.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.EnumInput`1">
+            <summary>
+            Multichoice input based on an <c>enum</c>
+            </summary>
+            <typeparam name="T">Enum to operate on</typeparam>
+            <param name="name">Name of input</param>
+            <param name="init">Initial value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.#ctor(System.String,`0)">
+            <summary>
+            Multichoice input based on an <c>enum</c>
+            </summary>
+            <typeparam name="T">Enum to operate on</typeparam>
+            <param name="name">Name of input</param>
+            <param name="init">Initial value</param>
+        </member>
+        <member name="F:FinderMod.Inputs.EnumInput`1.nameConv">
+            <summary>Name conversion function</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.EnumInput`1.excludeOptions">
+            <summary>Enum values to not include in list</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.#ctor(System.String,`0,System.Func{`0,System.String})">
+            <summary>
+            Creates an enum input with an initial value and a function to convert an enum value into a different string in the combo box
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="init">Initial value</param>
+            <param name="nameConv">Enum to string conversion function</param>
+        </member>
+        <member name="P:FinderMod.Inputs.EnumInput`1.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.ToSaveData">
+            <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.EnumInput`1.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="T:FinderMod.Inputs.FloatInput">
+            <summary>
+            Float input with an explicit minimum and maximum
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.FloatInput.#ctor(System.String,System.Single,System.Single)">
+            <summary>
+            Float input with an explicit minimum and maximum
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.FloatInput.#ctor(System.String)">
+            <summary>
+            Initializes with range from 0 to 1
+            </summary>
+            <param name="name">The name of the input</param>
+        </member>
+        <member name="P:FinderMod.Inputs.FloatInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.FloatInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.FloatInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Group">
+            <summary>
+            Container for a group of <see cref="T:FinderMod.Inputs.IElement"/>s.
+            </summary>
+            <param name="children">The list of children to add inside. Can also be set in the constructor if necessary with <see cref="F:FinderMod.Inputs.Group.children"/> field.</param>
+            <param name="internalName">Internal name for group. Ideally should be unique. Used for saving in history.</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Group.#ctor(System.Collections.Generic.List{FinderMod.Inputs.IElement},System.String)">
+            <summary>
+            Container for a group of <see cref="T:FinderMod.Inputs.IElement"/>s.
+            </summary>
+            <param name="children">The list of children to add inside. Can also be set in the constructor if necessary with <see cref="F:FinderMod.Inputs.Group.children"/> field.</param>
+            <param name="internalName">Internal name for group. Ideally should be unique. Used for saving in history.</param>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.MARGIN">
+            <summary>Internal margin between elements</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.PADDING">
+            <summary>Internal padding between edges</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.internalName">
+            <summary>Internal name used in save data</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.rect">
+            <summary>Outer edge. Null if not present.</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.hasRect">
+            <summary>Whether element has an outer edge.</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Group.children">
+            <summary>List of children</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Group.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Group.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Places the group and its children, optionally with the box if <see cref="F:FinderMod.Inputs.Group.hasRect"/> is set to <c>true</c> (default behavior).
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Group.ColorEdge">
+            <summary>
+            Sets the edge color of the box, if present.
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Group.ColorFill">
+            <summary>
+            Sets the background color of the box, if present.
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Group.SaveKey">
+            <summary>Save key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Group.ToSaveData">
+            <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Group.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Group.GetHistoryLines">
+            <summary>Returns the string representation for the group on the history tab.</summary>
+            <returns>The strings to represent the group on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.HueInput">
+            <summary>
+            Special float input that displays the selected hue on the slider bar
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.HueInput.#ctor(System.String,System.Single,System.Single)">
+            <summary>
+            Creates a hue input with a range
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.HueInput.#ctor(System.String)">
+            <summary>
+            Creates a hue input between 0 and 1
+            </summary>
+            <param name="name">Name of input</param>
+        </member>
+        <member name="M:FinderMod.Inputs.HueInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.IElement">
+            <summary>
+            Represents an item in the query box made up of <see cref="T:Menu.Remix.MixedUI.UIelement"/>s.
+            If you are making an input wrapper, make sure to implement <see cref="T:FinderMod.Inputs.ISaveInHistory"/> also.
+            If your input wrapper just encapsulates a group, consider using a <see cref="T:FinderMod.Inputs.Group"/> instead.
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.IElement.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.IElement.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element.
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="T:FinderMod.Inputs.Input`1">
+            <summary>
+            For generic inputs of any type. When it requires a minimum and maximum, use <see cref="T:FinderMod.Inputs.RangedInput`1"/>.
+            </summary>
+            <typeparam name="T">The value type</typeparam>
+            <param name="name">The name of the input</param>
+            <param name="init">The initial value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.#ctor(System.String,`0)">
+            <summary>
+            For generic inputs of any type. When it requires a minimum and maximum, use <see cref="T:FinderMod.Inputs.RangedInput`1"/>.
+            </summary>
+            <typeparam name="T">The value type</typeparam>
+            <param name="name">The name of the input</param>
+            <param name="init">The initial value</param>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.name">
+            <summary>Display name</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.description">
+            <summary>Description displayed at bottom of screen</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.enabled">
+            <summary>Enabled state</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.forceEnabled">
+            <summary>Whether or not element is forcefully enabled</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.inputOnNewLine">
+            <summary>Whether or not actual input created by <see cref="M:FinderMod.Inputs.Input`1.GetElement(UnityEngine.Vector2)"/> is placed separately from label</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.value">
+            <summary>Actual internal value</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.bias">
+            <summary>Bias</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Input`1.hasBias">
+            <summary>Whether input has bias dragger</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Input`1.InputHeight">
+            <summary>Height of the input. Should be larger than 24f.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Input`1.Height">
+            <summary>Calculated overall height.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element.
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.Config">
+            <summary>Helper method. Creates a <see cref="T:Configurable`1"/> with current value</summary>
+            <returns></returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.UpdateQueryBox">
+            <summary>
+            Helper method to update query box in search tab
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Input`1.SaveKey">
+            <summary>Save key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.ToSaveData">
+            <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Input`1.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Input`1.ValueChanged">
+            <summary>Delegate definition for input value change</summary>
+            <param name="input">Reference to input</param>
+            <param name="value">New value</param>
+            <param name="oldValue">Previous value</param>
+        </member>
+        <member name="E:FinderMod.Inputs.Input`1.OnValueChanged">
+            <summary>Called when input value changes</summary>
+        </member>
+        <member name="T:FinderMod.Inputs.RangedInput`1">
+            <summary>
+            <see cref="T:FinderMod.Inputs.Input`1"/> type with an explicit minimum and maximum value
+            </summary>
+            <typeparam name="T">The value type. Must be a comparable type.</typeparam>
+        </member>
+        <member name="F:FinderMod.Inputs.RangedInput`1.min">
+            <summary>Range minimum</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.RangedInput`1.max">
+            <summary>Range maximum</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.RangedInput`1.#ctor(System.String,`0,`0,`0)">
+            <summary>
+            Creates an input with an explicit minimum and maximum.
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="init">Initial value</param>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+        </member>
+        <member name="M:FinderMod.Inputs.RangedInput`1.ConfigRange">
+            <summary>Helper method. Creates a <see cref="T:Configurable`1"/> with a <see cref="T:ConfigAcceptableRange`1"/></summary>
+            <returns></returns>
+        </member>
+        <member name="T:FinderMod.Inputs.IntInput">
+            <summary>
+            Integer input with an explicit minimum and maximum, inclusive.
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="min">Minimum, inclusive</param>
+            <param name="max">Maximum, inclusive</param>
+        </member>
+        <member name="M:FinderMod.Inputs.IntInput.#ctor(System.String,System.Int32,System.Int32)">
+            <summary>
+            Integer input with an explicit minimum and maximum, inclusive.
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="min">Minimum, inclusive</param>
+            <param name="max">Maximum, inclusive</param>
+        </member>
+        <member name="P:FinderMod.Inputs.IntInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.IntInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.IntInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.IntManualInput">
+            <summary>
+            Integer input with manually entered value
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="init">Maximum value of input</param>
+        </member>
+        <member name="M:FinderMod.Inputs.IntManualInput.#ctor(System.String,System.Int32)">
+            <summary>
+            Integer input with manually entered value
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="init">Maximum value of input</param>
+        </member>
+        <member name="F:FinderMod.Inputs.IntManualInput.minValue">
+            <summary>Minimum value, if defined</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.IntManualInput.maxValue">
+            <summary>Maximum value, if defined</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.IntManualInput.#ctor(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Integer input with manually entered value and explicit minimum and maximum.
+            </summary>
+            <param name="name"></param>
+            <param name="init"></param>
+            <param name="minValue"></param>
+            <param name="maxValue"></param>
+        </member>
+        <member name="P:FinderMod.Inputs.IntManualInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.IntManualInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.IntManualInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.ISaveInHistory">
+            <summary>
+            Denotes that an element can be saved in history and provides the necessary utilities for allowing so.
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.ISaveInHistory.SaveKey">
+            <summary>Save key to use. Should be unique within the same layer.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.ISaveInHistory.ToSaveData">
+            <summary>Converts the element into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.ISaveInHistory.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the element to the state it was given the save state data.
+            </summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.ISaveInHistory.GetHistoryLines">
+            <summary>Returns the string representation for the element on the history tab.</summary>
+            <returns>The strings to represent the element on the history tab. Each returned string is separated by a new line. Recommended to yield return.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Label">
+            <summary>
+            Decorative label
+            </summary>
+            <param name="text">Text to display</param>
+            <param name="big">Whether to use a big label</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Label.#ctor(System.String,System.Boolean)">
+            <summary>
+            Decorative label
+            </summary>
+            <param name="text">Text to display</param>
+            <param name="big">Whether to use a big label</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Label.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Label.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element.
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItem">
+            <summary>
+            Input container for lizard cosmetics.
+            </summary>
+            <param name="cosmeticType">Cosmetic type represented</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.#ctor(FinderMod.Search.Util.LizardUtil.CosmeticType)">
+            <summary>
+            Input container for lizard cosmetics.
+            </summary>
+            <param name="cosmeticType">Cosmetic type represented</param>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.parent">
+            <summary>Parent subholder</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.Enabled">
+            <summary>Whether the parent is enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.Toggled">
+            <summary>Whether the parent is toggled on</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.Active">
+            <summary>Checks if input is enabled and toggled</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.cosmeticType">
+            <summary>Cosmetic type</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItem.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer">
+            <summary>
+            Holder for <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/>s.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.#ctor">
+            <summary>
+            Holder for <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/>s.
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.SaveKey">
+            <summary>Save key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of all subholders</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Add(FinderMod.Inputs.LizardCosmetics.Subholder)">
+            <summary>
+            Adds a subholder to the container
+            </summary>
+            <param name="subholder"></param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.OneOf(System.String,System.Collections.Generic.List{FinderMod.Inputs.LizardCosmetics.Subholder})">
+            <summary>
+            Helper method for generating a <see cref="T:FinderMod.Inputs.LizardCosmetics.OneOfSubholder"/>. Useful when <c>using static</c> this class.
+            </summary>
+            <param name="name">The name of the subholder</param>
+            <param name="subholders">The child subholders</param>
+            <returns>The created subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Toggleable(System.String,FinderMod.Inputs.LizardCosmetics.Subholder)">
+            <summary>
+            Helper method for generating a <see cref="T:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder"/>. Useful when <c>using static</c> this class.
+            </summary>
+            <param name="name">The name of the subholder</param>
+            <param name="child">The child subholder</param>
+            <returns>The created subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Group(System.String,System.Collections.Generic.List{FinderMod.Inputs.LizardCosmetics.Subholder})">
+            <summary>
+            Helper method for generating a <see cref="T:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder"/>. Useful when <c>using static</c> this class.
+            </summary>
+            <param name="name">The name of the subholder</param>
+            <param name="subholders">The child subholders</param>
+            <returns>The created subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.None">
+            <summary>
+            Generates a <see cref="T:FinderMod.Inputs.LizardCosmetics.NoneSubholder"/>. Useful when <c>using static</c> this class.
+            </summary>
+            <returns>The created subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer.Label(System.String)">
+            <summary>
+            Generates a <see cref="T:FinderMod.Inputs.LizardCosmetics.LabelSubholder"/>. Useful when <c>using static</c> this class.
+            </summary>
+            <param name="text">The text to put in the subholder</param>
+            <returns>The created subholder</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper">
+            <summary>
+            <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/> that holds a <see cref="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItem"/>
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.#ctor(FinderMod.Inputs.LizardCosmetics.CosmeticsItem)">
+            <summary>
+            Wraps a 
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.Height">
+            <seealso cref="P:FinderMod.Inputs.IElement.Height"/>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.IToggleableChildren">
+            <summary>
+            Denotes a subholder that has controls which may toggle a child element.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.IToggleableChildren.IsChildToggled(FinderMod.Inputs.LizardCosmetics.Subholder)">
+            <summary>
+            Checks if a child subholder is toggled.
+            </summary>
+            <param name="child">The child subholder to check</param>
+            <returns>Returns true if the subholder is the element's child and is toggled on.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.LabelSubholder">
+            <summary>
+            Subholder containing a <see cref="T:FinderMod.Inputs.Label"/>.
+            </summary>
+            <param name="text">The text to put in the label</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LabelSubholder.#ctor(System.String)">
+            <summary>
+            Subholder containing a <see cref="T:FinderMod.Inputs.Label"/>.
+            </summary>
+            <param name="text">The text to put in the label</param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.LabelSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LabelSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the label.
+            </summary>
+            <param name="x">The starting x position</param>
+            <param name="y">The starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LabelSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Does nothing, as labels have no save data.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LabelSubholder.ToSaveData">
+            <summary>
+            Returns an empty object, as labels have no save data.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LabelSubholder.GetHistoryLines">
+            <summary>
+            Does nothing, as labels have no data to display.
+            </summary>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder">
+            <summary>
+            Special case of <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/> containing a rot input type that controls a <see cref="T:FinderMod.Inputs.LizardCosmetics.LizardRotCosmetic"/> input group
+            </summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.RotTypeInput">
+            <summary>The rot input</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.RotCosmeticInput">
+            <summary>The rot cosmetic inputs</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.#ctor(FinderMod.Inputs.LizardCosmetics.LizardRotCosmetic)">
+            <summary>
+            Creates the subholder. Automatically created in <see cref="T:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics"/>.
+            </summary>
+            <param name="lizardRotCosmetic">Instance of <see cref="T:FinderMod.Inputs.LizardCosmetics.LizardRotCosmetic"/> to embed.</param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder">
+            <summary>
+            Contains a group of <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/>s.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.holdingGroup">
+            <summary>Internal group</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.children">
+            <summary>Child subholders, in list of appropriate type.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.#ctor(System.String,System.Collections.Generic.List{FinderMod.Inputs.LizardCosmetics.Subholder})">
+            <summary>
+            Creates a group of <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/>s.
+            </summary>
+            <param name="name">Internal name of subholder</param>
+            <param name="children">List of child subholders</param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.MultiItemSubholder.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.NoneSubholder">
+            <summary>
+            Subholder for the special case of no cosmetic. Contains a special message in a wrapper group.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.NoneSubholder.#ctor">
+            <summary>
+            Creates a none subholder
+            </summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.NoneSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.NoneSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.NoneSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Does nothing, as labels have no save data.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.NoneSubholder.ToSaveData">
+            <summary>
+            Returns an empty object, as labels have no save data.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.NoneSubholder.GetHistoryLines">
+            <summary>
+            Returns "No cosmetic" to display on the history tab.
+            </summary>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.OneOfSubholder">
+            <summary>
+            Allows a <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/> to be picked from a list.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.#ctor(System.String,System.Collections.Generic.List{FinderMod.Inputs.LizardCosmetics.Subholder})">
+            <summary>
+            Creates a subholder from which only one child can be displayed at a time. Names of the subholders are used as the items in the selection dropdown.
+            </summary>
+            <param name="name">Label for dropdown</param>
+            <param name="children">Children for selection</param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.Enabled">
+            <summary>Enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.OneOfSubholder.IsChildToggled(FinderMod.Inputs.LizardCosmetics.Subholder)">
+            <summary>
+            Checks if the subholder is a child and is selected.
+            </summary>
+            <param name="child">The child subholder</param>
+            <returns>Returns true if the subholder is a child and is selected.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.Subholder">
+            <summary>
+            Specialized container for lizard cosmetics inputs with some special logic relevant to them.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.#ctor(System.String)">
+            <summary>
+            Specialized container for lizard cosmetics inputs with some special logic relevant to them.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.Subholder.name">
+            <summary>Name</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.LizardCosmetics.Subholder.parent">
+            <summary>Parent subholder, or null if it is the top subholder</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.Subholder.Enabled">
+            <summary>Whether or not the subholder is enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.Subholder.IsToggled">
+            <summary>Checks whether the subholder is toggled, if any of its ancestors are <see cref="T:FinderMod.Inputs.LizardCosmetics.IToggleableChildren"/></summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.Subholder.SaveKey">
+            <summary>Save key</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.Subholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.Subholder.op_Implicit(FinderMod.Inputs.LizardCosmetics.CosmeticsItem)~FinderMod.Inputs.LizardCosmetics.Subholder">
+            <summary>Wraps the <see cref="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItem"/> in a <see cref="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItemWrapper"/> subholder</summary>
+            <param name="item">The item to wrap</param>
+        </member>
+        <member name="T:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder">
+            <summary>
+            Allows a <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/> to be toggled on and off, separately from an enable checkbox.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.#ctor(System.String,FinderMod.Inputs.LizardCosmetics.Subholder,System.Boolean)">
+            <summary>
+            Creates a subholder from which a child subholder can be toggled on and off.
+            </summary>
+            <param name="name">Text to display next to toggle</param>
+            <param name="child">Child subholder to be toggled</param>
+            <param name="defaultValue">Default toggle value. True by default</param>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.Enabled">
+            <summary>Enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>Creates elements</summary>
+            <param name="x">Starting x position</param>
+            <param name="y">Starting y position</param>
+            <param name="elements">List to dump created elements in</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Recreates inputs from save data</summary>
+            <param name="data">The JSON representation to recreate from</param>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.ToSaveData">
+            <summary>Turns the inputs into a format convertable to JSON</summary>
+            <returns>The JSON representation of this particular subholder</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.GetHistoryLines">
+            <summary>Generates history tab representation</summary>
+            <returns>String representation for history tab</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.LizardCosmetics.ToggleableSubholder.IsChildToggled(FinderMod.Inputs.LizardCosmetics.Subholder)">
+            <summary>
+            Checks if the subholder is the child and is toggled.
+            </summary>
+            <param name="child">The subholder to check</param>
+            <returns>Returns true if the subholder is the child and is toggled on.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.MultiChoiceInput">
+            <summary>
+            Combo box input, with value representing selected option.
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="options">List of options</param>
+            <param name="init">Initial selection</param>
+        </member>
+        <member name="M:FinderMod.Inputs.MultiChoiceInput.#ctor(System.String,System.String[],System.Int32)">
+            <summary>
+            Combo box input, with value representing selected option.
+            </summary>
+            <param name="name">Name of input</param>
+            <param name="options">List of options</param>
+            <param name="init">Initial selection</param>
+        </member>
+        <member name="P:FinderMod.Inputs.MultiChoiceInput.InputHeight">
+            <summary>Height of input.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.MultiChoiceInput.GetElement(UnityEngine.Vector2)">
+            <summary>Returns actual UI element to create</summary>
+            <param name="pos">Position of UI element</param>
+            <returns>New instance of element</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.MultiChoiceInput.GetValue(Menu.Remix.MixedUI.UIconfig)">
+            <summary>Gets the value of the element</summary>
+            <param name="element">Element whose value to check</param>
+            <returns>Value of the input</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Switchable`1">
+            <summary>
+            Switch between multiple elements based on a combo box.
+            </summary>
+            <typeparam name="E">The type of element to switch between</typeparam>
+        </member>
+        <member name="F:FinderMod.Inputs.Switchable`1.name">
+            <summary>Label used in switch input</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Switchable`1.SwitchInput">
+            <summary>Input used to switch between elements</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Switchable`1.elements">
+            <summary>Possible elements</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable`1.#ctor(System.String,System.Collections.Generic.List{System.ValueTuple{System.String,`0}})">
+            <summary>
+            Creates an input holder that switches between elements based on the value of a combo box.
+            </summary>
+            <param name="name">Name to display on switch input</param>
+            <param name="options">List of options using switch input label-resulting element tuples</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.ForceEnabled">
+            <summary>Whether to force the switch input to be force enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.Enabled">
+            <summary>Whether the switch input itself is enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.HasBias">
+            <summary>Whether the switch input has bias</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.Bias">
+            <summary>The bias of the switch input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.Switch">
+            <summary>Selected index of the switch input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.Element">
+            <summary>The active element according to the value of <see cref="P:FinderMod.Inputs.Switchable`1.Switch"/></summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Switchable`1.SaveKey">
+            <summary>Save Key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable`1.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable`1.ToSaveData">
+            <summary>Converts the input into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable`1.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Returns the input to the state it was given the save state data.</summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable`1.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Switchable">
+            <summary>
+            Version of <see cref="T:FinderMod.Inputs.Switchable`1"/> without the type argument. (Internally uses <see cref="T:FinderMod.Inputs.IElement"/>)
+            </summary>
+            <param name="name">Name of the switcher</param>
+            <param name="options">Elements to switch between, key-element pairs</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Switchable.#ctor(System.String,System.Collections.Generic.List{System.ValueTuple{System.String,FinderMod.Inputs.IElement}})">
+            <summary>
+            Version of <see cref="T:FinderMod.Inputs.Switchable`1"/> without the type argument. (Internally uses <see cref="T:FinderMod.Inputs.IElement"/>)
+            </summary>
+            <param name="name">Name of the switcher</param>
+            <param name="options">Elements to switch between, key-element pairs</param>
+        </member>
+        <member name="T:FinderMod.Inputs.Toggleable`1">
+            <summary>
+            Toggles an element's visibility with a yes/no button, separately from an enable checkbox.
+            </summary>
+            <typeparam name="E"></typeparam>
+        </member>
+        <member name="F:FinderMod.Inputs.Toggleable`1.name">
+            <summary>Label used in switch input</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Toggleable`1.ToggleInput">
+            <summary>Input used to toggle element</summary>
+        </member>
+        <member name="F:FinderMod.Inputs.Toggleable`1.Element">
+            <summary>Element. Only actually displays when yes.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.Toggled">
+            <summary>Whether or not input is toggled to yes.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Toggleable`1.#ctor(System.String,System.Boolean,`0)">
+            <summary>
+            Creates an input that can be toggled using a yes/no button, separately from an enable checkbox.
+            </summary>
+            <param name="name">Name of toggle input</param>
+            <param name="toggled">Default toggle state</param>
+            <param name="element">Element to toggle</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.ForceEnabled">
+            <summary>Whether to force the toggle input to be force enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.Enabled">
+            <summary>Whether the toggle input itself is enabled</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.HasBias">
+            <summary>Whether the toggle input has bias</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.Bias">
+            <summary>The bias of the toggle input</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="P:FinderMod.Inputs.Toggleable`1.SaveKey">
+            <summary>Save key</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Toggleable`1.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Toggleable`1.ToSaveData">
+            <summary>Converts the input into a format convertable to JSON via Newtonsoft.</summary>
+            <returns>A struct containing the data for easy conversion</returns>
+        </member>
+        <member name="M:FinderMod.Inputs.Toggleable`1.FromSaveData(Newtonsoft.Json.Linq.JObject)">
+            <summary>Returns the input to the state it was given the save state data.</summary>
+            <param name="data">The save data to restore data to</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Toggleable`1.GetHistoryLines">
+            <summary>Returns the string representation for the input on the history tab.</summary>
+            <returns>The strings to represent the input on the history tab.</returns>
+        </member>
+        <member name="T:FinderMod.Inputs.Whitespace">
+            <summary>
+            Creates configurable size gap (neglecting margins)
+            </summary>
+            <param name="size">Size of gap. Default 10px</param>
+        </member>
+        <member name="M:FinderMod.Inputs.Whitespace.#ctor(System.Single)">
+            <summary>
+            Creates configurable size gap (neglecting margins)
+            </summary>
+            <param name="size">Size of gap. Default 10px</param>
+        </member>
+        <member name="P:FinderMod.Inputs.Whitespace.Height">
+            <summary>Total height of the element.</summary>
+        </member>
+        <member name="M:FinderMod.Inputs.Whitespace.Create(System.Single,System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the element. For this particular element, simply changes <c>y</c> by the defined <c>size</c>.
+            </summary>
+            <param name="x">What x to start from</param>
+            <param name="y">What y to start from</param>
+            <param name="elements">The list of elements to add to</param>
+        </member>
+        <member name="T:FinderMod.OpComboBox2">
+            <summary>
+            <see cref="T:FinderMod.OpComboBox2"/> with no transparent background and moves to front when selected.
+            </summary>
+            <remarks>Thanks to Henpemaz for providing this.</remarks>
+        </member>
+        <member name="M:FinderMod.OpComboBox2.#ctor(Configurable{System.String},UnityEngine.Vector2,System.Single,System.String[])">
+            <param name="config">Configurable for selector</param>
+            <param name="pos">Position</param>
+            <param name="width">Width</param>
+            <param name="array">List items</param>
+        </member>
+        <member name="M:FinderMod.OpComboBox2.#ctor(Configurable{System.String},UnityEngine.Vector2,System.Single,System.Collections.Generic.List{Menu.Remix.MixedUI.ListItem})">
+            <param name="config">Configurable for selector</param>
+            <param name="pos">Position</param>
+            <param name="width">Width</param>
+            <param name="list">List items</param>
+        </member>
+        <member name="M:FinderMod.OpComboBox2.GrafUpdate(System.Single)">
+            
+        </member>
+        <member name="T:FinderMod.OpResourceSelector2">
+            <summary>
+            <see cref="T:FinderMod.OpResourceSelector2"/> with no transparent background and moves to front when selected.
+            </summary>
+            <remarks>Thanks to Henpemaz for providing this.</remarks>
+        </member>
+        <member name="M:FinderMod.OpResourceSelector2.#ctor(ConfigurableBase,UnityEngine.Vector2,System.Single)">
+            <param name="config">Configurable for selector</param>
+            <param name="pos">Position</param>
+            <param name="width">Width</param>
+        </member>
+        <member name="M:FinderMod.OpResourceSelector2.#ctor(Configurable{System.String},UnityEngine.Vector2,System.Single,Menu.Remix.MixedUI.OpResourceSelector.SpecialEnum)">
+            <param name="config">Configurable for selector</param>
+            <param name="pos">Position</param>
+            <param name="width">Width</param>
+            <param name="listType">Special list type</param>
+        </member>
+        <member name="M:FinderMod.OpResourceSelector2.GrafUpdate(System.Single)">
+            
+        </member>
+        <member name="T:FinderMod.OpTextBox2">
+            <summary>
+            <see cref="T:Menu.Remix.MixedUI.OpTextBox"/> with some minor fixes for both bugs and QOL.
+            </summary>
+        </member>
+        <member name="M:FinderMod.OpTextBox2.#ctor(ConfigurableBase,UnityEngine.Vector2,System.Single)">
+            <summary>
+            Creates element. Contains differing functionality for setting <see cref="F:Menu.Remix.MixedUI.OpTextBox.accept"/> and <see cref="F:Menu.Remix.MixedUI.OpTextBox.allowSpace"/>.
+            </summary>
+            <param name="config">Configurable for text box</param>
+            <param name="pos">Position</param>
+            <param name="sizeX">Width</param>
+        </member>
+        <member name="E:FinderMod.OpTextBox2.OnValueChangedFix">
+            <summary>
+            Fixed implementation of OnValueChanged, called when user has unselected the checkbox after changing its value.
+            </summary>
+        </member>
+        <member name="M:FinderMod.OpTextBox2.Update">
+            
+        </member>
+        <member name="T:FinderMod.OptionBuilder">
+            <summary>
+            Allows <see cref="T:FinderMod.Search.Options.Option"/>s to be constructed without inheritance, at the cost of a very slight amount of speed.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:FinderMod.OptionBuilder.#ctor(System.String)">
+            <summary>
+            Allows <see cref="T:FinderMod.Search.Options.Option"/>s to be constructed without inheritance, at the cost of a very slight amount of speed.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:FinderMod.OptionBuilder.Elements(FinderMod.OptionBuilder.OptionElements)">
+            <summary>
+            Sets a delegate to create the user interface. Run once at option creation when selected, and then cached for later reuse.
+            </summary>
+            <param name="elementsFunc">The delegate to call.</param>
+            <returns>The <see cref="T:FinderMod.OptionBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:FinderMod.OptionBuilder.Execute(FinderMod.OptionBuilder.OptionExecute)">
+            <summary>
+            Sets a delegate to return the distance for a given id: how close the id (initialized in <see cref="T:FinderMod.Search.XORShift128"/>)
+            is to matching the user inputs (preset in the passed in <c>List<IElement></IElement></c>, which are returned from <see cref="M:FinderMod.OptionBuilder.Elements(FinderMod.OptionBuilder.OptionElements)"/>).
+            </summary>
+            <remarks>It is recommended to use the various <c>DistanceIf</c> static methods located in the <see cref="T:FinderMod.Search.Options.Option"/> class when calculating distance.</remarks>
+            <param name="executeFunc">The delegate to call.</param>
+            <returns>The <see cref="T:FinderMod.OptionBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:FinderMod.OptionBuilder.Values(FinderMod.OptionBuilder.OptionValues)">
+            <summary>
+            Sets a delegate to create text display on the Values tab. Optional. Each entry is a new line. <c>null</c> is whitespace.
+            Values returned should represent the same values offered by the search option for the particular seed the <see cref="T:FinderMod.Search.XORShift128"/> argument is initialized to.
+            </summary>
+            <remarks></remarks>
+            <param name="valuesFunc">The delegate to call.</param>
+            <returns>The <see cref="T:FinderMod.OptionBuilder"/> instance for chaining.</returns>
+        </member>
+        <member name="M:FinderMod.OptionBuilder.Register">
+            <summary>
+            Registers the created option. <see cref="M:FinderMod.OptionBuilder.Execute(FinderMod.OptionBuilder.OptionExecute)"/> is required to have been called.
+            </summary>
+        </member>
+        <member name="T:FinderMod.OptionBuilder.OptionElements">
+            <summary>Delegate definition for creating the user interface for an option.</summary>
+            <returns>List of elements to put on user interface.</returns>
+        </member>
+        <member name="T:FinderMod.OptionBuilder.OptionExecute">
+            <summary>
+            Delegate definition for finding the distance for a particular id, initialized by the <see cref="T:FinderMod.Search.XORShift128"/> argument.
+            Distance should be calculated such that the closer an id's inputs match, the closer the distance is to 0.
+            Additionally, each input should ideally contribute the input's bias at most to the distance.
+            The various <c>DistanceIf</c> static methods in the <see cref="T:FinderMod.Search.Options.Option"/> should take care of most use cases.
+            </summary>
+            <param name="Random">Random number generator, pre-initialized with an id.</param>
+            <param name="elements">Elements created by <see cref="T:FinderMod.OptionBuilder.OptionElements"/>, with user-set values.</param>
+            <returns>Distance to the id.</returns>
+        </member>
+        <member name="T:FinderMod.OptionBuilder.OptionValues">
+            <summary>
+            Delegate definition for returning the values of a particular id, displayed on the Values tab.
+            </summary>
+            <param name="Random"></param>
+            <returns></returns>
+        </member>
+        <member name="T:FinderMod.Search.Options.APIBasicOption">
+            <summary>
+            Wrapper class used by the API if the user doesn't want to make their own Option. Do not use this directly; use the <see cref="T:FinderMod.API"/>.
+            </summary>
+        </member>
+        <member name="T:FinderMod.Search.Options.APIBasicOption.APIExecute">
+            <summary>
+            Delegate for Execute method. Should return a distance.
+            </summary>
+            <param name="Random">
+            Instance of <see cref="T:FinderMod.Search.XORShift128"/> initialized with the seed of the creature to search.
+            Use as you would <see cref="T:UnityEngine.Random"/>.
+            </param>
+            <param name="elements">List of elements provided by the user.</param>
+            <returns></returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.APIBasicOption.Execute(FinderMod.Search.XORShift128)">
+            <summary>
+            Invokes the provided <see cref="T:FinderMod.Search.Options.APIBasicOption.APIExecute"/> delegate to return a distance.
+            </summary>
+            <param name="Random">Instance of <see cref="T:FinderMod.Search.XORShift128"/> initialized with the seed of the creature to search.</param>
+            <returns></returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.APIBasicOption.GetValues(FinderMod.Search.XORShift128)">
+            <summary>
+            Basic API option does not support GetValues. Returns an error message.
+            </summary>
+            <param name="Random">Instance of <see cref="T:FinderMod.Search.XORShift128"/> initialized with the seed of the creature to search.</param>
+            <returns>Message stating that this option does not have a values implementation.</returns>
+        </member>
+        <member name="T:FinderMod.Search.Options.HazerVarsOption.HazerColorGroup">
+            <summary>
+            Simplified group for easier access of members
+            </summary>
+            <param name="skinColorInput">Skin color input</param>
+            <param name="secondColorInput">Secondary color input</param>
+            <param name="eyeColorInput">Eye color input</param>
+        </member>
+        <member name="M:FinderMod.Search.Options.HazerVarsOption.HazerColorGroup.#ctor(FinderMod.Inputs.ColorHSLInput,FinderMod.Inputs.ColorHSLInput,FinderMod.Inputs.ColorHSLInput)">
+            <summary>
+            Simplified group for easier access of members
+            </summary>
+            <param name="skinColorInput">Skin color input</param>
+            <param name="secondColorInput">Secondary color input</param>
+            <param name="eyeColorInput">Eye color input</param>
+        </member>
+        <member name="T:FinderMod.Search.Options.LizardColorsOption.LizardInput">
+            <summary>
+            Version of <see cref="T:FinderMod.Inputs.EnumInput`1"/> for <see cref="T:FinderMod.Search.Util.LizardUtil.LizardType"/> that forces a menu update
+            </summary>
+        </member>
+        <member name="T:FinderMod.Search.Options.LizardColorsOption.LizardColor">
+            <summary>
+            A very poor implementation of a switch statement
+            </summary>
+            <param name="lizInput"></param>
+        </member>
+        <member name="M:FinderMod.Search.Options.LizardColorsOption.LizardColor.#ctor(FinderMod.Search.Options.LizardColorsOption.LizardInput)">
+            <summary>
+            A very poor implementation of a switch statement
+            </summary>
+            <param name="lizInput"></param>
+        </member>
+        <member name="T:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics">
+            <summary>
+            Base option for lizard cosmetics. Useful to extend for modded lizards that do not change the default cosmetics code or add their own afterwards.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.type">
+            <summary>
+            The type of the lizard.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.cosmetics">
+            <summary>
+            A container for any <see cref="T:FinderMod.Inputs.LizardCosmetics.Subholder"/>s used by the input
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.returnMelanistic">
+            <summary>
+            Whether or not to return a <see cref="T:FinderMod.Search.Util.LizardUtil.Melanistic"/> in <see cref="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetResults(FinderMod.Search.XORShift128,FinderMod.Search.Util.LizardUtil.RotType)"/>
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.lizardRotCosmetic">
+            <summary>
+            Contains the <see cref="T:FinderMod.Inputs.LizardCosmetics.LizardRotCosmetic"/> instance for referencing during distance calculations.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.#ctor(FinderMod.Search.Util.LizardUtil.LizardType)">
+            <summary>
+            Initializes with a <see cref="T:FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer"/> containing a <see cref="T:FinderMod.Inputs.LizardCosmetics.LizardRotSubholder"/> if Watcher is enabled.
+            </summary>
+            <param name="type">Lizard type</param>
+        </member>
+        <member name="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetResults(FinderMod.Search.XORShift128)">
+            <summary>
+            Runs <see cref="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetResults(FinderMod.Search.XORShift128,FinderMod.Search.Util.LizardUtil.RotType)"/> with the rot type specified by <see cref="F:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.rotTypeInput"/>
+            </summary>
+            <param name="Random">An instance of <see cref="T:FinderMod.Search.XORShift128"/> initialized to the seed of the lizard</param>
+            <returns>All lizard cosmetics generated by the lizard</returns>
+            <seealso cref="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetResults(FinderMod.Search.XORShift128,FinderMod.Search.Util.LizardUtil.RotType)"/>
+        </member>
+        <member name="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetResults(FinderMod.Search.XORShift128,FinderMod.Search.Util.LizardUtil.RotType)">
+            <summary>
+            Returns all lizard cosmetics generated by the lizard.
+            </summary>
+            <param name="Random">An instance of <see cref="T:FinderMod.Search.XORShift128"/> initialized to the seed of the lizard</param>
+            <param name="rotType">The rot stage of the lizard</param>
+            <returns>All lizard cosmetics generated by the lizard assuming an unmodified call to <see cref="M:Lizard.#ctor(AbstractCreature,World)"/></returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.LizardCosmetics.BaseLizardCosmetics.GetValues(FinderMod.Search.XORShift128)">
+            <summary>
+            Returns strings to display in the Values tab for a particular id.
+            </summary>
+            <param name="Random"></param>
+            <returns>A string representation for the cosmetics of an id</returns>
+        </member>
+        <member name="T:FinderMod.Search.Options.Option">
+            <summary>
+            A search option. Fill out <see cref="F:FinderMod.Search.Options.Option.elements"/> in the constructor, and keep references so you can use the values in <see cref="M:FinderMod.Search.Options.Option.Execute(FinderMod.Search.XORShift128)"/>.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.#ctor">
+            <summary>
+            A search option. Fill out <see cref="F:FinderMod.Search.Options.Option.elements"/> in the constructor, and keep references so you can use the values in <see cref="M:FinderMod.Search.Options.Option.Execute(FinderMod.Search.XORShift128)"/>.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.elements">
+            <summary>
+            The elements to show in the space. Must be added to in the constructor.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.CreateOptions(System.Single@,System.Collections.Generic.List{Menu.Remix.MixedUI.UIelement})">
+            <summary>
+            Creates the UI elements for the Remix menu. Called internally.
+            </summary>
+            <param name="y">A variable initialized to the y-value of the top of the option</param>
+            <param name="output">The list of UI elements to output to, for adding to the remix menu later.</param>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.Execute(FinderMod.Search.XORShift128)">
+            <summary>
+            Execution, assuming an arbitrary given seed. Returns the distance of the calculated fields for the option from the values in the inputs.
+            <para>Things to keep in mind for a good distance calculation:</para>
+            <list type="bullet">
+            <item>
+            <description>
+            All inputs that should affect the result should be accounted for.
+            </description>
+            </item>
+            <item>
+            <description>
+            Most common input types are accounted for with the built-in <c>DistanceIf</c> helper methods, which already account for most factors.
+            </description>
+            </item>
+            <item>
+            <description>
+            If an input does not have a <c>DistanceIf</c> implementation, it is up to you to replace its calculation.
+            An ideal distance calculation should be between 0 and 1, then multiplied by the input's bias.
+            If the input is disabled, it should contribute 0 distance.
+            </description>
+            </item>
+            </list>
+            </summary>
+            <param name="Random">The random number generator correlating with the seed. Use like <see cref="T:UnityEngine.Random"/>.</param>
+            <returns>The calculated distance.</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.GetValues(System.Int32)">
+            <summary>
+            Values to display in the the values tab.
+            </summary>
+            <param name="id">The id of the seed. Feed into</param>
+            <returns>Strings to display in labels, or null for whitespace.</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.GetValues(FinderMod.Search.XORShift128)">
+            <summary>
+            Returns strings to display in the Values tab for a particular id.
+            It is recommended to use <c>yield return</c> when implementing this method.
+            <c>null</c> is treated as whitespace, and is a shorter amount than there would be by returning an empty string.
+            </summary>
+            <param name="Random">An instance of <see cref="T:FinderMod.Search.XORShift128"/>, initialized to the seed of the creature.</param>
+            <returns>A string representation of the traits for an id</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.UpdateQueryBox">
+            <summary>
+            Force updates the query box in the Search tab.
+            </summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.ToJson">
+            <summary>
+            Converts the Option to a JSON representation, for saving or sharing.
+            </summary>
+            <returns>A JSON representation of the Option stored as a <see cref="T:Newtonsoft.Json.Linq.JObject"/></returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.FromJson(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Returns the Option to the state stored in the JSON. Assumes JSON is properly formatted, and may throw an exception otherwise.
+            </summary>
+            <param name="json">A <see cref="T:Newtonsoft.Json.Linq.JObject"/> representation containing the JSON of the object</param>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.ToString">
+            <summary>
+            Returns a string representation of the current configuration of inputs in the Option. Used in the history tab.
+            </summary>
+            <returns>A string representation of the current configuruation of inputs in the Option</returns>
+        </member>
+        <member name="T:FinderMod.Search.Options.Option.Personality">
+            <summary>
+            <para>
+            Personality struct. When used with the <see cref="T:FinderMod.Search.XORShift128"/> constructor, generates personality values the same way as the game without changing the random state.
+            Field names are based on shortenings by the mod Visible ID.
+            </para>
+            <para>When using, ensure that it is created first or immediately after initializing a state so that it may make use of the seed properly.</para>
+            </summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.Personality.#ctor">
+            <summary>Do not use parameterless constructor.</summary>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.Personality.#ctor(FinderMod.Search.XORShift128)">
+            <summary>
+            Initializes the personality struct and resets the random state when done so it can be used.
+            </summary>
+            <param name="Random">The random state. Ensure that it is created before any other Random calls so it may make use of the seed properly.</param>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.agg">
+            <summary>Aggression</summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.brv">
+            <summary>Bravery</summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.dom">
+            <summary>Dominance</summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.nrg">
+            <summary>Energy</summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.nrv">
+            <summary>Nervous</summary>
+        </member>
+        <member name="F:FinderMod.Search.Options.Option.Personality.sym">
+            <summary>Sympathy</summary>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.ClampedRandomVariation(System.Single,System.Single,System.Single,FinderMod.Search.XORShift128)">
+            <summary>
+            Simulates <see cref="M:RWCustom.Custom.ClampedRandomVariation(System.Single,System.Single,System.Single)"/> using <see cref="T:FinderMod.Search.XORShift128"/>.
+            Creates an S-curve centered at <c>baseValue</c> and clamps between 0 and 1.
+            </summary>
+            <param name="baseValue">Median value</param>
+            <param name="maxDeviation">Max value</param>
+            <param name="k"></param>
+            <param name="Random">Current state of random number generator</param>
+            <returns>Value clamped between 0 and 1</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.WrappedRandomVariation(System.Single,System.Single,System.Single,FinderMod.Search.XORShift128)">
+            <summary>
+            Simulates <see cref="M:RWCustom.Custom.ClampedRandomVariation(System.Single,System.Single,System.Single)"/> using <see cref="T:FinderMod.Search.XORShift128"/>.
+            Creates an S-curve centered at <c>baseValue</c> and wraps between 0 and 1.
+            </summary>
+            <param name="baseValue">Median value</param>
+            <param name="maxDeviation">Max value</param>
+            <param name="k"></param>
+            <param name="Random">Current state of random number generator</param>
+            <returns>Value wrapped between 0 and 1</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(System.Single,FinderMod.Inputs.RangedInput{System.Single})">
+            <summary>Determines the distance for a ranged float input.</summary>
+            <param name="num">Value to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(System.Int32,FinderMod.Inputs.RangedInput{System.Int32})">
+            <summary>Determines the distance for a ranged int input.</summary>
+            <param name="num">Value to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(UnityEngine.Color,FinderMod.Inputs.Input{UnityEngine.Color})">
+            <summary>Determines the distance for an RGB color input.</summary>
+            <param name="col">Color to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(HSLColor,FinderMod.Inputs.ColorHSLInput)">
+            <summary>Determines the distance for an HSL color input.</summary>
+            <param name="col">Color to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(System.Boolean,FinderMod.Inputs.Input{System.Boolean})">
+            <summary>Determines the distance for a boolean input.</summary>
+            <param name="b">Value to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(System.Nullable{System.Int32},FinderMod.Inputs.Toggleable{FinderMod.Inputs.IntInput})">
+            <summary>Determines the distance for a toggleable ranged int input.</summary>
+            <param name="val">Value to compare. Use <c>null</c> to also check against toggle.</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.DistanceIf(System.Nullable{System.Single},FinderMod.Inputs.Toggleable{FinderMod.Inputs.FloatInput})">
+            <summary>Determines the distance for a toggleable ranged float input.</summary>
+            <param name="val">Value to compare. Use <c>null</c> to also check against toggle.</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="M:FinderMod.Search.Options.Option.WrapDistanceIf(System.Single,FinderMod.Inputs.Input{System.Single})">
+            <summary>Determines the distance for a ranged float input, wrapped between 0 and 1. Useful for <see cref="T:FinderMod.Inputs.HueInput"/>.</summary>
+            <param name="num">Value to compare</param>
+            <param name="target">Input to check</param>
+            <returns>Distance between 0 and 1 times bias</returns>
+        </member>
+        <member name="T:FinderMod.Search.Threadmaster">
+            <summary>
+            Runs ID Finder queries
+            </summary>
+        </member>
+        <member name="P:FinderMod.Search.Threadmaster.Running">
+            <summary>Whether or not the search is running</summary>
+        </member>
+        <member name="P:FinderMod.Search.Threadmaster.Progress">
+            <summary>Progress from 0 to 1</summary>
+        </member>
+        <member name="P:FinderMod.Search.Threadmaster.AbortReason">
+            <summary>Reason for an abort, or null if not</summary>
+        </member>
+        <member name="M:FinderMod.Search.Threadmaster.#ctor(System.Collections.Generic.List{FinderMod.Search.Options.Option},System.Int32,System.Int32,System.ValueTuple{System.Int32,System.Int32},System.Boolean)">
+            <summary>
+            Initializes a searcher. Use <see cref="M:FinderMod.Search.Threadmaster.Run"/> to actually run the thing.
+            </summary>
+            <param name="options">Options to run with</param>
+            <param name="threads">Number of threads to use</param>
+            <param name="results">Number of results to return</param>
+            <param name="range">Min and max, inclusive, as a tuple</param>
+            <param name="gpu">Not implemented. Do not use.</param>
+        </member>
+        <member name="M:FinderMod.Search.Threadmaster.Run">
+            <summary>Starts a search.</summary>
+            <remarks>Does nothing if a search has already been started. Use <see cref="M:FinderMod.Search.Threadmaster.Abort(System.String)"/> to stop a search.</remarks>
+        </member>
+        <member name="M:FinderMod.Search.Threadmaster.GetResults">
+            <summary>
+            Returns search results such that the first dimension is each query and the second dimension is the results from each query.
+            </summary>
+            <returns>Results in a two-dimensional array with queries on the outer and individual results on the inner</returns>
+        </member>
+        <member name="M:FinderMod.Search.Threadmaster.Abort(System.String)">
+            <summary>
+            Aborts an ongoing search
+            </summary>
+            <param name="reason"></param>
+        </member>
+        <member name="T:FinderMod.Search.Threadmaster.Result">
+            <summary>
+            Contains a search result.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Threadmaster.Result.id">
+            <summary>The id of the result</summary>
+        </member>
+        <member name="F:FinderMod.Search.Threadmaster.Result.dist">
+            <summary>The distance of the result from the actual query</summary>
+        </member>
+        <member name="T:FinderMod.Search.Util.LizardUtil">
+            <summary>
+            Collection of utilities for lizard searching
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.Util.LizardUtil.MISSING_PENALTY">
+            <summary>
+            Penalty applied to missing results
+            </summary>
+        </member>
+        <member name="T:FinderMod.Search.XORShift128">
+            <summary>
+            Version of <see cref="T:UnityEngine.Random"/> able to be created individually, which is useful for multithreading purposes.
+            </summary>
+        </member>
+        <member name="F:FinderMod.Search.XORShift128.x">
+            <summary>State variable</summary>
+        </member>
+        <member name="F:FinderMod.Search.XORShift128.y">
+            <summary>State variable</summary>
+        </member>
+        <member name="F:FinderMod.Search.XORShift128.z">
+            <summary>State variable</summary>
+        </member>
+        <member name="F:FinderMod.Search.XORShift128.w">
+            <summary>State variable</summary>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.InitState(System.Int32)">
+            <summary>Initializes with a seed.</summary>
+            <param name="seed">Seed to initialize with</param>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.InitState(System.UInt32)">
+            <summary>Initializes with a seed.</summary>
+            <param name="seed">Seed to initialize with</param>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.InitState(System.UInt32,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>Initializes with a state</summary>
+            <param name="x"><see cref="F:FinderMod.Search.XORShift128.x"/></param>
+            <param name="y"><see cref="F:FinderMod.Search.XORShift128.y"/></param>
+            <param name="z"><see cref="F:FinderMod.Search.XORShift128.z"/></param>
+            <param name="w"><see cref="F:FinderMod.Search.XORShift128.w"/></param>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.Shift">
+            <summary>Advances the random state without returning a number.</summary>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.Shift(System.Int32)">
+            <summary>Advances the random state n times without returning a number.</summary>
+            <param name="n">The amount of times to shift</param>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.Range(System.Int32,System.Int32)">
+            <summary>Equivalent to <see cref="M:UnityEngine.Random.Range(System.Int32,System.Int32)"/></summary>
+            <param name="min">Minimum, inclusive.</param>
+            <param name="max">Maximum, exclusive.</param>
+            <returns>Random value between min (inclusive) and max (exclusive).</returns>
+        </member>
+        <member name="P:FinderMod.Search.XORShift128.Value">
+            <summary>Equivalent to <see cref="P:UnityEngine.Random.value"/>. Returns a random value between 0 and 1, inclusive.</summary>
+        </member>
+        <member name="M:FinderMod.Search.XORShift128.Range(System.Single,System.Single)">
+            <summary>Equivalent to <see cref="M:UnityEngine.Random.Range(System.Single,System.Single)"/></summary>
+            <param name="min">Minimum, inclusive.</param>
+            <param name="max">Maximum, inclusive.</param>
+            <returns>Random value between min and max, inclusive.</returns>
+        </member>
+    </members>
+</doc>

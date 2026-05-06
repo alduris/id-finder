@@ -89,6 +89,7 @@ namespace FinderMod.Search
                 "Centipede Variations (Aqua)",
                 "Miros Vulture Variations",
                 "Yeek Color",
+                "Lilypuck Variations",
 
                 // MSC
                 "Elite Scavenger Skills",
