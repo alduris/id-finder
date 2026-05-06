@@ -186,13 +186,13 @@ namespace FinderMod.Search.Options
         /// <param name="target">Input to check</param>
         /// <returns>Distance between 0 and 1 times bias</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float WrapDistanceIf(float num, Input<float>? target)
+        public static float WrapDistanceIf(float num, RangedInput<float>? target)
         {
             if (target != null && target.enabled)
             {
-                float a = Custom.Decimal(num);
-                float b = Custom.Decimal(target.value);
-                return Mathf.Min(Mathf.Abs(a - b), Mathf.Abs(a - (b + 1f)), Mathf.Abs(a - (b - 1f))) * target.bias;
+                float a = num;
+                float b = target.value;
+                return Mathf.Min(Mathf.Abs(a - b), Mathf.Abs((a + 1f) - b), Mathf.Abs((a - 1f) - b)) / (target.max - target.min) * target.bias;
             }
             return 0f;
         }

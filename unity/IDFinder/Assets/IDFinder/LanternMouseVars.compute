@@ -1,0 +1,39 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    /*
+        if (Random.Value < 0.01f)
+        {
+            hue = Random.Value;
+        }
+        else
+        {
+            if (Random.Value < 0.5f)
+            {
+                hue = Mathf.Lerp(0f, 0.1f, Random.Value);
+            }
+            else
+            {
+                hue = Mathf.Lerp(0.5f, 0.65f, Random.Value);
+            }
+        }
+        dominance = Random.Value;
+    */
+    
+    bool flag = RandomValue(random) < 0.01;
+    float hue = RandomValueIf(random, flag);
+    flag = !flag;
+    bool flag2 = RandomValueIf(random, flag) < 0.5;
+    float value = RandomValueIf(random, flag);
+    hue = lerp(hue, lerp(lerp(0.5, 0.65, value), lerp(0, 0.1, value), flag2), flag);
+    
+    d += WrapDistance(hue, inputs[0]);
+    d += Distance(RandomValue(random), inputs[1]);
+    
+    return d;
+}

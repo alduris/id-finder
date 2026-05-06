@@ -7,6 +7,7 @@ using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -17,6 +18,7 @@ namespace FinderMod.Search.Options
 
         public BoxWormVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.BoxWorm;
             elements = [
                 SizeVarInput = new FloatInput("Size", 1f, 1.2f),
                 NumLarvaeInput = new IntInput("Number of larvae", 1, 5) {description = "Note: box worms with 5 larvae are extremely rare, with a one in 8 million chance."},

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using FinderMod.Search.Options;
 using MoreSlugcats;
 using UnityEngine;
+using Watcher;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace FinderMod.Search.Util
@@ -34,8 +36,35 @@ namespace FinderMod.Search.Util
             Eel,
             Blizzard,
             Basilisk,
-            Indigo
+            Indigo,
+            Peach
         }
+
+        public static CreatureTemplate.Type? LizardTypeToTemplateType(LizardType type)
+        {
+            return type switch
+            {
+                LizardType.Pink => CreatureTemplate.Type.PinkLizard,
+                LizardType.Green => CreatureTemplate.Type.GreenLizard,
+                LizardType.Blue => CreatureTemplate.Type.BlueLizard,
+                LizardType.Yellow => CreatureTemplate.Type.YellowLizard,
+                LizardType.White => CreatureTemplate.Type.WhiteLizard,
+                LizardType.Red => CreatureTemplate.Type.RedLizard,
+                LizardType.Black => CreatureTemplate.Type.BlackLizard,
+                LizardType.Salamander => CreatureTemplate.Type.Salamander,
+                LizardType.Cyan => CreatureTemplate.Type.CyanLizard,
+                LizardType.Caramel when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.SpitLizard,
+                LizardType.Zoop when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.ZoopLizard,
+                LizardType.Eel when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.EelLizard,
+                LizardType.Train when ModManager.MSC => MoreSlugcatsEnums.CreatureTemplateType.TrainLizard,
+                LizardType.Blizzard when ModManager.Watcher => WatcherEnums.CreatureTemplateType.BlizzardLizard,
+                LizardType.Basilisk when ModManager.Watcher => WatcherEnums.CreatureTemplateType.BasiliskLizard,
+                LizardType.Indigo when ModManager.Watcher => WatcherEnums.CreatureTemplateType.IndigoLizard,
+                LizardType.Peach when ModManager.Watcher => WatcherEnums.CreatureTemplateType.PeachLizard,
+                _ => null,
+            };
+        }
+
         public enum LizardBodyScaleType
         {
             Patch = 0,
@@ -62,6 +91,8 @@ namespace FinderMod.Search.Util
             LizardRot,
             SkinkSpeckles,
             SkinkStripes, // no vars
+            PeachBackFin,
+            PeachHeadStripes
         }
         public enum RotType
         {
@@ -161,6 +192,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 6,
                 LizardType.Basilisk => 5,
                 LizardType.Indigo => 7,
+                LizardType.Peach => 5,
                 _ => throw new NotImplementedException()
             };
         }
@@ -177,6 +209,7 @@ namespace FinderMod.Search.Util
                 LizardType.Zoop => 10,
                 LizardType.Train => 10,
                 LizardType.Indigo => 7,
+                LizardType.Peach => 7,
                 _ => 0
             };
         }
@@ -219,6 +252,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 1.4f,
                 LizardType.Basilisk => 1.1f,
                 LizardType.Indigo => 1.2f,
+                LizardType.Peach => 0.65f,
                 _ => throw new NotImplementedException()
             };
             float bodyStiffnessParam = type switch
@@ -239,6 +273,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 0.55f,
                 LizardType.Basilisk => 0.2f,
                 LizardType.Indigo => 0.5f,
+                LizardType.Peach => 0.8f,
                 _ => throw new NotImplementedException()
             };
             float tailLengthFactorParam = type switch
@@ -259,6 +294,7 @@ namespace FinderMod.Search.Util
                 LizardType.Blizzard => 0.3f,
                 LizardType.Basilisk => 0.6f,
                 LizardType.Indigo => 0.9f,
+                LizardType.Peach => 1.44f,
                 _ => throw new NotImplementedException(),
             };
 
@@ -286,10 +322,17 @@ namespace FinderMod.Search.Util
         private static float GetMaxBodyAndTailLength(LizardType type) => GetBodyAndTailLength(type, 1.4f);
 
 
-        public struct AntennaeVars
+        public interface ILizardCosmeticVars
         {
-            public AntennaeVars(XORShift128 Random)
+            public IEnumerable<string> GetValues();
+        }
+
+        public struct AntennaeVars : ILizardCosmeticVars
+        {
+            public AntennaeVars(int id, XORShift128 Random)
             {
+                this.id = id;
+
                 // Get values
                 length = Random.Value;
                 alpha = length * 0.9f + Random.Value * 0.1f;
@@ -299,17 +342,27 @@ namespace FinderMod.Search.Util
                 Random.Shift(2 * segments);
             }
 
+            public int id;
             public float length;
             public float alpha;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has Antennae:";
+                yield return $"  Length: {length}";
+                yield return $"  Alpha: {alpha}";
+            }
         }
 
-        public struct AxolotlGillsVars
+        public struct AxolotlGillsVars : ILizardCosmeticVars
         {
-            public AxolotlGillsVars(XORShift128 Random, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
+            public AxolotlGillsVars(int id, XORShift128 Random, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
+                this.id = id;
+
                 rigor = Random.Value;
 
-                Random.Shift();
+                sizeFac = Mathf.Pow(Random.Value, 0.7f);
 
                 graphic = Random.Range(0, 6);
                 if (graphic == 2)
@@ -320,35 +373,64 @@ namespace FinderMod.Search.Util
 
                 numGills = Random.Range(2, 8);
 
+                widthFac = Random.Value;
+                backwardsFac = Mathf.Lerp(0.1f, 0.9f, Random.Value);
+
                 // Offset picker
-                Random.Shift(2 + 4 * numGills);
+                Random.Shift(4 * numGills);
             }
 
+            public int id;
             public float rigor;
             public int numGills;
             public int graphic;
+            public float sizeFac;
+            public float widthFac;
+            public float backwardsFac;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has AxolotlGills:";
+                yield return $"  Rigor: {rigor}";
+                yield return $"  Size factor: {sizeFac}";
+                yield return $"  Width factor: {widthFac}";
+                yield return $"  Backwards factor: {backwardsFac}";
+                yield return $"  Number of gills: {numGills}";
+                yield return $"  Graphic: {graphic}";
+            }
         }
 
-        public struct BodyStripesVars
+        public struct BodyStripesVars : ILizardCosmeticVars
         {
-            public BodyStripesVars(XORShift128 Random, float tailLength, LizardType type)
+            public BodyStripesVars(int id, XORShift128 Random, float tailLength, LizardType type)
             {
+                this.id = id;
+
                 float bodyAndTailLength = GetBodyAndTailLength(type, tailLength);
                 float bodyRange = Mathf.Lerp(0.4f, 0.8f, Random.Value) * bodyAndTailLength;
                 float num4 = Mathf.Lerp(5f, 12f, Random.Value) * 1.5f;
                 numScales = (int)(bodyRange / num4);
-                if (numScales > 3) numScales = 3;
+                if (numScales < 3) numScales = 3;
             }
 
+            public int id;
             public int numScales;
 
             public static int MaxNumScales(LizardType type) => (int)((0.8f * GetMaxBodyAndTailLength(type)) / (5f * 1.5f));
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has BodyStripes:";
+                yield return $"  Number of scales: {numScales}";
+            }
         }
 
-        public struct BumpHawkVars
+        public struct BumpHawkVars : ILizardCosmeticVars
         {
-            public BumpHawkVars(XORShift128 Random, float tailLength, LizardType type)
+            public BumpHawkVars(int id, XORShift128 Random, float tailLength, LizardType type)
             {
+                this.id = id;
+
                 // Get body and tail length
                 float bodyAndTailLength = GetBodyAndTailLength(type, tailLength);
 
@@ -375,20 +457,39 @@ namespace FinderMod.Search.Util
             public static int MinNumBumps(LizardType type) => (int)(MinSpineLength(type) / 12f);
             public static int MaxNumBumps(LizardType type) => (int)(0.7f * GetMaxBodyAndTailLength(type) / 3f);
 
+            public int id;
             public bool colored;
             public float spineLength;
             public int numBumps;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has BumpHawk:";
+                yield return $"  Number of bumps: {numBumps}";
+                yield return $"  Spine length: {spineLength}";
+                yield return $"  Is colored: {(colored ? "Yes" : "No")}";
+            }
         }
 
-        public struct JumpRingsVars();
-
-        public struct LizardRotModule
+        public struct JumpRingsVars(int id) : ILizardCosmeticVars
         {
+            public int id = id;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has JumpRings";
+            }
+        }
+
+        public struct LizardRotModule : ILizardCosmeticVars
+        {
+            public RotType rotType;
             public int numTentacles = 0;
             public float[] tentacleLengths;
 
             public LizardRotModule(XORShift128 Random, RotType state)
             {
+                rotType = state;
                 if (state != RotType.None && state != RotType.Slight)
                 {
                     numTentacles = Random.Range(5, 10);
@@ -416,16 +517,29 @@ namespace FinderMod.Search.Util
                     tentacleLengths = [];
                 }
             }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return $"LizardRotModule ({rotType}):";
+                yield return $"  Number of tentacles: {numTentacles}";
+                yield return $"  Tentacle lengths:";
+                for (int i = 0; i < numTentacles; i++)
+                {
+                    yield return $"    Tentacle {i + 1}: {tentacleLengths[i]}";
+                }
+            }
         }
 
-        public struct LizardRotVars
+        public struct LizardRotVars : ILizardCosmeticVars
         {
+            public RotType rotType;
             public int numLegs;
             public int numDeadLegs;
             public int numEyes;
 
             public LizardRotVars(XORShift128 Random, LizardRotModule rotModule, RotType state)
             {
+                rotType = state;
                 numLegs = rotModule.numTentacles;
                 for (int i = 0; i < numLegs; i++)
                 {
@@ -465,12 +579,29 @@ namespace FinderMod.Search.Util
                 numEyes = Random.Range(2, Random.Range(4, 7));
                 Random.Shift(5 * numEyes);
             }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return $"LizardRotGraphics ({rotType}):";
+                yield return $"  Number of alive tentacles: {numLegs}";
+                yield return $"  Number of dead tentacles: {numDeadLegs}";
+                yield return $"  Number of eyes: {numEyes}";
+            }
         }
 
-        public struct LongHeadScalesVars
+        public struct LongHeadScalesVars : ILizardCosmeticVars
         {
-            public LongHeadScalesVars(XORShift128 Random, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
+            public int id;
+            public float rigor;
+            public int graphic;
+            public bool colored;
+            public float length;
+            public float width;
+
+            public LongHeadScalesVars(int id, XORShift128 Random, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
+                this.id = id;
+
                 // Some values
                 rigor = Random.Value;
                 Random.Shift(2); // GenerateTwoHorns()
@@ -501,17 +632,31 @@ namespace FinderMod.Search.Util
                 width = Mathf.Lerp(0.65f, 1.2f, randomWidth * size);
             }
 
-            public float rigor;
-            public int graphic;
-            public bool colored;
-            public float length;
-            public float width;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has LongHeadScales:";
+                yield return $"  Length: {length}";
+                yield return $"  Width: {width}";
+                yield return $"  Rigor: {rigor}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Is colored: {(colored ? "Yes" : "No")}";
+            }
         }
 
-        public struct LongShoulderScalesVars
+        public struct LongShoulderScalesVars : ILizardCosmeticVars
         {
-            public LongShoulderScalesVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
+            public int id;
+            public LizardBodyScaleType scaleType;
+            public int numScales;
+            public bool colored;
+            public float minSize;
+            public float maxSize;
+            public int graphic;
+
+            public LongShoulderScalesVars(int id, XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
             {
+                this.id = id;
+
                 scaleType = LizardBodyScaleType.Patch;
                 if (type != LizardType.Pink || Random.Value < 0.33333334f)
                 {
@@ -588,18 +733,81 @@ namespace FinderMod.Search.Util
             public static int MinNumScales(LizardType type) => Math.Min(4, Math.Min(MinGenTwoLines(type, 0.07f, 3f), MinGenSegments(type, 0.1f)));
             public static int MaxNumScales(LizardType type) => Math.Max(14, Math.Max(MaxGenTwoLines(type, 0.07f, 1f, 3f), MaxGenSegments(type, 0.1f, 0.8f)));
 
-            public LizardBodyScaleType scaleType;
-            public int numScales;
-            public bool colored;
-            public float minSize;
-            public float maxSize;
-            public int graphic;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has LongShoulderScales:";
+                yield return $"  Min size: {minSize}";
+                yield return $"  Max size: {maxSize}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Scale type: {scaleType}";
+                yield return $"  Number of scales: {numScales}";
+                yield return $"  Is colored: {(colored ? "Yes" : "No")}";
+            }
         }
 
-        public struct ShortBodyScalesVars
+        public struct PeachBackFinVars : ILizardCosmeticVars
         {
-            public ShortBodyScalesVars(XORShift128 Random, float tailLength, LizardType type)
+            public int id;
+            public float minSize;
+            public float maxSize;
+            public float sizeSkewExponent;
+            public int graphic;
+            public int bumps;
+            public float scaleX;
+
+            public PeachBackFinVars(int id, XORShift128 Random)
             {
+                this.id = id;
+
+                minSize = Mathf.Lerp(0.27f, 0.35f, Mathf.Pow(Random.Value, 2f));
+                maxSize = Mathf.Lerp(minSize, 0.7f, Random.Value);
+                sizeSkewExponent = Mathf.Lerp(0.5f, 1.5f, Random.Value);
+                graphic = (Random.Value < 0.5f) ? 4 : 5;
+                bumps = (Random.Value < 0.5f) ? 3 : 4;
+                scaleX = Mathf.Lerp(1.5f, 2.5f, Random.Value);
+            }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has PeachBackFin:";
+                yield return $"  Min size: {minSize}";
+                yield return $"  Max size: {maxSize}";
+                yield return $"  Size skew exponent: {sizeSkewExponent}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Number of bumps: {bumps}";
+                yield return $"  Scale x: {scaleX}";
+            }
+        }
+
+        public struct PeachHeadStripesVars : ILizardCosmeticVars
+        {
+            public int id;
+            public float alpha;
+
+            public PeachHeadStripesVars(int id, XORShift128 Random)
+            {
+                this.id = id;
+
+                alpha = Random.Value;
+            }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has PeachHeadStripes:";
+                yield return $"  Alpha: {alpha}";
+            }
+        }
+
+        public struct ShortBodyScalesVars : ILizardCosmeticVars
+        {
+            public int id;
+            public LizardBodyScaleType scaleType;
+            public int numScales;
+
+            public ShortBodyScalesVars(int id, XORShift128 Random, float tailLength, LizardType type)
+            {
+                this.id = id;
+
                 scaleType = (LizardBodyScaleType)Random.Range(0, 3);
                 if (type == LizardType.Green && Random.Value < 0.7f) scaleType = LizardBodyScaleType.Segments;
                 else if (type == LizardType.Blue && Random.Value < 0.93f) scaleType = LizardBodyScaleType.TwoLines;
@@ -632,31 +840,74 @@ namespace FinderMod.Search.Util
             public static int MinNumScales(LizardType type) => Math.Min(4, Math.Min(MinGenTwoLines(type, 0.1f, 1f), MinGenSegments(type, 0.1f)));
             public static int MaxNumScales(LizardType type) => Math.Max(14, Math.Max(MaxGenTwoLines(type, 0.1f, 1f, 1f), MaxGenSegments(type, 0.1f, 0.9f)));
 
-            public LizardBodyScaleType scaleType;
-            public int numScales;
-        }
-
-        public struct SkinkSpecklesVars
-        {
-            public int spots;
-
-            public SkinkSpecklesVars(XORShift128 Random)
+            public readonly IEnumerable<string> GetValues()
             {
-                spots = Random.Range(Random.Range(0, 20), 50);
-                Random.Shift(3 * spots);
+                yield return "Has ShortBodyScale:";
+                yield return $"  Scale type: {scaleType}";
+                yield return $"  Number of scales: {numScales}";
             }
         }
 
-        public struct SnowAccumulationVars
+        public struct SkinkSpecklesVars : ILizardCosmeticVars
         {
-            public SnowAccumulationVars(XORShift128 Random) => Random.Shift(48);
-            // no funny things to return :(
+            public int id;
+            public int spots;
+
+            public SkinkSpecklesVars(int id, XORShift128 Random)
+            {
+                this.id = id;
+
+                spots = Random.Range(Random.Range(0, 20), 50);
+                Random.Shift(3 * spots);
+            }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return $"Has SkinkSpeckles:";
+                yield return $"  Number of spots: {spots}";
+            }
         }
 
-        public struct SpineSpikesVars
+        public struct SkinkStripesVars(int id) : ILizardCosmeticVars
         {
-            public SpineSpikesVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
+            public int id = id;
+
+            public readonly IEnumerable<string> GetValues()
             {
+                yield return "Has SkinkStripes";
+            }
+        }
+
+        public struct SnowAccumulationVars : ILizardCosmeticVars
+        {
+            public int id;
+
+            // no funny things to return :(
+            public SnowAccumulationVars(int id, XORShift128 Random)
+            {
+                this.id = id;
+                Random.Shift(48);
+            }
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has SnowAccumulation";
+            }
+        }
+
+        public struct SpineSpikesVars : ILizardCosmeticVars
+        {
+            public int id;
+            public float spineLength;
+            public bool spinesFlipped;
+            public int numScales;
+            public int graphic;
+            public ColorMode colorMode;
+
+            public SpineSpikesVars(int id, XORShift128 Random, float tailLength, LizardType type, ref TailTuftVars.TailTuftGraphicCalculation? graphicCalculation)
+            {
+                this.id = id;
+
                 float bodyAndTailLength = GetBodyAndTailLength(type, tailLength);
 
                 float bumpDiv = Mathf.Lerp(5f, 8f, Mathf.Pow(Random.Value, 0.7f));
@@ -690,11 +941,13 @@ namespace FinderMod.Search.Util
             public static int MinNumScales(LizardType type) => (int)(MinSpineLength(type) / 8f);
             public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 5f);
 
-            public float spineLength;
-            public bool spinesFlipped;
-            public int numScales;
-            public int graphic;
-            public ColorMode colorMode;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has SpineSpikes:";
+                yield return $"  Spine length: {spineLength}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Number of spines: {numScales}";
+            }
 
             public enum ColorMode
             {
@@ -704,10 +957,20 @@ namespace FinderMod.Search.Util
             }
         }
 
-        public struct TailFinVars
+        public struct TailFinVars : ILizardCosmeticVars
         {
-            public TailFinVars(XORShift128 Random, float tailLength, LizardType type)
+            public int id;
+            public float spineLength;
+            public float undersideSize;
+            public float spineScaleX;
+            public int numScales;
+            public bool colored;
+            public int graphic;
+
+            public TailFinVars(int id, XORShift128 Random, float tailLength, LizardType type)
             {
+                this.id = id;
+
                 float bodyAndTailLength = GetBodyAndTailLength(type, tailLength);
 
                 float bumpDiv = Mathf.Lerp(4f, 7f, Mathf.Pow(Random.Value, 0.7f));
@@ -736,18 +999,24 @@ namespace FinderMod.Search.Util
             public static int MinNumScales(LizardType type) => (int)(MinSpineLength(type) / 7f);
             public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 4f);
 
-            public float spineLength;
-            public float undersideSize;
-            public float spineScaleX;
-            public int numScales;
-            public bool colored;
-            public int graphic;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has TailFin:";
+                yield return $"  Spine length: {spineLength}";
+                yield return $"  Spine scale X: {spineScaleX}";
+                yield return $"  Underside size: {undersideSize}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Number of spines: {numScales}";
+                yield return $"  Is colored: {(colored ? "Yes" : "No")}";
+            }
         }
 
-        public struct TailGeckoScalesVars
+        public struct TailGeckoScalesVars : ILizardCosmeticVars
         {
-            public TailGeckoScalesVars(XORShift128 Random, float tailColor, WingScalesVars? wingScalesVars)
+            public TailGeckoScalesVars(int id, XORShift128 Random, float tailColor, WingScalesVars? wingScalesVars)
             {
+                this.id = id;
+
                 // Get rows, lines, and increment picker
                 rows = Random.Range(7, 14);
                 lines = 3;
@@ -771,15 +1040,32 @@ namespace FinderMod.Search.Util
                 }
             }
 
+            public int id;
             public int rows;
             public int lines;
             public bool bigScales;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has TailGeckoScales:";
+                yield return $"  Rows: {rows}";
+                yield return $"  Lines: {lines}";
+                yield return $"  Big scales: {(bigScales ? "Yes" : "No")}";
+            }
         }
 
-        public struct TailTuftVars
+        public struct TailTuftVars : ILizardCosmeticVars
         {
-            public TailTuftVars(XORShift128 Random, float tailLength, LizardType type, ref TailTuftGraphicCalculation? graphicCalculation)
+            public int id;
+            public LizardBodyScaleType scaleType;
+            public int numScales;
+            public int graphic;
+            public bool colored;
+
+            public TailTuftVars(int id, XORShift128 Random, float tailLength, LizardType type, ref TailTuftGraphicCalculation? graphicCalculation)
             {
+                this.id = id;
+
                 if (Random.Value < 0.14285715f || (Random.Value < 0.9f && type == LizardType.Blue) || type == LizardType.Red || type == LizardType.Zoop)
                 {
                     scaleType = LizardBodyScaleType.TwoLines;
@@ -825,10 +1111,14 @@ namespace FinderMod.Search.Util
                     (type == LizardType.Blue || type == LizardType.Red) ? MaxGenTwoLines(type, 0f, type == LizardType.Red ? 0.3f : 0.7f, 3f) : MaxGenTwoLines(type, 0f, 0.4f, 1.3f)
                     , 7);
 
-            public LizardBodyScaleType scaleType;
-            public int numScales;
-            public int graphic;
-            public bool colored;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has TailTuft:";
+                yield return $"  Scale type: {scaleType}";
+                yield return $"  Number of scales: {numScales}";
+                yield return $"  Graphic: {graphic}";
+                yield return $"  Is colored: {(colored ? "Yes" : "No")}";
+            }
 
             public struct TailTuftGraphicCalculation
             {
@@ -842,10 +1132,12 @@ namespace FinderMod.Search.Util
             }
         }
 
-        public struct WhiskersVars
+        public struct WhiskersVars : ILizardCosmeticVars
         {
-            public WhiskersVars(XORShift128 Random)
+            public WhiskersVars(int id, XORShift128 Random)
             {
+                this.id = id;
+
                 // Number of whiskers
                 numWhiskers = Random.Range(3, 5);
 
@@ -853,33 +1145,64 @@ namespace FinderMod.Search.Util
                 Random.Shift(numWhiskers * 9 + (numWhiskers - 1) * 4);
             }
 
+            public int id;
             public int numWhiskers;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has Whiskers:";
+                yield return $"  Number of whiskers: {numWhiskers}";
+            }
         }
 
-        public struct WingScalesVars
+        public struct WingScalesVars : ILizardCosmeticVars
         {
-            public WingScalesVars(XORShift128 Random)
+            public int id;
+            public int numScales;
+            public float scaleLength;
+            public float frontDir;
+            public float backDir;
+            public int graphic;
+
+            public WingScalesVars(int id, XORShift128 Random)
             {
+                this.id = id;
+
                 numScales = Random.Value < 0.2f ? 3 : 2;
 
-                if (Random.Value >= 0.4f) Random.Shift();
+                graphic = 0;
+                if (Random.Value >= 0.4f) graphic = Random.Range(0, 5);
 
                 float sturdy = Random.Value;
                 Random.Shift();
                 scaleLength = Mathf.Lerp(5f, 40f, Mathf.Pow(Random.Value, 0.75f + 1.25f * sturdy));
 
+                frontDir = Mathf.Lerp(-0.1f, 0.2f, Random.Value);
+                backDir = Mathf.Lerp(Mathf.Max(0f, frontDir), frontDir + numScales * 0.2f, Random.Value);
+
                 // More offsetting
-                Random.Shift(2);
                 Random.Shift(2 * numScales);
             }
 
-            public int numScales;
-            public float scaleLength;
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return "Has WingScales:";
+                yield return $"  Scale length: {scaleLength}";
+                yield return $"  Number of scales: {numScales}";
+                yield return $"  Front direction: {frontDir}";
+                yield return $"  Back direction: {backDir}";
+                yield return $"  Graphic: {graphic}";
+            }
         }
 
-        public struct Melanistic(bool melanistic)
+        public struct Melanistic(bool melanistic) : ILizardCosmeticVars
         {
             public bool melanistic = melanistic;
+
+            public readonly IEnumerable<string> GetValues()
+            {
+                yield return $"Is melanistic: {melanistic}";
+            }
         }
     }
 }

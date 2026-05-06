@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FinderMod.Search;
 using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -54,10 +55,11 @@ namespace FinderMod.Inputs
         {
             y -= inputOnNewLine ? 24f : InputHeight;
             float topY = y;
+            OpCheckBox? cb = null;
 
             if (!forceEnabled)
             {
-                var cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : InputHeight / 2f - 12f)));
+                cb = new OpCheckBox(OpUtil.CosmeticBind(enabled), new(x, y + (inputOnNewLine ? 0f : InputHeight / 2f - 12f)));
                 cb.OnValueUpdate += ToggleEnable;
                 elements.Add(cb);
             }
@@ -67,7 +69,8 @@ namespace FinderMod.Inputs
             }
 
             float cbOffset = forceEnabled ? 0f : 34f;
-            elements.Add(new OpLabel(x + cbOffset, y + (inputOnNewLine ? 12f : InputHeight / 2f) - LabelTest._lineHalfHeight, LabelText) { verticalAlignment = OpLabel.LabelVAlignment.Bottom});
+            OpLabel label;
+            elements.Add(label = new OpLabel(x + cbOffset, y + (inputOnNewLine ? 12f : InputHeight / 2f) - LabelTest._lineHalfHeight, LabelText) { verticalAlignment = OpLabel.LabelVAlignment.Bottom});
 
             if (enabled)
             {
@@ -80,17 +83,26 @@ namespace FinderMod.Inputs
                 element.OnValueChanged += ValueChange;
                 if (description != null) element.description = description;
                 elements.Add(element);
+                label.bumpBehav = element.bumpBehav;
 
                 // Add bias
                 if (hasBias)
                 {
                     float edge = 600f - 20f - 20f - Mathf.Floor(x / 10f) * 10f; // screen width - scrollbar width - padding - extra padding for the hell of it
                     var biasTicker = new OpDragger(OpUtil.CosmeticRange(bias, 1, 999), new Vector2(edge - 24f, topY));
-                    var biasLabel = new OpLabel(edge - 30f - LabelTest.GetWidth("Bias:"), topY, "Bias:") { verticalAlignment = OpLabel.LabelVAlignment.Center };
+                    var biasLabel = new OpLabel(edge - 30f - LabelTest.GetWidth("Bias:"), topY, "Bias:")
+                    {
+                        verticalAlignment = OpLabel.LabelVAlignment.Center,
+                        bumpBehav = biasTicker.bumpBehav
+                    };
                     biasTicker.OnValueUpdate += (_, _, _) => bias = biasTicker.GetValueInt();
                     elements.Add(biasTicker);
                     elements.Add(biasLabel);
                 }
+            }
+            else if (cb != null)
+            {
+                label.bumpBehav = cb.bumpBehav;
             }
         }
 
@@ -195,7 +207,7 @@ namespace FinderMod.Inputs
     /// <see cref="Input{T}"/> type with an explicit minimum and maximum value
     /// </summary>
     /// <typeparam name="T">The value type. Must be a comparable type.</typeparam>
-    public abstract class RangedInput<T> : Input<T> where T : IComparable
+    public abstract class RangedInput<T> : Input<T>, IGPUInput where T : IComparable
     {
         /// <summary>Range minimum</summary>
         public T min;
@@ -215,6 +227,9 @@ namespace FinderMod.Inputs
             this.min = min;
             this.max = max;
         }
+
+        /// <inheritdoc/>
+        public abstract ICanGPU.GPUInput AsGPUInput();
 
         /// <summary>Helper method. Creates a <see cref="Configurable{T}"/> with a <see cref="ConfigAcceptableRange{T}"/></summary>
         /// <returns></returns>

@@ -1,0 +1,32 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs
+// 0 - Hue
+// 1 - Fatness
+// 2 - Tentacle length
+// 3 - Tentacle thickness
+// 4 - Wing length
+// 5 - Wing thickness
+// 6 - Has busted wing
+// 7 - Which busted wing
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    d += Distance(ClampedRandomVariation(0.55, 0.1, 0.5, random), inputs[0]); // hue
+    d += Distance(ClampedRandomVariation(0.5, 0.1, 0.5, random) * 2, inputs[1]); // fatness
+    bool hasBrokenWing = RandomValue(random) < 0.125;
+    int brokenWing = RandomRangeIf(0, 4, random, hasBrokenWing);
+    d += MatchDistance(hasBrokenWing, inputs[6]);
+    d += hasBrokenWing * Distance(brokenWing, inputs[7]);
+    d += Distance(lerp(0.6, 1.4, RandomValue(random)), inputs[2]); // tentacle length
+    d += Distance(lerp(0.6, 1.4, RandomValue(random)), inputs[3]); // tentacle thickness
+    d += Distance(lerp(1, 0.4, RandomValue(random) * RandomValue(random)), inputs[4]); // wing length
+    d += Distance(ClampedRandomVariation(0.66667, 0.3, 0.2, random) * 1.5, inputs[5]); // wing thickness
+    
+    return d;
+}

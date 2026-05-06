@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using FinderMod.Inputs;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
+using MoreSlugcats;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class SlupBehaviorOption : Option
+    internal class SlupBehaviorOption : Option, ICanGPU
     {
         private readonly GroupWithEnable behaviorGroup, foodGroup;
         private readonly BoolInput doesWiggle, doesNap, doesPlayWithItems, doesLayNearParent;
         private readonly EnumInput<FoodLike>[] foodLikes;
 
+        public ComputeShader Shader => InternalShaders.slugpupBehaviorShader;
+
         public SlupBehaviorOption()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             // Initialize food like inputs
             foodLikes = new EnumInput<FoodLike>[SlupFoodOption.foodLength];
             for (int i = 0; i < foodLikes.Length; i++)
@@ -38,6 +43,35 @@ namespace FinderMod.Search.Options
                 ];
         }
 
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            List<ICanGPU.GPUInput> inputs = [];
+
+            int foodEnabled = behaviorGroup.enabled ? 1 : 0;
+            for (int i = 0; i < foodLikes.Length; i++)
+            {
+                var inp = foodLikes[i].AsGPUInput();
+                inp.bias *= foodEnabled;
+                inputs.Add(inp);
+            }
+
+            int behaviorEnabled = behaviorGroup.enabled ? 1 : 0;
+            var input = doesWiggle.AsGPUInput();
+            input.bias *= behaviorEnabled;
+            inputs.Add(input);
+            input = doesNap.AsGPUInput();
+            input.bias *= behaviorEnabled;
+            inputs.Add(input);
+            input = doesPlayWithItems.AsGPUInput();
+            input.bias *= behaviorEnabled;
+            inputs.Add(input);
+            input = doesLayNearParent.AsGPUInput();
+            input.bias *= behaviorEnabled;
+            inputs.Add(input);
+
+            return [.. inputs];
+        }
+
         private FoodLike DetermineFoodLike(float o) => o switch
         {
             < -0.85f => FoodLike.VeryNegative,
@@ -59,6 +93,7 @@ namespace FinderMod.Search.Options
                 r += DistanceIf(p.nrg > 0.6f, doesWiggle);
                 r += DistanceIf(p.nrg < 0.15f, doesNap);
                 r += DistanceIf(p.nrg > 0.85f, doesPlayWithItems);
+                r += DistanceIf(p.nrg < 0.35f, doesLayNearParent);
             }
 
             if (foodGroup.enabled)

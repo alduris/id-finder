@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class CentipedeVarsOption : Option
+    internal class CentipedeVarsOption : Option, ICanGPU
     {
         public enum CentipedeType
         {
@@ -19,6 +20,24 @@ namespace FinderMod.Search.Options
         private readonly HueInput HueInput = null!;
         private readonly ColorHSLInput ColorInput = null!;
         private readonly FloatInput SizeInput = null!;
+
+        public override CreatureTemplate.Type? RepresentedCreature
+        {
+            get
+            {
+                return type switch
+                {
+                    CentipedeType.Normal => CreatureTemplate.Type.Centipede,
+                    CentipedeType.Red => CreatureTemplate.Type.RedCentipede,
+                    CentipedeType.Centiwing => CreatureTemplate.Type.Centiwing,
+                    CentipedeType.Aquapede when ModManager.DLCShared => DLCSharedEnums.CreatureTemplateType.AquaCenti,
+                    _ => null,
+                };
+            }
+            protected set => throw new NotImplementedException();
+        }
+
+        public ComputeShader Shader => InternalShaders.centipedeVarsShader;
 
         public CentipedeVarsOption(CentipedeType type)
         {
@@ -45,6 +64,11 @@ namespace FinderMod.Search.Options
             if (HueInput != null) elements.Add(HueInput);
             if (ColorInput != null) elements.Add(ColorInput);
             if (SizeInput != null) elements.Add(SizeInput);
+
+            if (type == CentipedeType.Centiwing)
+            {
+                elements.Add(new Label("Note: for centiwings, hue and size are 1:1 correlated. Only one option should be used."));
+            }
         }
 
         private (float hue, float saturation, float size) GetResults(XORShift128 Random)
@@ -80,8 +104,8 @@ namespace FinderMod.Search.Options
             }
             else if (type == CentipedeType.Red)
             {
-                hue = Mathf.Lerp(-0.02f, 0.1f, Random.Value);
-                saturation = Mathf.Lerp(0.9f, 1f, Random.Value);
+                hue = Mathf.Lerp(-0.02f, 0.01f, Random.Value);
+                saturation = 0.9f + 0.1f * Random.Value;
             }
             else
             {
@@ -106,6 +130,16 @@ namespace FinderMod.Search.Options
             yield return $"Hue: {hue}";
             yield return $"Saturation: {saturation}";
             yield return $"Size: {size}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                new ICanGPU.GPUInput((int)type, 1, 0),
+                ColorInput?.HueInput?.AsGPUInput() ?? HueInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                ColorInput?.SatInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                SizeInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
+                ];
         }
     }
 }

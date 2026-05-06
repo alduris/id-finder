@@ -4,11 +4,17 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class LanternMouseOption : Option
+    internal class LanternMouseOption : Option, ICanGPU
     {
+        private readonly HueInput hueInput;
+        private readonly FloatInput dominanceInput;
+
+        public ComputeShader Shader => InternalShaders.lanternMouseVarsShader;
+
         public LanternMouseOption() : base()
         {
-            elements = [new HueInput("Hue"), new FloatInput("Dominance")];
+            RepresentedCreature = CreatureTemplate.Type.LanternMouse;
+            elements = [hueInput = new HueInput("Hue"), dominanceInput = new FloatInput("Dominance")];
         }
 
         private (float hue, float dominance) GetResults(XORShift128 Random)
@@ -37,7 +43,7 @@ namespace FinderMod.Search.Options
         public override float Execute(XORShift128 Random)
         {
             var (hue, dominance) = GetResults(Random);
-            return DistanceIf(hue, elements[0] as RangedInput<float>) + DistanceIf(dominance, elements[1] as RangedInput<float>);
+            return WrapDistanceIf(hue, hueInput) + DistanceIf(dominance, dominanceInput);
         }
 
         protected override IEnumerable<string> GetValues(XORShift128 Random)
@@ -45,6 +51,14 @@ namespace FinderMod.Search.Options
             var (hue, dominance) = GetResults(Random);
             yield return $"Hue: {hue}";
             yield return $"Dominance: {dominance}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                hueInput.AsGPUInput(),
+                dominanceInput.AsGPUInput(),
+                ];
         }
     }
 }

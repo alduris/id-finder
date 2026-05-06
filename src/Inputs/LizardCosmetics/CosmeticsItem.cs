@@ -67,12 +67,18 @@ namespace FinderMod.Inputs.LizardCosmetics
     public class AxolotlGillsCosmetic : CosmeticsItem
     {
         public FloatInput RigorInput;
+        public FloatInput SizeFacInput;
+        public FloatInput WidthFacInput;
+        public FloatInput BackwardsFacInput;
         public IntInput NumGillsInput;
         public IntInput GraphicInput;
 
         public AxolotlGillsCosmetic() : base(CosmeticType.AxolotlGills)
         {
             children.Add(RigorInput = new("Rigor") { enabled = false });
+            children.Add(SizeFacInput = new("Size factor") { enabled = false });
+            children.Add(WidthFacInput = new("Width factor") { enabled = false });
+            children.Add(BackwardsFacInput = new("Backwards factor", 0.1f, 0.9f) { enabled = false });
             children.Add(NumGillsInput = new("Number of gills", 2, 7) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
         }
@@ -250,6 +256,69 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.colored, ColoredInput)
                     + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
                     + (ScaleTypeInput.enabled && ScaleTypeInput.value != vars.scaleType ? ScaleTypeInput.bias : 0f);
+            }
+            else if (Enabled && !Toggled)
+            {
+                return MISSING_PENALTY;
+            }
+            return 0f;
+        }
+    }
+
+    public class PeachBodyFinCosmetic : CosmeticsItem
+    {
+        public FloatInput MinSizeInput;
+        public FloatInput MaxSizeInput;
+        public FloatInput SizeSkewExponentInput;
+        public IntInput GraphicInput;
+        public IntInput BumpsInput;
+        public FloatInput ScaleXInput;
+
+        public PeachBodyFinCosmetic() : base(CosmeticType.PeachBackFin)
+        {
+            children.AddRange([
+                MinSizeInput = new FloatInput("Min size", 0.27f, 0.35f) { enabled = false },
+                MaxSizeInput = new FloatInput("Max size", 0.27f, 0.7f) { enabled = false },
+                SizeSkewExponentInput = new FloatInput("Size skew exponent", 0.5f, 1.5f) { enabled = false },
+                GraphicInput = new IntInput("Graphc", 4, 5) { enabled = false },
+                BumpsInput = new IntInput("Number of bumps", 3, 4) { enabled = false },
+                ScaleXInput = new FloatInput("Scale x", 1.5f, 2.5f) { enabled = false }
+                ]);
+        }
+
+        public float Distance(PeachBackFinVars vars)
+        {
+            if (Active)
+            {
+                return Option.DistanceIf(vars.minSize, MinSizeInput)
+                    + Option.DistanceIf(vars.maxSize, MaxSizeInput)
+                    + Option.DistanceIf(vars.sizeSkewExponent, SizeSkewExponentInput)
+                    + Option.DistanceIf(vars.bumps, BumpsInput)
+                    + Option.DistanceIf(vars.scaleX, ScaleXInput)
+                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
+            }
+            else if (Enabled && !Toggled)
+            {
+                return MISSING_PENALTY;
+            }
+            return 0f;
+        }
+    }
+
+    public class PeachHeadStripesCosmetic : CosmeticsItem
+    {
+        public FloatInput AlphaInput;
+
+        public PeachHeadStripesCosmetic() : base(CosmeticType.PeachHeadStripes)
+        {
+            children.Add(AlphaInput = new FloatInput("Alpha") { enabled = false });
+        }
+
+        public float Distance(PeachHeadStripesVars vars)
+        {
+            if (Active)
+            {
+                return Option.DistanceIf(vars.alpha, AlphaInput);
             }
             else if (Enabled && !Toggled)
             {
@@ -495,11 +564,17 @@ namespace FinderMod.Inputs.LizardCosmetics
     {
         public FloatInput LengthInput;
         public IntInput NumScalesInput;
+        public FloatInput FrontDirInput;
+        public FloatInput BackDirInput;
+        public IntInput GraphicInput;
 
         public WingScalesCosmetic() : base(CosmeticType.WingScales)
         {
             children.Add(LengthInput = new("Length", 5f, 40f) { enabled = false });
             children.Add(NumScalesInput = new("Scales per side", 2, 3) { enabled = false });
+            children.Add(FrontDirInput = new("Front direction", -0.1f, 0.2f) { enabled = false });
+            children.Add(BackDirInput = new("Back direction", 0f, 0.8f) { enabled = false });
+            children.Add(GraphicInput = new("Graphic", 0, 4) { enabled = false });
         }
 
         public float Distance(WingScalesVars vars)
@@ -507,7 +582,10 @@ namespace FinderMod.Inputs.LizardCosmetics
             if (Active)
             {
                 return Option.DistanceIf(vars.scaleLength, LengthInput)
-                    + Option.DistanceIf(vars.numScales, NumScalesInput);
+                    + Option.DistanceIf(vars.numScales, NumScalesInput)
+                    + Option.DistanceIf(vars.frontDir, FrontDirInput)
+                    + Option.DistanceIf(vars.backDir, BackDirInput)
+                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
             }
             else if (Enabled && !Toggled)
             {

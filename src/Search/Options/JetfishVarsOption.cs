@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class JetfishVarsOption : Option
+    internal class JetfishVarsOption : Option, ICanGPU
     {
         // private readonly FloatInput FatnessInput;
         private readonly FloatInput TentacleLengthInput;
@@ -13,8 +13,11 @@ namespace FinderMod.Search.Options
         private readonly IntInput FlipperGraphicInput;
         private readonly FloatInput FlipperSizeInput;
 
+        public ComputeShader Shader => InternalShaders.jetfishVarsShader;
+
         public JetfishVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.JetFish;
             elements = [
                 // FatnessInput = new FloatInput("Fatness", 0.8f, 1.2f),
                 TentacleLengthInput = new FloatInput("Tentacle length"),
@@ -63,6 +66,16 @@ namespace FinderMod.Search.Options
             yield return $"Number of whiskers: {results.numWhiskers}";
             yield return $"Flipper graphic: {results.flipperGraphic}";
             yield return $"Flipper size: {results.flipperSize}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                TentacleLengthInput.AsGPUInput(),
+                NumWhiskersInput.AsGPUInput(),
+                FlipperGraphicInput.AsGPUInput(),
+                FlipperSizeInput.AsGPUInput(),
+                ];
         }
 
         private struct JetfishResults

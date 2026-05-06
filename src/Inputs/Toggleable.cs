@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FinderMod.Search;
 using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
@@ -9,7 +10,7 @@ namespace FinderMod.Inputs
     /// Toggles an element's visibility with a yes/no button, separately from an enable checkbox.
     /// </summary>
     /// <typeparam name="E"></typeparam>
-    public class Toggleable<E> : IElement, ISaveInHistory where E : IElement
+    public class Toggleable<E> : IElement, ISaveInHistory, IGPUMultiInput where E : IElement
     {
         /// <summary>Label used in switch input</summary>
         protected readonly string name;
@@ -111,6 +112,35 @@ namespace FinderMod.Inputs
                 {
                     yield return item;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the toggle input as a GPU input and, if the element type supports it, the toggleable element as GPU input(s) with states reflecting the toggled state.
+        /// </summary>
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            if (Element is IGPUInput gpuInput)
+            {
+                var input = gpuInput.AsGPUInput();
+                if (!Toggled) input.bias = 0;
+                return [ToggleInput.AsGPUInput(), input];
+            }
+            else if (Element is IGPUMultiInput gpuMultiInput)
+            {
+                var internalInputs = gpuMultiInput.GetGPUInputs();
+                if (!Toggled)
+                {
+                    for (int i = 0; i < internalInputs.Length; i++)
+                    {
+                        internalInputs[i].bias = 0;
+                    }
+                }
+                return [ToggleInput.AsGPUInput(), .. internalInputs];
+            }
+            else
+            {
+                return [ToggleInput.AsGPUInput()];
             }
         }
     }

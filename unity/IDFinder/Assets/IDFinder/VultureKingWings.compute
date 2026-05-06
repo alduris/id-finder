@@ -1,0 +1,34 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+
+// Input order:
+//  0 - color a hue
+//  1 - color a sat
+//  2 - color a light
+//  3 - color b hue
+//  4 - color b sat
+//  5 - color b light
+//  6 - feather count
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    // color b
+    float hueB = frac(lerp(0.93, 1.07, RandomValue(random)));
+    d += WrapDistance(hueB, inputs[3]);
+    d += Distance(lerp(0.8, 1, 1.0 - RandomValue(random) * RandomValue(random)), inputs[4]);
+    d += Distance(lerp(0.45, 1, RandomValue(random) * RandomValue(random)), inputs[5]);
+    
+    // color a
+    d += WrapDistance(hueB + lerp(-0.25, 0.25, RandomValue(random)), inputs[0]);
+    d += Distance(lerp(0.5, 0.7, RandomValue(random)), inputs[1]);
+    d += Distance(lerp(0.7, 0.8, RandomValue(random)), inputs[2]);
+
+    // feather count
+    d += Distance(RandomRange(15, 25, random), inputs[6]);
+    
+    return d;
+}

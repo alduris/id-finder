@@ -1,15 +1,23 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using Menu.Remix.MixedUI;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
     internal class TestOption : Option
     {
+        public override CreatureTemplate.Type? RepresentedCreature =>
+            new(CreatureTemplate.Type.values.GetEntry(Random.Range(0, CreatureTemplate.Type.values.Count)), false);
+
         public TestOption()
         {
             elements = [
                 new Label("This is a test option. It does nothing."),
+
+                new Whitespace(),
+
+                new CrashButton(),
 
                 new Whitespace(),
 
@@ -69,6 +77,38 @@ namespace FinderMod.Search.Options
             Carrot,
             Donut,
             Egg
+        }
+
+        private class CrashButton : IElement
+        {
+            public float Height => 30f;
+
+            public void Create(float x, ref float y, List<UIelement> elements)
+            {
+                y -= Height;
+                var button = new OpSimpleButton(new Vector2(x, y), new Vector2(120f, Height), "Press to explode")
+                {
+                    colorFill = Color.red
+                };
+                var button2 = new OpSimpleButton(new Vector2(x + 130f, y), new Vector2(120f, Height), "Obliterate game")
+                {
+                    colorFill = Color.red
+                };
+                button.OnClick += Explodey_McBoomface;
+                button2.OnClick += Gameus_Obliteratus;
+                elements.Add(button);
+                elements.Add(button2);
+            }
+
+            private void Explodey_McBoomface(UIfocusable trigger)
+            {
+                throw new System.Exception("Test exception");
+            }
+
+            private void Gameus_Obliteratus(UIfocusable trigger)
+            {
+                throw new Joar();
+            }
         }
     }
 }

@@ -1,0 +1,79 @@
+#pragma kernel CS_IDFinderMain
+
+#define IDFINDER_Y 16
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+// Input order:
+//   0: Head size
+//   1: Eartler thickness
+//
+//   2: Eye size
+//   3: Eye narrowness
+//   4: Eye angle
+//
+//   5: Fatness
+//   6: Waist narrowness
+//   7: Neck thickness
+//
+//   8: Pupil size
+//   9: Deep pupils (bool)
+//
+//   10: Hands color blend
+//   11: Leg size
+//   12: Arm thickness
+//
+//   13: Colored eartler tips (bool)
+//   14: Teeth wideness
+//   15: Tail segments
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    
+    float d = 0;
+    
+    float generalMelanin = PushFromHalf(RandomValue(random), 2);
+    float headSize = ClampedRandomVariation(0.5, 0.5, 0.1, random);
+    d += Distance(headSize, inputs[0]);
+    d += Distance(RandomValue(random), inputs[1]); // eartler thickness
+    
+    float eyeSize = pow(max(0, lerp(RandomValue(random), pow(headSize, 0.5), RandomValue(random) * 0.4)), lerp(0.95, 0.55, p.sympathy));
+    d += Distance(eyeSize, inputs[2]);
+    float narrowEyes = RandomValue(random) >= lerp(0.3, 0.7, p.sympathy);
+    narrowEyes *= pow(RandomValueIf(random, narrowEyes != 0), lerp(0.5, 1.5, p.sympathy));
+    d += Distance(narrowEyes, inputs[3]);
+    d += Distance(pow(RandomValue(random), lerp(2.5, 0.5, pow(saturate(p.energy), 0.03))), inputs[4]); // eye angle (the saturate is just there to shut up unity)
+    
+    float fatness = lerp(RandomValue(random), p.dominance, RandomValue(random) * 0.2);
+    fatness = lerp(fatness, p.energy < 0.5, RandomValue(random) * invlerp(0.5, p.energy >= 0.5, p.energy));
+    d += Distance(fatness, inputs[5]);
+    d += Distance(lerp(lerp(RandomValue(random), 1 - fatness, RandomValue(random)), 1 - p.energy, RandomValue(random)), inputs[6]); // waist narrowness
+    d += Distance(lerp(pow(RandomValue(random), 1.5 - p.aggression), 1 - fatness, RandomValue(random) * 0.5), inputs[7]); // neck thiccness
+    
+    // this part sucks
+    int doPupilStuff = RandomValue(random) < 0.65 && eyeSize > 0.4 && narrowEyes < 0.3; // future note: operators do NOT get short-circuit evaluated. all expressions get evaluated
+    int deepPupil = doPupilStuff * (RandomValueIf(random, doPupilStuff) >= pow(saturate(p.sympathy), 1.5) * 0.8); // once more the saturate is to shut up unity
+    d += Distance(deepPupil, inputs[9]);
+    float pupilSize = doPupilStuff * lerp(lerp(0.4, 0.8, pow(RandomValueIf(random, doPupilStuff * (1 - deepPupil)), 0.5)), 0.7, deepPupil);
+    d += Distance(pupilSize, inputs[8]); // pupil size
+    int coloredPupilChance = (RandomValueIf(random, doPupilStuff * (1 - deepPupil)) < 0.6666667);
+    RandomRangeIf(1, 4, random, doPupilStuff * (1 - deepPupil) * coloredPupilChance); // colored pupils (tick but discard)
+    
+    // why doesn't generalMelanin get used until here lmao
+    int hhcGM = RandomValue(random) < generalMelanin;
+    float hhc1 = RandomValue(random);
+    float hhc2 = RandomValue(random);
+    d += Distance(lerp(hhc2 < (hhcGM ? 0.6 : 0.8), hhc2, hhc1 < (hhcGM ? 0.3 : 0.2)), inputs[10]); // hands color blend (internally handsHeadColor)
+    d += Distance(RandomValue(random), inputs[11]); // leg size
+    d += Distance(lerp(RandomValue(random), lerp(p.dominance, fatness, 0.5), RandomValue(random)), inputs[12]); // arm thickness
+    
+    d += Distance((int) (RandomValue(random) < (1.0 / lerp(1.2, 10, generalMelanin))), inputs[13]); // colored eartler tips (force to int or it becomes ambiguous I guess???)
+    d += Distance(RandomValue(random), inputs[14]);
+    d += Distance((int) ((RandomValue(random) >= 0.5) * RandomRange(1, 5, random)), inputs[15]); // tail segments
+    // (the above line does not leave the random state in the correct spot but there's nothing after this in this file so who cares)
+    
+    return d;
+}

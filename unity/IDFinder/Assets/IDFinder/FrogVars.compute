@@ -1,0 +1,50 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs:
+// 0 - Number of horns
+// 1 - Horn scale
+// 2 - Body color H
+// 3 - Body color S
+// 4 - Body color L
+// 5 - Belly color H
+// 6 - Belly color S
+// 7 - Belly color L
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    // Base colors
+    bool useRareColor = RandomValue(random) < 0.05;
+    float3 bodyColor = useRareColor ? float3(0.2, 0.17, 0.15) : float3(0.06, 0.47, 0.38);
+    float3 bellyColor = useRareColor ? float3(0.12, 0.09, 0.41) : float3(0.09, 0.45, 0.74);
+    
+    // Color adjustements
+    float fac = ClampedRandomVariation(0.5, 0.1, 0.2, random) - 0.5;
+    
+    bodyColor.x = frac(bodyColor.x + fac);
+    bodyColor.y = ClampedRandomVariation(bodyColor.y, 0.1, 0.1, random);
+    bodyColor.z = ClampedRandomVariation(bodyColor.z, 0.2, 0.1, random);
+    
+    bellyColor.x = frac(bellyColor.x + fac);
+    bellyColor.y = ClampedRandomVariation(bellyColor.y, 0.1, 0.1, random);
+    bellyColor.z = ClampedRandomVariation(bellyColor.z, 0.2, 0.1, random);
+    
+    // Color distance
+    d += WrapDistance(bodyColor.x, inputs[2]);
+    d += Distance(bodyColor.y, inputs[3]);
+    d += Distance(bodyColor.z, inputs[4]);
+    
+    d += WrapDistance(bellyColor.x, inputs[5]);
+    d += Distance(bellyColor.y, inputs[6]);
+    d += Distance(bellyColor.z, inputs[7]);
+    
+    // Horns
+    d += Distance((int) round(3.0 * RandomValue(random)), inputs[0]);
+    d += Distance(RandomRange(0.8, 1.2, random), inputs[1]);
+    
+    return d;
+}

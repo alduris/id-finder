@@ -1,0 +1,40 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+// Inputs:
+//  0 - Body size
+//  1 - Eye size
+//  2 - Leg thickness
+//  3 - Number of cones
+//  4 - Cone radius variance
+//  5 - Cone length variance
+//  6 - Cone color variance
+//  7 - Cone base color hue
+//  8 - Cone base color sat
+//  9 - Cone base color light
+// 10 - Low-end lightness offset
+// 11 - High-end lightness offset
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    float d = 0;
+    
+    d += Distance(lerp(p.dominance, RandomValue(random), RandomValue(random)) * 0.4 + 0.6, inputs[0]); // body size
+    d += Distance(RandomRange(0.7, 1.0, random), inputs[1]); // eye size
+    d += Distance(RandomRange(13, 20, random), inputs[3]); // number of cones
+    d += Distance(RandomValue(random), inputs[4]); // cone radius variance
+    d += Distance(PushFromHalf(RandomValue(random), 1.5), inputs[5]); // cone length variance
+    d += Distance(sqrt(RandomValue(random)), inputs[6]); // cone color variance
+    d += Distance(lerp(0.7, 1.3, PushFromHalf(RandomValue(random), 0.7)), inputs[2]); // leg thickness
+    d += WrapDistance(WrappedRandomVariation(0.04, 0.1, 0.1, random), inputs[7]); // cone base hue
+    d += Distance(ClampedRandomVariation(0.5, 0.2, 0.3, random), inputs[8]); // cone base saturation
+    d += Distance(ClampedRandomVariation(0.75, 0.2, 1.5, random), inputs[9]); // cone base lightness
+    d += Distance(-RandomRange(0.1, 0.2, random), inputs[10]); // lo-end lightness offset
+    d += Distance(RandomRange(0.0, 0.1, random), inputs[11]); // hi-end lightness offset
+    
+    return d;
+}

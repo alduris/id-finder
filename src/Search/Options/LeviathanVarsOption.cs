@@ -17,6 +17,7 @@ namespace FinderMod.Search.Options
 
         public LeviathanVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.BigEel;
             elements = [
                 ColorAInput = new ColorHSLInput("Pattern color A", 0.45f, 0.85f, 0.5f, 0.95f, 0.12f, 0.18f),
                 ColorBInput = new ColorHSLInput("Pattern color B", true, 0.3f, 1f, false, 1f, 1f, false, 0.2f, 0.2f),

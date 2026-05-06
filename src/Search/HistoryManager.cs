@@ -23,6 +23,7 @@ namespace FinderMod.Search
             public Result[][] results;
             public DateTime date;
             public string version;
+            public bool gpu;
 
             public readonly IEnumerable<Option> GetOptions()
             {
@@ -46,6 +47,7 @@ namespace FinderMod.Search
                     {
                         tab.AddOption(option, false);
                     }
+                    tab.input_gpu.SetValueBool(gpu);
                     tab.UpdateQueryBox();
                     tab.input_min.valueInt = min;
                     tab.input_max.valueInt = max;
@@ -110,14 +112,14 @@ namespace FinderMod.Search
             File.WriteAllLines(SaveFile, historyItems.Select(x => JsonConvert.SerializeObject(x)));
         }
 
-        public static string CreateCopyString(List<Option> options, (int min, int max) range, Result[][] results = null!)
+        public static string CreateCopyString(List<Option> options, (int min, int max) range, bool gpu, Result[][] results = null!)
         {
-            var history = GetAsHistoryItem(options, results, range);
+            var history = GetAsHistoryItem(options, results, range, gpu);
             return JsonConvert.SerializeObject(history);
         }
 
 
-        private static HistoryItem GetAsHistoryItem(List<Option> options, Result[][] results, (int min, int max) range)
+        private static HistoryItem GetAsHistoryItem(List<Option> options, Result[][] results, (int min, int max) range, bool gpu)
         {
             results ??= [];
 
@@ -137,23 +139,24 @@ namespace FinderMod.Search
                 options = array,
                 results = results,
                 date = DateTime.UtcNow,
+                gpu = gpu,
                 version = Plugin.VERSION
             };
 
             return history;
         }
 
-        public static void SaveTemporaryHistory(List<Option> options, Result[][] results, (int min, int max) range)
+        public static void SaveTemporaryHistory(List<Option> options, Result[][] results, (int min, int max) range, bool gpu)
         {
-            temporaryHistory.Add(GetAsHistoryItem(options, results, range));
+            temporaryHistory.Add(GetAsHistoryItem(options, results, range, gpu));
         }
 
-        public static void SaveHistory(List<Option> options, Result[][] results, (int min, int max) range)
+        public static void SaveHistory(List<Option> options, Result[][] results, (int min, int max) range, bool gpu)
         {
             LoadHistory();
 
             // Create
-            var history = GetAsHistoryItem(options, results, range);
+            var history = GetAsHistoryItem(options, results, range, gpu);
             historyItems.Add(history);
 
             // Remove from temporary history

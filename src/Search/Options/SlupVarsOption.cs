@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using MoreSlugcats;
 using RWCustom;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class SlupVarsOption : Option
+    internal class SlupVarsOption : Option, ICanGPU
     {
         private readonly FloatInput SizeInput, WidenessInput, EyeInput;
         private readonly ColorHSLInput ColorInp;
         private readonly BoolInput DarkInput;
 
+        public ComputeShader Shader => InternalShaders.slugpupVarsShader;
+
         public SlupVarsOption() : base()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             elements = [
                 SizeInput = new FloatInput("Size"),
                 WidenessInput = new FloatInput("Wideness"),
@@ -137,7 +141,20 @@ namespace FinderMod.Search.Options
             yield return $"Wideness: {results.wideness}";
             yield return $"Color: hsl({results.h}, {results.s}, {results.l})";
             yield return $"Is dark: {(results.dark ? "Yes" : "No")}";
-            yield return $"Eye (lightness): {results.eye}";
+            if (results.dark) yield return $"Eye (lightness): {results.eye}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                SizeInput.AsGPUInput(),
+                WidenessInput.AsGPUInput(),
+                ColorInp.HueInput.AsGPUInput(),
+                ColorInp.SatInput.AsGPUInput(),
+                ColorInp.LightInput.AsGPUInput(),
+                DarkInput.AsGPUInput(),
+                EyeInput.AsGPUInput(),
+                ];
         }
 
         private struct Results

@@ -1,0 +1,52 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs:
+//     0 - Size
+//   1-3 - Color A
+//   4-6 - Color B
+//     7 - Same color?
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    // Size
+    float value = RandomValue(random);
+    float sizeDiff = lerp(0.2, 0.4, value);
+    float size = lerp(1 - sizeDiff, 1 + sizeDiff, value);
+    d += Distance(size, inputs[0]);
+    
+    // Colors
+    float hue1 = frac(lerp(0.85, 1.1, RandomValue(random)));
+    float hue2 = frac(lerp(0.85, 1.1, RandomValue(random)));
+    
+    float value1 = RandomValue(random);
+    float value2 = RandomValue(random);
+    float value3;
+    float3 a = HSL2RGB(hue1, lerp(0.7, 1, 1 - value1 * value1 * value1), lerp(0, 0.3, value2 * value2));
+    
+    value1 = RandomValue(random);
+    value2 = RandomValue(random);
+    value3 = RandomValue(random);
+    float3 b = HSL2RGB(lerp(hue2, hue1, value1 * value1 * value1), lerp(0.7, 1, 1 - value2 * value2 * value2), lerp(0.05, 1, value3 * value3 * value3));
+    
+    // Same color?
+    bool same = RandomValue(random) >= 0.8;
+    d += MatchDistance(same, inputs[7]);
+    
+    value = RandomValueIf(random, !same);
+    a = lerp(a, b, lerp(value * value * value, 1, same));
+    
+    // Minimal value
+    a = max(a, 0.007843138);
+    b = max(b, 0.007843138);
+    
+    // Color distance
+    d += DistanceColor(a, inputs[1], inputs[2], inputs[3]);
+    d += DistanceColor(b, inputs[4], inputs[5], inputs[6]);
+    
+    return d;
+}

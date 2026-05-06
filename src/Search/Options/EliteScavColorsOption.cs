@@ -6,12 +6,15 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class EliteScavColorsOption : Option
+    internal class EliteScavColorsOption : Option, ICanGPU
     {
         private readonly ColorHSLInput body, head, deco;
 
+        public ComputeShader Shader => InternalShaders.eliteScavengerColorsShader;
+
         public EliteScavColorsOption() : base()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.ScavengerElite;
             elements = [
                 body = new ColorHSLInput("Body color"),
                 head = new ColorHSLInput("Head color"),
@@ -29,28 +32,11 @@ namespace FinderMod.Search.Options
             float headSize = ClampedRandomVariation(0.5f, 0.5f, 0.1f, Random);
             Random.Shift();
             float eyeSize = Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(Random.Value, Mathf.Pow(headSize, 0.5f), Random.Value * 0.4f)), Mathf.Lerp(0.95f, 0.55f, p.sym));
-            if (Random.Value >= Mathf.Lerp(0.3f, 0.7f, p.sym)) Random.Shift(); // narrow eyes gets overridden in the next line but the calculation still occurs
-            float narrowEyes = 1f;
 
             // Calculate how far we have to advance the pointer
-            Random.Shift(9); // next 9 rolls (eyes angle, fatness * 3, narrow waist * 3, neck thickness * 2)
+            if (Random.Value >= Mathf.Lerp(0.3f, 0.7f, p.sym)) Random.Shift(); // narrow eyes
+            Random.Shift(18); // next 18 rolls (eyes angle, fatness * 3, narrow waist * 3, neck thickness * 2, failed add pupils check, colored pupils, hands head color * 3, legs size, arm thickness * 2, wide teeth)
 
-            if (Random.Value < 0.65f && eyeSize > 0.4f && narrowEyes < 0.3f) // check to add pupils
-            {
-                if (Random.Value < Mathf.Pow(p.sym, 1.5f) * 0.8f) // determine if sympathetic enough to have colored pupils
-                {
-                    // Colored pupils
-                    Random.Shift();
-                    if (Random.Value < 0.6666667f)
-                    {
-                        // hasColoredPupils = true;
-                        Random.Shift();
-                    }
-                }
-                // else deep pupils
-            }
-
-            Random.Shift(8); // tick 8 more rolls (colored pupils, hands head color * 3, legs size, arm thickness * 2, wide teeth)
             if (Random.Value >= 0.5f) Random.Shift(); // tail segments
             if (Random.Value < 0.25f) Random.Shift(); // unused scruffy calculation that's still done for some reason
 
@@ -191,6 +177,15 @@ namespace FinderMod.Search.Options
             yield return $"Body color: hsl({bodyColor.hue}, {bodyColor.saturation}, {bodyColor.lightness})";
             yield return $"Deco color: hsl({decoColor.hue}, {decoColor.saturation}, {decoColor.lightness})";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. body.GetGPUInputs(),
+                .. head.GetGPUInputs(),
+                .. deco.GetGPUInputs(),
+                ];
         }
     }
 }

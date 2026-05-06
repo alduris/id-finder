@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using UnityEngine;
@@ -26,8 +24,8 @@ namespace FinderMod.Tabs
             outputBox = new OpScrollBox(new(10f, 10f), new(580f, 480f), 30f, false, true, true);
 
             AddItems(
-                new OpLabel(10f, 560f, "Values", true),
-                new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:"),
+                new OpLabel(10f, 560f, "VALUES", true),
+                new OpLabel(10f + searchItems.size.x + 20f, searchItems.pos.y, "ID:") { bumpBehav = inputId.bumpBehav },
                 inputId,
                 outputBox,
                 searchItems

@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using FinderMod.Inputs;
+using FinderMod.Search.Util;
 using UnityEngine;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options
 {
-    internal class LizardVarsOption : Option
+    internal class LizardVarsOption : Option, ICanGPU
     {
         private readonly EnumInput<LizardType> TypeInp;
         private readonly FloatInput HeadSizeInput, FatnessInput, TailLengthInput, TailFatnessInput, TailColorInput;
+
+        public override CreatureTemplate.Type? RepresentedCreature => LizardUtil.LizardTypeToTemplateType(TypeInp.value);
+
+        public ComputeShader Shader => InternalShaders.lizardVarsShader;
 
         public LizardVarsOption() : base()
         {
@@ -100,6 +105,18 @@ namespace FinderMod.Search.Options
                 yield return null!;
             }
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                TypeInp.AsGPUInput(),
+                HeadSizeInput.AsGPUInput(),
+                FatnessInput.AsGPUInput(),
+                TailLengthInput.AsGPUInput(),
+                TailFatnessInput.AsGPUInput(),
+                TailColorInput.AsGPUInput(),
+                ];
         }
     }
 }

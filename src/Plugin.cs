@@ -5,6 +5,7 @@ using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Logging;
 using FinderMod.Search;
+using UnityEngine;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -16,10 +17,10 @@ namespace FinderMod
     [BepInPlugin("alduris.finder", "ID Finder", VERSION)]
     internal sealed class Plugin : BaseUnityPlugin
     {
-        private readonly Options Options;
+        private readonly Interface Options;
         public static Plugin instance = null!;
         public static ManualLogSource logger = null!;
-        public const string VERSION = "2.2.2";
+        public const string VERSION = "2.3";
         public static readonly Version CurrentVersion = new(VERSION);
 
         public Plugin()
@@ -28,7 +29,7 @@ namespace FinderMod
             {
                 instance = this;
                 logger = base.Logger;
-                Options = new Options(this, base.Logger);
+                Options = new Interface(this, base.Logger);
             }
             catch (Exception ex)
             {
@@ -41,6 +42,8 @@ namespace FinderMod
         {
             On.RainWorld.PreModsInit += RainWorld_PreModsInit;
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+            On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
+            On.OptionInterface.ErrorScreen += OptionInterface_ErrorScreen;
         }
 
         private void RainWorld_PreModsInit(On.RainWorld.orig_PreModsInit orig, RainWorld self)
@@ -57,19 +60,20 @@ namespace FinderMod
             {
                 if (IsInit) return;
 
-                On.ProcessManager.ActualProcessSwitch += ProcessManager_ActualProcessSwitch;
-
+                // Register UI
                 MachineConnector.SetRegisteredOI("alduris.finder", Options);
                 IsInit = true;
-                Logger.LogInfo("Loaded successfully");
 
+                // Register Dev Console interactions
                 if (ModManager.ActiveMods.Any(x => x.id == "slime-cubed.devconsole"))
                     Commands.Register();
+
+                // Register shaders
+                InternalShaders.LoadShaders();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                throw;
             }
         }
 
@@ -77,6 +81,15 @@ namespace FinderMod
         {
             orig(self, ID, fadeOutSeconds);
             ClearMemory();
+        }
+
+        private void OptionInterface_ErrorScreen(On.OptionInterface.orig_ErrorScreen orig, OptionInterface self, Exception ex, bool isInit)
+        {
+            orig(self, ex, isInit);
+            if (self is Interface options)
+            {
+                options.CustomErrorScreen(ex);
+            }
         }
 
         private void ClearMemory()

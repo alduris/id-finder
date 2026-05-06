@@ -9,8 +9,9 @@ namespace FinderMod.Search.Options
         private readonly OptionBuilder.OptionExecute executeFunc = null!;
         private readonly OptionBuilder.OptionValues valuesFunc = null!;
 
-        public APIBuilderOption(OptionBuilder.OptionElements elementFunc, OptionBuilder.OptionExecute executeFunc, OptionBuilder.OptionValues valuesFunc)
+        public APIBuilderOption(OptionBuilder.OptionElements elementFunc, OptionBuilder.OptionExecute executeFunc, OptionBuilder.OptionValues valuesFunc, CreatureTemplate.Type? rep)
         {
+            RepresentedCreature = rep;
             options = [.. elementFunc()];
             this.executeFunc = executeFunc;
             this.valuesFunc = valuesFunc;

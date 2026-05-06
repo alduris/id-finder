@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using RWCustom;
 using UnityEngine;
+using Watcher;
 using Color = UnityEngine.Color; // STOP POPPING UP System.Drawing NOBODY LIKES YOU
 
 namespace FinderMod.Search.Options
@@ -21,8 +21,11 @@ namespace FinderMod.Search.Options
         private readonly IntInput? TaggedLegInput;
         private readonly MultiChoiceInput? TagOwnerInput;
 
+        private readonly ColorHSLInput? SlugcatTagColorInput;
+
         public MothVarsOption(bool big)
         {
+            RepresentedCreature = big ? WatcherEnums.CreatureTemplateType.BigMoth : WatcherEnums.CreatureTemplateType.SmallMoth;
             this.big = big;
             baseSize = big ? 1f : 0.3f;
             elements = [
@@ -49,6 +52,11 @@ namespace FinderMod.Search.Options
             if (AntennaLength != null)
             {
                 AntennaLength.description = "Note: antenna length of 7 is very rare, with only 4 ids having it between ids 0 and 1000000.";
+            }
+
+            if (big)
+            {
+                elements.Add(SlugcatTagColorInput = new ColorHSLInput("Slugcat owner tag color", 0f, 1f, 0.45f, 1f, 0.3f, 0.5f));
             }
         }
 
@@ -94,6 +102,8 @@ namespace FinderMod.Search.Options
             if (tagOwner == 0) taggedLeg = -1;
             else if (tagOwner == 1) taggedLeg = 2;
 
+            HSLColor slugcatTagColor = new HSLColor(Random.Value, 0.45f + Mathf.Min(1, Random.Value * 0.6f), 0.3f + 0.2f * Random.Value);
+
             return new MothResults
             {
                 size = scale,
@@ -104,6 +114,7 @@ namespace FinderMod.Search.Options
                 secondaryColor = secondaryColor,
                 taggedLeg = taggedLeg,
                 tagOwner = tagOwner,
+                tagColor = slugcatTagColor,
             };
         }
         public override float Execute(XORShift128 Random)
@@ -135,6 +146,7 @@ namespace FinderMod.Search.Options
             yield return null!;
             yield return $"Tag owner: {results.tagOwner switch { 1 => "GA (green)", 2 => "DG (blue)", _ => "None" }}";
             if (results.tagOwner > 0) yield return $"Tagged leg: {results.taggedLeg}";
+            if (big) yield return $"Slugcat owner tag color: hsl({results.tagColor.hue}, {results.tagColor.saturation}, {results.tagColor.lightness})";
         }
 
         private struct MothResults
@@ -147,6 +159,7 @@ namespace FinderMod.Search.Options
             public Color secondaryColor;
             public int taggedLeg;
             public int tagOwner;
+            public HSLColor tagColor;
         }
     }
 }

@@ -5,13 +5,16 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class NootBabyVarsOption : Option
+    internal class NootBabyVarsOption : Option, ICanGPU
     {
         private readonly FloatInput wsInp, lsInp, fatInp, slInp;
         private readonly ColorRGBInput bodyInp, eyeInp;
 
+        public ComputeShader Shader => InternalShaders.noodleflyBabyVarsShader;
+
         public NootBabyVarsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.SmallNeedleWorm;
             elements = [
                 wsInp = new FloatInput("Wing size", 0.4f, 0.8f),
                 lsInp = new FloatInput("Leg size", 0.48f, 1.12f),
@@ -99,6 +102,18 @@ namespace FinderMod.Search.Options
             yield return $"Snout length: {results.snoutLength}";
             yield return $"Body color: rgb({results.bodyColor.r}, {results.bodyColor.g}, {results.bodyColor.b})";
             yield return $"Eye color: rgb({results.eyeColor.r}, {results.eyeColor.g}, {results.eyeColor.b})";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                wsInp.AsGPUInput(),
+                lsInp.AsGPUInput(),
+                fatInp.AsGPUInput(),
+                slInp.AsGPUInput(),
+                .. bodyInp.GetGPUInputs(),
+                .. eyeInp.GetGPUInputs(),
+                ];
         }
     }
 }

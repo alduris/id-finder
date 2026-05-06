@@ -1,0 +1,61 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+#define CentiAdult 0
+#define CentiRed 1
+#define CentiWing 2
+#define CentiAqua 3
+
+
+// Inputs
+// 0 - type
+// 1 - hue
+// 2 - saturation
+// 3 - size
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    int type = (int) inputs[0].value;
+    
+    float size = pow(RandomValue(random), 1.5);
+    float hue;
+    float sat = 0.9;
+    int satFac = 1;
+    int sizeFac = 1;
+    
+    float value1 = RandomValue(random);
+    float value2 = RandomValue(random);
+    
+    switch (type)
+    {
+        default:
+            hue = lerp(0.04, 0.1, value1);
+            satFac = 0;
+            break;
+        case CentiRed:
+            size = 1;
+            sizeFac = 0;
+            hue = lerp(-0.02, 0.01, value1);
+            sat = 0.9 + 0.1 * value2;
+            break;
+        case CentiWing:
+            size = lerp(0.5, 0.65, value1);
+            hue = lerp(0.28, 0.38, value1); // value1 intentional
+            sat = 0.5;
+            satFac = 0;
+            break;
+        case CentiAqua:
+            size = min(1, lerp(0.9, 1.8, value1));
+            hue = lerp(0.5, 0.6, value1); // value1 intentional
+            sat = lerp(0.8, 1, value2);
+            break;
+    }
+    
+    d += Distance(size, inputs[3]) * sizeFac; // size
+    d += Distance(hue, inputs[1]);            // hue
+    d += Distance(sat, inputs[2]) * satFac;   // saturation
+    
+    return d;
+}

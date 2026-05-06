@@ -5,12 +5,15 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class EliteScavSkillsOption : Option
+    internal class EliteScavSkillsOption : Option, ICanGPU
     {
         private readonly FloatInput dgeInp, midInp, mleInp, blkInp, reaInp;
 
+        public ComputeShader Shader => InternalShaders.eliteScavengerSkillsShader;
+
         public EliteScavSkillsOption() : base()
         {
+            RepresentedCreature = DLCSharedEnums.CreatureTemplateType.ScavengerElite;
             elements = [
                 dgeInp = new FloatInput("Dodge"),
                 midInp = new FloatInput("Mid-range"),
@@ -75,6 +78,17 @@ namespace FinderMod.Search.Options
             yield return $"Blocking: {results.blk}";
             yield return $"Reaction: {results.rea}";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                dgeInp.AsGPUInput(),
+                midInp.AsGPUInput(),
+                mleInp.AsGPUInput(),
+                blkInp.AsGPUInput(),
+                reaInp.AsGPUInput(),
+                ];
         }
     }
 }

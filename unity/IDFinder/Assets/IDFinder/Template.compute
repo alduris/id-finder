@@ -1,0 +1,12 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    // distance calculations here
+    
+    return d;
+}

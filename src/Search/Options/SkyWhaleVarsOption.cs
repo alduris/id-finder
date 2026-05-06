@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
@@ -19,6 +20,7 @@ namespace FinderMod.Search.Options
 
         public SkyWhaleVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.SkyWhale;
             elements = [
                 SizeMultiplierInput = new FloatInput("Size multiplier", 3.75f, 4.25f),
                 FinSharpnessInput = new FloatInput("Fin sharpness"),

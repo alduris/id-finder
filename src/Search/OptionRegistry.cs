@@ -103,8 +103,10 @@ namespace FinderMod.Search
 
                 // Watcher
                 "Lizard Cosmetics (Indigo)",
+                "Lizard Cosmetics (Peach)",
                 "Moth (Big) Variations",
                 "Moth (Small) Variations",
+                "Angler Variations",
                 "Barnacle Variations",
                 "Box Worm Variations",
                 "Drill Crab Variations",
@@ -112,6 +114,7 @@ namespace FinderMod.Search
                 "Rat Variations",
                 "Sky Whale Variations",
                 "Tardigrade Variations",
+                "Graffiti Bomb Variations",
             ];
             foreach (var option in DLCOptions)
             {
@@ -132,6 +135,9 @@ namespace FinderMod.Search
                 Options.Add("Centipede Variations (Aqua)", () => new CentipedeVarsOption(CentipedeVarsOption.CentipedeType.Aquapede));
                 Options.Add("Miros Vulture Variations", () => new MirosVultureVarsOption());
                 Options.Add("Yeek Color", () => new YeekColorsOption());
+
+                // Objects
+                Options.Add("Lilypuck Variations", () => new LilypuckVarsOption());
             }
 
             if (ModManager.MSC)
@@ -162,6 +168,7 @@ namespace FinderMod.Search
 
                 // Lizards
                 Options.Add("Lizard Cosmetics (Indigo)", () => new IndigoLizardCosmetics());
+                Options.Add("Lizard Cosmetics (Peach)", () => new PeachLizardCosmetics());
                 // you cannot convince me to do blizzards or basilisks if you have peeped the horrors that are their cosmetics code
 
                 // Moths!
@@ -169,6 +176,7 @@ namespace FinderMod.Search
                 Options.Add("Moth (Small) Variations", () => new MothVarsOption(false));
 
                 // Misc
+                Options.Add("Angler Variations", () => new AnglerVarsOption());
                 Options.Add("Barnacle Variations", () => new BarnacleVarsOption());
                 Options.Add("Box Worm Variations", () => new BoxWormVarsOption());
                 Options.Add("Drill Crab Variations", () => new DrillCrabVarsOption());
@@ -176,6 +184,9 @@ namespace FinderMod.Search
                 Options.Add("Rat Variations", () => new RatOption());
                 Options.Add("Sky Whale Variations", () => new SkyWhaleVarsOption());
                 Options.Add("Tardigrade Variations", () => new TardigradeOption());
+
+                // Objects
+                Options.Add("Graffiti Bomb Variations", () => new GraffitiBombVarsOption());
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
@@ -17,6 +18,17 @@ namespace FinderMod.Inputs
 
         /// <summary>Height of input.</summary>
         public override float InputHeight => 30f;
+
+        /// <inheritdoc/>
+        public override ICanGPU.GPUInput AsGPUInput()
+        {
+            return new ICanGPU.GPUInput
+            {
+                value = value,
+                range = max - min,
+                bias = enabled ? bias : 0
+            };
+        }
 
         /// <summary>Returns actual UI element to create</summary>
         /// <param name="pos">Position of UI element</param>

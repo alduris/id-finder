@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using Unity.Burst;
@@ -7,13 +6,17 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class ScavVarsOption : Option
+    internal class ScavVarsOption : Option, ICanGPU
     {
         private readonly FloatInput hsInp, etInp, esInp, enInp, eaInp, fatInp, wnInp, ntInp, psInp, hcbInp, lsInp, atInp, twInp;
         private readonly BoolInput dpInp, cetInp;
         private readonly IntInput tsInp;
+
+        public ComputeShader Shader => InternalShaders.scavengerVarsShader;
+
         public ScavVarsOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 hsInp = new FloatInput("Head size"),
                 etInp = new FloatInput("Eartler thickness"),
@@ -35,7 +38,7 @@ namespace FinderMod.Search.Options
                 new Whitespace(),
                 cetInp = new BoolInput("Colored eartler tips?"),
                 twInp = new FloatInput("Teeth wideness"),
-                tsInp = new IntInput("Tail segments", 1, 4)
+                tsInp = new IntInput("Tail segments", 0, 4)
             ];
         }
 
@@ -186,6 +189,28 @@ namespace FinderMod.Search.Options
             yield return $"Teeth wideness: {results.teethWideness}";
             yield return $"Tail segments: {results.tailSegments}";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                hsInp.AsGPUInput(),
+                etInp.AsGPUInput(),
+                esInp.AsGPUInput(),
+                enInp.AsGPUInput(),
+                eaInp.AsGPUInput(),
+                fatInp.AsGPUInput(),
+                wnInp.AsGPUInput(),
+                ntInp.AsGPUInput(),
+                psInp.AsGPUInput(),
+                dpInp.AsGPUInput(),
+                hcbInp.AsGPUInput(),
+                lsInp.AsGPUInput(),
+                atInp.AsGPUInput(),
+                cetInp.AsGPUInput(),
+                twInp.AsGPUInput(),
+                tsInp.AsGPUInput(),
+                ];
         }
     }
 }

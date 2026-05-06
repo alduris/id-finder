@@ -27,6 +27,7 @@ namespace FinderMod.Search.Options
 
         public MirosBirdVarsOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.MirosBird;
             elements = [
                 PlumageGraphicInput = new IntInput("Plumage graphic", 0, 6),
                 PlumageLengthInput = new FloatInput("Plumage length", 0.2f, 1.2f),

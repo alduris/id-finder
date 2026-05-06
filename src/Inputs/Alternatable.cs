@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FinderMod.Search;
 using FinderMod.Tabs;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
@@ -10,7 +11,7 @@ namespace FinderMod.Inputs
     /// Alternates between two elements using a Yes/No button.
     /// </summary>
     /// <typeparam name="E">Element type to alternate between</typeparam>
-    public class Alternatable<E> : IElement, ISaveInHistory where E : IElement
+    public class Alternatable<E> : IElement, ISaveInHistory, IGPUMultiInput where E : IElement
     {
         /// <summary>Label used in switch input</summary>
         protected readonly string name;
@@ -131,6 +132,25 @@ namespace FinderMod.Inputs
                 {
                     yield return line;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the switch input as a GPU input and, if the element supports it, the currently switched element as GPU input(s).
+        /// </summary>
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            if (Element is IGPUInput gpuInput)
+            {
+                return [SwitchInput.AsGPUInput(), gpuInput.AsGPUInput()];
+            }
+            else if (Element is IGPUMultiInput gpuMultiInput)
+            {
+                return [SwitchInput.AsGPUInput(), .. gpuMultiInput.GetGPUInputs()];
+            }
+            else
+            {
+                return [SwitchInput.AsGPUInput()];
             }
         }
     }

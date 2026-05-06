@@ -51,15 +51,9 @@ namespace FinderMod.Search.Options.LizardCosmetics
         public override float Execute(XORShift128 Random)
         {
             float r = 0f;
-            bool finishedZoopSpecific = false;
             bool body = false;
             bool tail = false;
             bool lhs = false;
-
-            // Tracking variables so we know which inputs to poll for distance if we already encountered them once.
-            // This is necessary because the user does not necessarily know which order they may come in.
-            SpineSpikesCosmetic otherSS = null!;
-            TailTuftCosmetic otherTT = null!;
 
             foreach (var result in GetResults(Random))
             {
@@ -69,70 +63,26 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         r += wingScalesCosmetic.Distance(wingScalesVars);
                         break;
                     case SpineSpikesVars spineSpikesVars:
+                        if (spineSpikesVars.id == 0)
                         {
-                            bool tryBoth = true;
-                            if (finishedZoopSpecific)
-                            {
-                                body = true;
-                                if (otherSS != null)
-                                {
-                                    r += otherSS.Distance(spineSpikesVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = spineSpikesCosmetic.Distance(spineSpikesVars);
-                                float b = mainSpineSpikesCosmetic.Distance(spineSpikesVars);
-
-                                if ((a <= b && spineSpikesCosmetic.Enabled) || !mainSpineSpikesCosmetic.Enabled)
-                                {
-                                    otherSS = mainSpineSpikesCosmetic;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherSS = spineSpikesCosmetic;
-                                    r += b;
-                                }
-                            }
+                            r += mainSpineSpikesCosmetic.Distance(spineSpikesVars);
+                        }
+                        else
+                        {
+                            body = true;
+                            r += spineSpikesCosmetic.Distance(spineSpikesVars);
                         }
                         break;
 
                     case TailTuftVars tailTuftVars:
+                        if (tailTuftVars.id == 1)
                         {
-                            bool tryBoth = true;
-                            if (!finishedZoopSpecific)
-                            {
-                                finishedZoopSpecific = true;
-                            }
-                            else
-                            {
-                                tail = true;
-                                if (otherTT != null)
-                                {
-                                    otherTT.Distance(tailTuftVars);
-                                    tryBoth = false;
-                                }
-                            }
-
-                            if (tryBoth)
-                            {
-                                float a = tailTuftCosmetic.Distance(tailTuftVars);
-                                float b = mainTailTuftCosmetic.Distance(tailTuftVars);
-
-                                if ((a <= b && tailTuftCosmetic.Enabled) || !mainTailTuftCosmetic.Enabled)
-                                {
-                                    otherTT = mainTailTuftCosmetic;
-                                    r += a;
-                                }
-                                else
-                                {
-                                    otherTT = tailTuftCosmetic;
-                                    r += b;
-                                }
-                            }
+                            r += mainTailTuftCosmetic.Distance(tailTuftVars);
+                        }
+                        else
+                        {
+                            r += tailTuftCosmetic.Distance(tailTuftVars);
+                            tail = true;
                         }
                         break;
 

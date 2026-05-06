@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
 using FinderMod.Inputs;
+using MoreSlugcats;
 using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class SlupStatsOption : Option
+    internal class SlupStatsOption : Option, ICanGPU
     {
         private readonly FloatInput wgtInp, vz0Inp, vz1Inp, louInp, lngInp, polInp, tunInp, spdInp;
 
+        public ComputeShader Shader => InternalShaders.slugpupStatsShader;
+
         public SlupStatsOption() : base()
         {
+            RepresentedCreature = MoreSlugcatsEnums.CreatureTemplateType.SlugNPC;
             elements = [
                 wgtInp = new FloatInput("Body weight", 0.5525f, 0.715f),
                 vz0Inp = new FloatInput("Visibility (standing)", -0.24f, -0.16f),
@@ -93,6 +97,20 @@ namespace FinderMod.Search.Options
             yield return $"Pole climbing speed: {results.pol}";
             yield return $"Tunnel crawling speed: {results.tun}";
             yield return $"Running speed: {results.spd}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                wgtInp.AsGPUInput(),
+                vz0Inp.AsGPUInput(),
+                vz1Inp.AsGPUInput(),
+                louInp.AsGPUInput(),
+                lngInp.AsGPUInput(),
+                polInp.AsGPUInput(),
+                tunInp.AsGPUInput(),
+                spdInp.AsGPUInput()
+                ];
         }
 
         private struct Results

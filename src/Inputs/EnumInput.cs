@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace FinderMod.Inputs
     /// <typeparam name="T">Enum to operate on</typeparam>
     /// <param name="name">Name of input</param>
     /// <param name="init">Initial value</param>
-    public class EnumInput<T>(string name, T init) : Input<T>(name, init) where T : struct, Enum
+    public class EnumInput<T>(string name, T init) : Input<T>(name, init), IGPUInput where T : struct, Enum
     {
         private readonly T init = init;
         /// <summary>Name conversion function</summary>
@@ -45,6 +46,7 @@ namespace FinderMod.Inputs
                 .Where(x => !excludeOptions.Contains((T)Enum.Parse(typeof(T), x.name)))
                 .Select(x => nameConv != null ? new ListItem(x.name, nameConv((T)Enum.Parse(typeof(T), x.name)), x.value) : x)
                 .ToArray();
+            el.listHeight = (ushort)Math.Min(10, el._itemList.Length);
             return el;
         }
 
@@ -65,6 +67,17 @@ namespace FinderMod.Inputs
                 }
             }
             return init;
+        }
+
+        /// <inheritdoc/>
+        public ICanGPU.GPUInput AsGPUInput()
+        {
+            return new ICanGPU.GPUInput()
+            {
+                bias = bias,
+                range = Enum.GetValues(typeof(T)).Length,
+                value = (int)(object)value // have to convert to object first because generic
+            };
         }
 
 

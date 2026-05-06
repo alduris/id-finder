@@ -1,0 +1,47 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+
+// Inputs
+// 0 - Body thickness
+// 1 - Legs thickness
+// 2 - Antennae length
+// 3 - Pinchers length
+// 4 - Antennae color intensity
+// 5 - Hue
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    // Shift x 15
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    Shift(random);
+    
+    // Distance calculations
+    float d = 0;
+    
+    d += Distance(lerp(0.6, 1.4, RandomValue(random)), inputs[0]); // body thickness
+    d += Distance(lerp(0.6, 1.4, RandomValue(random)), inputs[1]); // legs thickness
+    d += Distance(lerp(0.5, 1.5, RandomValue(random)), inputs[2]); // antennae length
+    d += Distance(lerp(40, 60, RandomValue(random)), inputs[3]); // pinchers length
+    bool temp = RandomValue(random) < 0.5;
+    d += Distance(temp * RandomValueIf(random, temp), inputs[4]); // colored antennae
+    d += Distance(0.6722222 + (1 - ClampedRandomVariation(0.5, 0.5, 0.3, random) * 2) * 0.2, inputs[5]); // hue
+    
+    return d;
+}

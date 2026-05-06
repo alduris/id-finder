@@ -1,0 +1,15 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    float d = 0;
+    
+    int numLarvae = max(1, (int) (RandomValue(random) * 5));
+    d += Distance(numLarvae, inputs[0]);
+    float sizeVar = 1.0 + RandomValue(random) * 0.2;
+    d += Distance(sizeVar, inputs[1]);
+    
+    return d;
+}

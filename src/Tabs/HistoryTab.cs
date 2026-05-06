@@ -18,7 +18,7 @@ namespace FinderMod.Tabs
         private HistoryItem? activeItem = null;
         private bool shownTooLargeWarning = false;
 
-        public HistoryTab(Options options) : base(options, Translate("History"))
+        public HistoryTab(Interface options) : base(options, Translate("History"))
         {
             HistoryManager.UpdateHistory += MarkDirty;
         }

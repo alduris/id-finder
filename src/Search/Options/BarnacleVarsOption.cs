@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using FinderMod.Inputs;
 using RWCustom;
 using UnityEngine;
+using Watcher;
 
 namespace FinderMod.Search.Options
 {
-    internal class BarnacleVarsOption : Option
+    internal class BarnacleVarsOption : Option, ICanGPU
     {
         private readonly FloatInput BodySizeInput;
         private readonly FloatInput EyeSizeInput;
@@ -21,8 +22,11 @@ namespace FinderMod.Search.Options
         private readonly FloatInput DarkColorInput;
         private readonly FloatInput LightColorInput;
 
+        public ComputeShader Shader => InternalShaders.barnacleVarsShader;
+
         public BarnacleVarsOption()
         {
+            RepresentedCreature = WatcherEnums.CreatureTemplateType.Barnacle;
             elements = [
                 BodySizeInput = new FloatInput("Body size", 0.6f, 1f),
                 EyeSizeInput = new FloatInput("Eye size", 0.7f, 1f),
@@ -100,6 +104,22 @@ namespace FinderMod.Search.Options
             yield return $"Cone base color: hsl({results.coneColor.hue}, {results.coneColor.saturation}, {results.coneColor.lightness})";
             yield return $"Low-end lightness offset: {results.darkColor}";
             yield return $"High-end lightness offset: {results.lightColor}";
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                BodySizeInput.AsGPUInput(),
+                EyeSizeInput.AsGPUInput(),
+                LegThicknessInput.AsGPUInput(),
+                NumConesInput.AsGPUInput(),
+                ConeRadVarianceInput.AsGPUInput(),
+                ConeLengthVarianceInput.AsGPUInput(),
+                ConeColorVarianceInput.AsGPUInput(),
+                .. ConeColorInput.GetGPUInputs(),
+                DarkColorInput.AsGPUInput(),
+                LightColorInput.AsGPUInput(),
+                ];
         }
 
         private struct BarnacleResults

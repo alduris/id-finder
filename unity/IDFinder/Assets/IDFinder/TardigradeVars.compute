@@ -1,0 +1,58 @@
+#pragma kernel CS_IDFinderMain
+
+// kinda surprised I have to do this but it makes sense given it kinda uses a full register per input for some reason
+#define IDFINDER_Y 16
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+
+// Inputs
+//  0 - body color h
+//  1 - body color s
+//  2 - body color l
+//  3 - secondary color h
+//  4 - secondary color s
+//  5 - secondary color l
+//  6 - scale
+//  7 - spikes per side
+//  8 - spike width
+//  9 - spike length
+// 10 - spike lay back
+// 11 - spike puff out
+// 12 - ear width
+// 13 - ear length
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    float d = 0;
+    
+    // scale
+    float scale = 0.55 + ((p.dominance - pow(RandomValue(random), 2)) * 0.6 + (1.0 - pow(RandomValue(random), 2)) * 0.4) * 0.15;
+    d += Distance(scale, inputs[6]);
+    
+    // body color
+    d += WrapDistance(0.3 + RandomValue(random) * 0.6, inputs[0]);
+    d += Distance(0.3 + RandomValue(random) * 0.17, inputs[1]);
+    d += Distance(0.5 + RandomValue(random) * 0.3, inputs[2]);
+    
+    // secondary color
+    d += WrapDistance(RandomValue(random), inputs[3]);
+    d += Distance(0.75 + RandomValue(random) * 0.25, inputs[4]);
+    d += Distance(0.5 + RandomValue(random) * 0.2, inputs[5]);
+    
+    // spikes
+    d += Distance(RandomRange(2, 7, random), inputs[7]); // spikes per side
+    d += Distance(RandomValue(random), inputs[8]); // spike width
+    d += Distance(RandomValue(random), inputs[9]); // spike length
+    d += Distance(RandomValue(random) * 0.7 + 0.3, inputs[10]); // spike lay back
+    d += Distance(RandomValue(random) * 0.8, inputs[11]); // spike puff out
+    
+    // ear
+    d += Distance(RandomValue(random), inputs[12]); // spike width
+    d += Distance(RandomValue(random), inputs[13]); // spike length
+    
+    return d;
+}

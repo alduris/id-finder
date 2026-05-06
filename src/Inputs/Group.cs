@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FinderMod.Search;
 using Menu.Remix.MixedUI;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace FinderMod.Inputs
     /// </summary>
     /// <param name="children">The list of children to add inside. Can also be set in the constructor if necessary with <see cref="children"/> field.</param>
     /// <param name="internalName">Internal name for group. Ideally should be unique. Used for saving in history.</param>
-    public class Group(List<IElement> children, string internalName) : IElement, ISaveInHistory
+    public class Group(List<IElement> children, string internalName) : IElement, ISaveInHistory, IGPUMultiInput
     {
         /// <summary>Internal margin between elements</summary>
         protected const float MARGIN = 6f;
@@ -143,6 +144,29 @@ namespace FinderMod.Inputs
                 }
             }
             yield break;
+        }
+
+        /// <summary>
+        /// Returns all GPU input-compatible children as GPU inputs, recursively.
+        /// </summary>
+        /// <returns></returns>
+        public virtual ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            List<ICanGPU.GPUInput> list = [];
+
+            foreach (var child in children)
+            {
+                if (child is IGPUInput gpuInput)
+                {
+                    list.Add(gpuInput.AsGPUInput());
+                }
+                else if (child is IGPUMultiInput multiInput)
+                {
+                    list.AddRange(multiInput.GetGPUInputs());
+                }
+            }
+
+            return [.. list];
         }
     }
 }

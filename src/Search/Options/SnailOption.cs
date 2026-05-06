@@ -6,14 +6,17 @@ using UnityEngine;
 
 namespace FinderMod.Search.Options
 {
-    internal class SnailOption : Option
+    internal class SnailOption : Option, ICanGPU
     {
         private FloatInput sizeInput;
         private ColorRGBInput colorAInput, colorBInput;
         private BoolInput sameInput;
 
+        public ComputeShader Shader => InternalShaders.snailVarsShader;
+
         public SnailOption()
         {
+            RepresentedCreature = CreatureTemplate.Type.Snail;
             elements = [
                 sizeInput = new FloatInput("Size", 0.6f, 1.4f),
                 colorAInput = new ColorRGBInput("Color A") { description = "Head side" },
@@ -85,6 +88,16 @@ namespace FinderMod.Search.Options
             yield return $"Color B: rgb({results.colorB.r}, {results.colorB.g}, {results.colorB.b})";
             yield return $"Same color? {(results.same ? "Yes" : "No")}";
             yield break;
+        }
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                sizeInput.AsGPUInput(),
+                .. colorAInput.GetGPUInputs(),
+                .. colorBInput.GetGPUInputs(),
+                sameInput.AsGPUInput(),
+                ];
         }
     }
 }

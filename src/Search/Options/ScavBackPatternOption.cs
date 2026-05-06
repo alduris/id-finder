@@ -13,17 +13,19 @@ namespace FinderMod.Search.Options
         private readonly EnumInput<ScavBackType> SpineTypeInput;
         private readonly EnumInput<ScavBodyScalePattern> SpinePatternInput;
         private readonly MultiChoiceInput ColorTypeInput;
-        private readonly IntInput NumSpinesInput;
+        private readonly IntInput NumSpinesInput, GraphicInput;
         private readonly FloatInput ColorStrengthInput, RangeStartInput, RangeEndInput, GeneralSizeInput;
 
         public ScavBackPatternOption() : base()
         {
+            RepresentedCreature = CreatureTemplate.Type.Scavenger;
             elements = [
                 new Label("See hover descriptions at bottom for some inputs"),
                 new Whitespace(),
                 SpineTypeInput = new EnumInput<ScavBackType>("Spine type", ScavBackType.HardBackSpikes),
                 SpinePatternInput = new EnumInput<ScavBodyScalePattern>("Spine pattern", ScavBodyScalePattern.SpineRidge),
                 NumSpinesInput = new IntInput("Number of spines", 2, 40) { description = "SpineRidge range: (2, 37), DoubleSpineRidge range: (2, 40), RandomBackBlotch range: (4, 40)" },
+                GraphicInput = new IntInput("Graphic", 0, 6) { description = "The graphic used on the spines. Uses lizard scale sprites." },
                 new Whitespace(),
                 ColorTypeInput = new MultiChoiceInput("Color type", ["None", "Decoration", "Head"]),
                 ColorStrengthInput = new FloatInput("Color strength") { description = "With color type = none, this will always be 0" },
@@ -39,6 +41,7 @@ namespace FinderMod.Search.Options
             public ScavBackType spineType;
             public ScavBodyScalePattern spinePattern;
             public int numSpines;
+            public int scaleGraphic;
             public int colorType;
             public float colorStrength;
             public float rangeStart;
@@ -183,7 +186,8 @@ namespace FinderMod.Search.Options
             float generalSize;
 
             // BackTuftsAndRidges constructor
-            Random.Shift(2); // graphic
+            int scaleGraphic = Random.Range(0, 7);
+            Random.Shift();
             if (Random.Value < 0.5f) Random.Shift();
             if (Random.Value > generalMelanin)
             {
@@ -206,7 +210,10 @@ namespace FinderMod.Search.Options
                 GeneratePattern(Random, ScavBackType.HardBackSpikes, pattern, out top, out bottom, out numScales);
 
                 // Advance pointer
-                if (Random.Value < 0.5f && Random.Value < 0.85f) Random.Shift();
+                if (Random.Value < 0.5f)
+                {
+                    scaleGraphic = Random.Value < 0.85f ? Random.Range(0, 4) : 6;
+                }
                 Random.Shift(2);
 
                 // General size
@@ -228,10 +235,18 @@ namespace FinderMod.Search.Options
                     pattern = (Random.Value < 0.5f) ? ScavBodyScalePattern.DoubleSpineRidge : ScavBodyScalePattern.SpineRidge;
                 }
 
-                if (Random.Value >= 0.2f)
+                if (Random.Value < 0.2f)
                 {
-                    if (Random.Value < 0.5f) Random.Shift(2);
-                    else Random.Shift();
+                    scaleGraphic = 0;
+                }
+                else if (Random.Value < 0.5f)
+                {
+                    Random.Shift();
+                    scaleGraphic = Random.Range(3, 6);
+                }
+                else
+                {
+                    Random.Shift();
                 }
 
                 GeneratePattern(Random, ScavBackType.WobblyBackTufts, pattern, out top, out bottom, out numScales);
@@ -256,6 +271,7 @@ namespace FinderMod.Search.Options
                 spineType = useHardBackSpikes ? ScavBackType.HardBackSpikes : ScavBackType.WobblyBackTufts,
                 spinePattern = pattern,
                 numSpines = numScales,
+                scaleGraphic = scaleGraphic,
                 colorType = colorType,
                 colorStrength = colored,
                 rangeStart = top,
@@ -272,6 +288,7 @@ namespace FinderMod.Search.Options
             if (SpineTypeInput.enabled) r += results.spineType != SpineTypeInput.value ? SpineTypeInput.bias : 0f;
             r += DistanceIf(results.colorType, ColorTypeInput);
             r += DistanceIf(results.colorStrength, ColorStrengthInput);
+            if (GraphicInput.enabled) r += results.scaleGraphic != GraphicInput.value ? GraphicInput.bias : 0f;
             if (SpinePatternInput.enabled) r += results.spinePattern != SpinePatternInput.value ? SpinePatternInput.bias : 0f;
             r += DistanceIf(results.rangeStart, RangeStartInput);
             r += DistanceIf(results.rangeEnd, RangeEndInput);

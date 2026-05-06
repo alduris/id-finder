@@ -1,0 +1,159 @@
+#pragma kernel CS_IDFinderMain
+
+#define IDFINDER_Y 16
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+// Input order:
+//   Body color:
+//     0 - body hue
+//     1 - body saturation
+//     2 - body lightness
+//
+//   Head color:
+//     3 - head hue
+//     4 - head saturation
+//     5 - head lightness
+//
+//   Decoration color:
+//     6 - deco hue
+//     7 - deco saturation
+//     8 - deco lightness
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    
+    float d = 0;
+    
+    // Precompute some variables and offset the random state
+    float generalMelanin = PushFromHalf(RandomValue(random), 2);
+    float headSize = ClampedRandomVariation(0.5, 0.5, 0.1, random);
+    NextU32(random);
+    float eyeSize = pow(max(0, lerp(RandomValue(random), sqrt(headSize), RandomValue(random) * 0.4)), lerp(0.95, 0.55, p.sympathy));
+    bool narrowEyesTick = RandomValue(random) >= lerp(0.3, 0.7, p.sympathy);
+    ShiftIf(random, narrowEyesTick);
+    float narrowEyes = 1;
+    
+    // 18 shifts
+    Shift(random); // eyes angle
+    Shift(random); // fatness
+    Shift(random); // fatness
+    Shift(random); // fatness
+    Shift(random); // narrow waist
+    Shift(random); // narrow waist
+    Shift(random); // narrow waist
+    Shift(random); // neck thickness
+    Shift(random); // neck thickness
+    Shift(random); // do pupils check (fails because narrowEyes = 1)
+    Shift(random); // colored pupils (elite scav edition)
+    Shift(random); // hands head color
+    Shift(random); // hands head color
+    Shift(random); // hands head color
+    Shift(random); // legs size
+    Shift(random); // arms thickness
+    Shift(random); // arms thickness
+    Shift(random); // wide teeth
+    
+    // bonus conditional shifts :O
+    bool temp = RandomValue(random) >= 0.5;
+    RandomValueIf(random, temp); // tail segments
+    temp = RandomValue(random) < 0.25;
+    RandomValueIf(random, temp); // scruffy
+    
+    // Congratulations! We have now gotten to the color slop part :DDDDDD
+    // Important numbers
+    Shift(random);
+    bool diverseHue = RandomValue(random) < 0.025;
+    ShiftIf(random, diverseHue);
+    float bodyHue = RandomValue(random);
+    bodyHue *= bodyHue * bodyHue * bodyHue * bodyHue; // this whole chain is equivalent to pow(RandomValue(random), 5)
+    
+    float temp1 = RandomValue(random);
+    float temp2 = RandomValue(random);
+    float accentHue1 = bodyHue + lerp(-1.0, 1.0, temp1) * 0.3 * temp2 * temp2;
+    accentHue1 -= floor(accentHue1);
+    
+    // Body color calculation
+    float3 bodyColor = float3(bodyHue, lerp(0.05, 1.0, pow(RandomValue(random), 0.85)), lerp(0.05, 0.8, RandomValue(random)));
+    bodyColor.y *= (1.0 - generalMelanin);
+    bodyColor.z = lerp(bodyColor.z, 0.5 + 0.5 * pow(RandomValue(random), 0.8), 1.0 - generalMelanin);
+    
+    float3 bodyColorRGB = HSL2RGB(bodyColor);
+    float bodyColorBlack = LerpMap((bodyColorRGB.x + bodyColorRGB.y + bodyColorRGB.z) / 3.0, 0.04, 0.8, 0.3, 0.95, 0.5);
+    bodyColorBlack = lerp(bodyColorBlack, lerp(0.5, 1, RandomValue(random)), RandomValue(random) * RandomValue(random) * RandomValue(random));
+    bodyColorBlack *= generalMelanin;
+    
+    float2 bodyColorVec = float2(bodyColor.y, lerp(-1.0, 1.0, bodyColor.z * (1 - bodyColorBlack)));
+    float bodyColorVecMag = length(bodyColorVec);
+    if (bodyColorVecMag < 0.5)
+    {
+        bodyColorVec = lerp(bodyColorVec, normalize(bodyColorVec), invlerp(0.5, 0.3, bodyColorVecMag));
+        bodyColor.y = invlerp(-1, 1, bodyColorVec.x);
+        bodyColor.z = invlerp(-1, 1, bodyColorVec.y);
+
+        bodyColorRGB = HSL2RGB(bodyColor);
+        bodyColorBlack = LerpMap((bodyColorRGB.x + bodyColorRGB.y + bodyColorRGB.z) / 3.0, 0.04, 0.8, 0.3, 0.95, 0.5);
+        bodyColorBlack = lerp(bodyColorBlack, lerp(0.5, 1, RandomValue(random)), RandomValue(random) * RandomValue(random) * RandomValue(random));
+        bodyColorBlack *= generalMelanin;
+    }
+    
+    d += WrapDistance(bodyColor.x, inputs[0]);
+    d += Distance(bodyColor.y, inputs[1]);
+    d += Distance(bodyColor.z, inputs[2]);
+    
+    // Important numbers 2 electric boogaloo
+    float accentHue2 = 0;
+    bool pathway = RandomValue(random) < LerpMap(bodyColorBlack, 0.5f, 0.8f, 0.9f, 0.3f);
+    
+    // pathway 1
+    accentHue2 = pathway * (accentHue1 + lerp(-1, 1, RandomValueIf(random, pathway)) * 0.1 * pow(RandomValueIf(random, pathway), 1.5));
+    accentHue2 = lerp(accentHue2, 0.15, RandomValueIf(random, pathway) * pathway);
+    
+    // pathway 2
+    pathway = !pathway;
+    accentHue2 += pathway * (Decimal(lerp(accentHue1, bodyHue, RandomValueIf(random, pathway) < 0.5) + 0.5) + lerp(-1, 1, RandomValueIf(random, pathway)) * 0.25 * pow(RandomValueIf(random, pathway), 2));
+    temp = pathway && (RandomValueIf(random, pathway) < lerp(0.8, 0.2, p.energy));
+    accentHue2 = lerp(accentHue2, 0.15, RandomValueIf(random, pathway && temp) * pathway * temp);
+    
+    // pathways meet once more
+    accentHue2 -= floor(accentHue2);
+    
+    // Head color
+    float3 headColor = float3(lerp(accentHue2, accentHue1, RandomValue(random) < 0.75), 1, 0.05 + 0.15 * RandomValue(random));
+    headColor.y *= (1 - generalMelanin) * (1 - generalMelanin);
+    headColor.z = lerp(headColor.z, 0.5 + 0.5 * pow(RandomValue(random), 0.8), 1.0 - generalMelanin);
+    headColor.y *= 0.1 + 0.9 * invlerp(0.1, 0, DistanceBetweenZeroToOneFloats(bodyColor.x, headColor.x) * LerpMap(abs(0.5 - headColor.z), 0, 0.5, 1, 0.3));
+    headColor.z *= lerp(1, 0.5 + 0.5 * invlerp(0.2, 0.05, DistanceBetweenZeroToOneFloats(bodyColor.x, headColor.x)), headColor.z < 0.5);
+    
+    float3 headColorRGB = HSL2RGB(headColor);
+    float headColorBlack = LerpMap((headColorRGB.r + headColorRGB.g + headColorRGB.b) / 3.0, 0.035, 0.26, 0.7, 0.95, 0.25);
+    headColorBlack = lerp(headColorBlack, lerp(0.8, 1, RandomValue(random)), RandomValue(random) * RandomValue(random) * RandomValue(random));
+    headColorBlack *= 0.2 + 0.7 * generalMelanin;
+    headColorBlack = max(headColorBlack, bodyColorBlack);
+    headColor.y = LerpMap(headColor.z * (1 - headColorBlack), 0, 0.15, 1, headColor.y);
+    headColor = lerp(headColor, bodyColor, headColor.z > bodyColor.z);
+    
+    bool headColorSatAdj = headColor.y < bodyColor.y * 0.75;
+    bool headColorAdjTemp = RandomValueIf(random, headColorSatAdj) < 0.5 && headColorSatAdj;
+    headColor.x = lerp(headColor.x, bodyColor.x, headColorSatAdj && headColorAdjTemp);
+    headColor.z *= lerp(1, 0.25, headColorSatAdj && !headColorAdjTemp);
+    headColor.y = lerp(headColor.y, bodyColor.y * 0.75, headColorSatAdj);
+    
+    d += WrapDistance(headColor.x, inputs[3]);
+    d += Distance(headColor.y, inputs[4]);
+    d += Distance(headColor.z, inputs[5]);
+    
+    // Decoration color
+    bool decoHueUseBody = RandomValue(random) < 0.65;
+    float decoHue = lerp(lerp(accentHue2, accentHue1, RandomValueIf(random, !decoHueUseBody) < 0.5), bodyHue, decoHueUseBody);
+    d += WrapDistance(decoHue, inputs[6]);
+    d += Distance(RandomValue(random), inputs[7]); // deco saturation
+    float decoLight = 0.5 + 0.5 * sqrt(RandomValue(random));
+    decoLight *= lerp(generalMelanin, RandomValue(random), 0.5);
+    d += Distance(decoLight, inputs[8]);
+    
+    return d;
+}

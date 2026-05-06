@@ -1,0 +1,34 @@
+#pragma kernel CS_IDFinderMain
+
+#include "IDFinder.cginc"
+#include "RWCustom.cginc"
+#include "Personality.cginc"
+
+
+// Inputs
+// 0 - has big eyes
+// 1 - whisker length
+// 2 - coat darkness
+// 3 - coat color
+// 4 - head color h
+// 5 - head color s
+// 6 - head color l
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    Personality p = InitPersonality(random);
+    float d = 0;
+    
+    d += MatchDistance(RandomValue(random) < 0.05, inputs[0]); // big eyes
+    d += Distance(lerp(20.0, 35.0, p.dominance), inputs[1]); // whisker length
+    float val = RandomValue(random);
+    d += Distance(1.0 - val * val * 0.4, inputs[2]); // coat darkness
+    d += Distance(RandomValue(random), inputs[3]); // coat color
+    
+    // head color
+    d += WrapDistance(WrappedRandomVariation(0, 0.1, 0.1, random), inputs[4]);
+    d += Distance(ClampedRandomVariation(0.2, 0.2, 0.1, random), inputs[5]);
+    d += Distance(ClampedRandomVariation(0.3, 0.1, 0.1, random), inputs[6]);
+    
+    return d;
+}

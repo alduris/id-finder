@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using FinderMod.Search;
 using FinderMod.Search.Options;
+using Menu;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
@@ -15,6 +17,9 @@ namespace FinderMod.Tabs
 {
     internal class SearchTab(OptionInterface owner) : BaseTab(owner, "Search")
     {
+        private const string GPU_INPUT_DESCRIPTION = "Toggles whether or not to use GPU searching. Intended for very large searches.";
+        private const string GPU_MEM_DESCRIPTION = "Determines how much CPU and GPU memory to use while searching. Tradeoff between more ids searched at once and finding the best results.";
+
         internal static SearchTab instance = null!;
         
         private OpScrollBox cont_queries = null!;
@@ -23,47 +28,101 @@ namespace FinderMod.Tabs
         internal OpTextBox input_min = null!;
         internal OpTextBox input_max = null!;
         internal OpDragger input_find = null!;
+        internal OpDragger input_threads = null!;
+        internal OpDragger? input_gpudispatch = null;
+        internal OpCheckBox input_gpu = null!;
         internal readonly List<Option> options = [];
         internal Threadmaster? threadmaster = null;
         private DateTime startTime;
 
         private bool waitingForResults = false;
+        private bool canUseGPU;
 
         public override void Initialize()
         {
             instance = this;
             options.Clear();
 
-            // Get max number of threads we can use
-            var maxThreads = Environment.ProcessorCount * 2;
+            // Get system information
+            int maxThreads = Environment.ProcessorCount;
+            canUseGPU = SystemInfo.supportsComputeShaders; // I am 99% sure all machines should use it so this might be replaced with a different check for strength later
 
             // Initialize elements we need
+            float comboOffset = LabelTest.GetWidth("SEARCH", true) + 10f;
             var combo_allOpts = new OpComboBox2(
-                CosmeticBind(""), new(10f, 520f), 250f,
+                CosmeticBind(""), new(10f + comboOffset, 574f), 250f,
                 [.. OptionRegistry.ListOptions()
                     .Select(s => new ListItem(s))]
             )
             { listHeight = 24 };
-            var button_add = new OpSimpleButton(new(266f, 520f), new(80f, 24f), "ADD") { description = "Add an item to search for" };
-            var button_copy = new OpSimpleButton(new(464f, 520f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
-            var button_paste = new OpSimpleButton(new(530f, 520f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
+            float addBttnX = combo_allOpts.PosX + combo_allOpts.size.x + 10f;
+            var button_add = new OpSimpleButton(new(addBttnX, 574f), new(60f, 24f), "ADD") { description = "Add an item to search for", colorEdge = GreenColor };
+            var button_copy = new OpSimpleButton(new(464f, 574f), new(60f, 24f), "COPY") { description = "Copy to clipboard" };
+            var button_paste = new OpSimpleButton(new(530f, 574f), new(60f, 24f), "PASTE") { description = "Paste from clipboard" };
             
-            cont_queries = new OpScrollBox(new(10f, 240f), new(580f, 270f), 0f, false, true, true);
+            cont_queries = new OpScrollBox(new(10f, 270f), new(580f, 290f), 0f, false, true, true);
 
-            input_min = new OpTextBox(CosmeticBind(0), new(50f, 206f), 100f) { description = "Start of search range", allowSpace = true };
-            input_max = new OpTextBox(CosmeticBind(100000), new(185f, 206f), 100f) { description = "End of search range", allowSpace = true };
-            input_find = new OpDragger(CosmeticRange(6, 1, 100), 360f, 206f) { description = "Number of ids to find per result (1-100)" };
-            var input_threads = new OpDragger(CosmeticRange(maxThreads / 4, 1, maxThreads), 455f, 206f) { description = "Number of threads to use" };
+            input_min = new OpTextBox(CosmeticBind(0),      new(50f, 236f), 100f) { description = "Start of search range", allowSpace = true };
+            input_max = new OpTextBox(CosmeticBind(100000), new(50f, 206f), 100f) { description = "End of search range", allowSpace = true };
 
-            var button_run = new OpSimpleButton(new(510f, 206f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
+            input_find    = new OpDragger(CosmeticRange(6, 1, 100),                     210f, 236f) { description = "Number of ids to find per result (1-100)" };
+            input_threads = new OpDragger(CosmeticRange(maxThreads / 2, 1, maxThreads), 210f, 206f) { description = "Number of threads to use" };
 
-            cont_results = new OpScrollBox(new(10f, 10f), new(580f, 160f), 0f, false, true, true);
+            input_gpu = new OpCheckBox(CosmeticBind(false), new Vector2(300f, 221f))
+            {
+                description = GPU_INPUT_DESCRIPTION
+            };
+            if (!canUseGPU)
+            {
+                input_gpu.colorEdge = RedColor;
+                input_gpu.greyedOut = true;
+                input_gpu.description = "Your hardware does not support compute shaders! Unable to use GPU to search.";
+            }
+            input_gpu.OnValueUpdate += (_, _, _) =>
+            {
+                input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
+            };
+
+            OpLabel? label_gpudispatch = null, label_gpumemory = null;
+            if (canUseGPU)
+            {
+                input_gpu.PosY += 15f;
+                input_gpudispatch = new OpDragger(CosmeticRange(6, 1, 9), new Vector2(input_gpu.PosX, input_gpu.PosY - 30f))
+                {
+                    description = GPU_MEM_DESCRIPTION,
+                    greyedOut = !input_gpu.GetValueBool()
+                };
+
+                label_gpudispatch = new OpLabel(new Vector2(250f, input_gpudispatch.PosY), new Vector2(44f, 24f), "Memory:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpudispatch.bumpBehav
+                };
+                label_gpumemory = new OpLabel(input_gpudispatch.pos + new Vector2(34f, 0f), new Vector2(0f, 24f), $"({Threadmaster.GPUDispatchSizeString(input_gpudispatch.GetValueInt())})", FLabelAlignment.Left)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpudispatch.bumpBehav
+                };
+
+                input_gpu.OnValueUpdate += (_, _, _) => input_gpudispatch.greyedOut = !input_gpu.GetValueBool();
+
+                input_gpudispatch.OnValueUpdate += (_, v, lv) =>
+                {
+                    if (v != lv)
+                    {
+                        label_gpumemory.text = $"({Threadmaster.GPUDispatchSizeString(input_gpudispatch.GetValueInt())})";
+                    }
+                };
+            }
+
+            var button_run = new OpSimpleButton(new(510f, 221f), new(80f, 24f), "SEARCH") { description = "Start the search!", colorEdge = BlueColor };
+
+            cont_results = new OpScrollBox(new(10f, 10f), new(580f, 176f), 0f, false, true, true);
 
             // Set up event listeners
-            // button_save.OnClick += (_) => HistoryManager.SaveHistory(options, [], (input_min.valueInt, input_max.valueInt));
             button_copy.OnClick += (_) =>
             {
-                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt)));
+                UniClipboard.SetText(HistoryManager.CreateCopyString(options, (input_min.valueInt, input_max.valueInt), input_gpu.GetValueBool() && !input_gpu.greyedOut));
                 ConfigContainer.instance.CfgMenu.ShowAlert(OptionalText.GetText(OptionalText.ID.ConfigContainer_AlertCopyCosmetic).Replace("<Text>", "search"));
             };
             button_paste.OnClick += (_) =>
@@ -121,8 +180,9 @@ namespace FinderMod.Tabs
                 cont_results.items.Clear();
                 cont_results.SetContentSize(0f, true);
 
+                bool useGPU = canUseGPU && input_gpu.GetValueBool() && !input_gpu.greyedOut;
                 var label_searching = new OpLabel(10f, cont_results.size.y - 40f, "SEARCHING...", true);
-                label_progress = new OpLabel(10f, cont_results.size.y - 70f, "0.00% complete", false);
+                label_progress = new OpLabel(10f, cont_results.size.y - 70f, useGPU ? "GPU search does not support progress reading" : "0.00% complete", false);
                 var button_abort = new OpSimpleButton(new(10f, cont_results.size.y - 100f), new(80f, 24f), "ABORT")
                 { description = "Aborts the search and return the current results", colorEdge = RedColor, colorFill = RedColor };
                 button_abort.OnClick += _ =>
@@ -132,32 +192,74 @@ namespace FinderMod.Tabs
                 cont_results.AddItems(label_searching, label_progress, button_abort);
                 cont_results.SetContentSize(80f, true);
 
+                if (useGPU)
+                {
+                    threads = input_gpudispatch.GetValueInt();
+                }
+
                 startTime = DateTime.Now;
-                threadmaster = new Threadmaster(options, threads, resultsPer, range, false);
+                threadmaster = new Threadmaster(options, threads, resultsPer, range, useGPU);
                 threadmaster.Run();
             };
 
             // Add stuff to tab
             var UIArrPlayerOptions = new UIelement[]
             {
-                new OpLabel(10f, 570f, "Input", true),
-                new OpLabel(10f, 550f, "WARNING: do not leave this tab while searching for ids.", false) { color = YellowColor },
+                // Top
+                new OpLabel(new Vector2(10f, 574f), new Vector2(0f, 24f), "SEARCH", FLabelAlignment.Left, true) { verticalAlignment = OpLabel.LabelVAlignment.Center },
                 combo_allOpts, button_add,
                 button_copy, button_paste,
+                // Input box
                 cont_queries,
-                new OpLabel(10f, 206f, "From:"),
+                // Further search options
+                new OpLabel(new Vector2(10f, 236f), new Vector2(34f, 24f), "From:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_min.bumpBehav
+                },
                 input_min,
-                new OpLabel(160f, 206f, "To:"),
+                new OpLabel(new Vector2(10f, 206f), new Vector2(34f, 24f), "To:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_max.bumpBehav
+                },
                 input_max,
-                new OpLabel(310f, 206f, "Results:"),
+
+                new OpLabel(new Vector2(160f, 236f), new Vector2(44f, 24f), "Results:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_find.bumpBehav
+                },
                 input_find,
-                new OpLabel(400f, 206f, "Threads:"),
+                new OpLabel(new Vector2(160f, 206f), new Vector2(44f, 24f), "Threads:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_threads.bumpBehav
+                },
                 input_threads,
+
+                new OpLabel(new Vector2(250f, input_gpu.PosY), new Vector2(44f, 24f), "GPU:", FLabelAlignment.Right)
+                {
+                    verticalAlignment = OpLabel.LabelVAlignment.Center,
+                    bumpBehav = input_gpu.bumpBehav
+                },
+                input_gpu,
+
                 button_run,
-                new OpLabel(10f, 176f, "Output", true),
+                // Output box
+                new OpImage(new Vector2(0f, 195f), "pixel") { scale = new Vector2(600f, 2f), color = MenuColorEffect.rgbMediumGrey },
                 cont_results,
             };
             AddItems(UIArrPlayerOptions);
+
+            if (input_gpudispatch != null && label_gpudispatch != null && label_gpumemory != null)
+            {
+                AddItems(input_gpudispatch, label_gpudispatch, label_gpumemory);
+            }
+
+            // Dummy labels
+            cont_queries.AddItems(new OpLabel(10f, cont_queries.size.y - 4f - LabelTest.LineHeight(true), "Input", true));
+            cont_results.AddItems(new OpLabel(10f, cont_results.size.y - 4f - LabelTest.LineHeight(true), "Output", true));
         }
 
         internal void AddOption(Option option, bool update)
@@ -203,6 +305,17 @@ namespace FinderMod.Tabs
 
             cont_queries.SetContentSize(cont_queries.size.y - y + PADDING, true);
             cont_queries.ScrollOffset = oldScroll + (oldHeight - cont_queries.contentSize);
+
+            if (canUseGPU)
+            {
+                input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked);
+                input_gpu.description = input_gpu.greyedOut ? "GPU search not supported for this search!" : GPU_INPUT_DESCRIPTION;
+                input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
+                if (input_gpudispatch != null)
+                {
+                    input_gpudispatch.greyedOut = input_gpu.greyedOut || !input_gpu.GetValueBool();
+                }
+            }
         }
 
         public override void Update()
@@ -247,7 +360,7 @@ namespace FinderMod.Tabs
                     label.PosY -= labelSize;
 
                     // Copy results button
-                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "COPY") { description = "Copy results" };
+                    var button_copy = new OpSimpleButton(new(10f, cont_results.size.y - labelSize - 40f), new(100f, 24f), "COPY RESULTS") { description = "Copy results to clipboard" };
                     button_copy.OnClick += (_) =>
                     {
                         UniClipboard.SetText(label.text);
@@ -264,19 +377,19 @@ namespace FinderMod.Tabs
                         bool saved = false;
                         var optionsLocalClone = options.ToList();
                         var range = (input_min.valueInt, input_max.valueInt);
-                        var button_save = new OpSimpleButton(new(64f, cont_results.size.y - labelSize - 40f), new(48f, 24f), "SAVE") { description = "Save results to history" };
+                        var button_save = new OpSimpleButton(new(button_copy.PosX + button_copy.size.x + 10f, cont_results.size.y - labelSize - 40f), new(100f, 24f), "SAVE SEARCH") { description = "Save results to history" };
                         button_save.OnClick += (_) =>
                         {
                             if (saved) return;
                             saved = true;
-                            HistoryManager.SaveHistory(optionsLocalClone, results, range);
+                            HistoryManager.SaveHistory(optionsLocalClone, results, range, threadmaster.IsGPU);
                             button_save.Deactivate();
                             RemoveItems(button_save);
                         };
                         cont_results.AddItems(button_save);
 
                         // Temporary history gets removed after it is actually saved, or when the game closes
-                        HistoryManager.SaveTemporaryHistory(options, results, range);
+                        HistoryManager.SaveTemporaryHistory(options, results, range, threadmaster.IsGPU);
 
                         // Also print to dev console
                         Commands.TryPrint("ID FINDER RESULTS", Color.white);
@@ -287,7 +400,7 @@ namespace FinderMod.Tabs
                     // Reupdate query box to reenable everything
                     UpdateQueryBox();
                 }
-                else
+                else if (!threadmaster.IsGPU)
                 {
                     // Update progress thingy
                     double min = threadmaster.Progress;

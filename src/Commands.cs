@@ -8,19 +8,20 @@ using DevConsole.Commands;
 using FinderMod.Search;
 using FinderMod.Search.Options;
 using Menu.Remix.MixedUI;
+using RWCustom;
 using UnityEngine;
 
 namespace FinderMod
 {
     internal static class Commands
     {
-        private static bool registered = false;
+        internal static bool registered = false;
 
         public static void Register()
         {
             registered = true;
             new CommandBuilder("id_finder")
-                .Help("id_finder [history|values]")
+                .Help("id_finder [history|values|spawn]")
                 .AutoComplete(FinderAutocomplete)
                 .Run(FinderRun)
                 .Register();
@@ -32,6 +33,7 @@ namespace FinderMod
             {
                 yield return "history";
                 yield return "values";
+                yield return "spawn";
             }
             else
             {
@@ -48,12 +50,26 @@ namespace FinderMod
                         {
                             foreach (string option in OptionRegistry.ListOptions())
                             {
-                                yield return $"{option}";
+                                yield return $"\"{option}\"";
                             }
                         }
                         else if (args.Length == 2)
                         {
                             yield return "help-id: int";
+                        }
+                        break;
+                    case "spawn":
+                        if (args.Length == 1)
+                        {
+                            yield return "help-index: int";
+                        }
+                        else if (args.Length == 2)
+                        {
+                            yield return "null";
+                            foreach (var creature in CreatureTemplate.Type.values.entries)
+                            {
+                                yield return creature;
+                            }
                         }
                         break;
                 }
@@ -109,14 +125,12 @@ namespace FinderMod
                                 GameConsole.WriteLine("  No temporary history");
                             }
 
-                            [MethodImpl(MethodImplOptions.AggressiveInlining)]
                             int NameLengthSafe()
                             {
                                 int histLen = history.Count > 0 ? history.Max(x => x.name.Length) : 0;
                                 int tempLen = tempHistory.Count > 0 ? tempHistory.Max(x => x.name.Length) : 0;
                                 return Math.Max(histLen, tempLen);
                             }
-                            [MethodImpl(MethodImplOptions.AggressiveInlining)]
                             int ResultsLengthSafe()
                             {
                                 int histLen = history.Count > 0 ? history.Max(x => x.results?.Length > 0 ? x.results[0].Length : 0) : 0;
@@ -186,6 +200,94 @@ namespace FinderMod
                         {
                             GameConsole.WriteLine($"\"{args[0]}\" is not a valid option!");
                             return;
+                        }
+                    }
+                    break;
+                case "spawn":
+                    {
+                        if (GameConsole.TargetPos.Room == null)
+                        {
+                            GameConsole.WriteLine("`id_finder spawn` must be run while in a room!");
+                            break;
+                        }
+                        if (args.Length > 1 && int.TryParse(args[1], out int index))
+                        {
+                            index--;
+                            var history = HistoryManager.GetHistory();
+                            var tempHistory = HistoryManager.GetTempHistory();
+
+                            HistoryManager.HistoryItem? historyItem = null;
+                            if (index < 0 || index >= history.Count + tempHistory.Count)
+                            {
+                                GameConsole.WriteLine($"Index out of bounds! Must be between 1 and {history.Count + tempHistory.Count}", Color.red);
+                                return;
+                            }
+                            else if (index < history.Count)
+                            {
+                                historyItem = history[index];
+                            }
+                            else
+                            {
+                                historyItem = tempHistory[index - history.Count];
+                            }
+
+                            if (historyItem == null)
+                            {
+                                GameConsole.WriteLine("Something went wrong! (historyItem was null)", Color.red);
+                                return;
+                            }
+                            
+                            var options = historyItem.Value.GetOptions().ToList();
+                            int resultsIndex = 0;
+                            var target = GameConsole.TargetPos;
+                            var wc = Custom.MakeWorldCoordinate(Room.StaticGetTilePosition(target.Pos), target.Room.index);
+                            for (int i = 0; i < options.Count; i++)
+                            {
+                                if (i != 0 && !options[i].linked)
+                                {
+                                    resultsIndex++;
+                                }
+                                CreatureTemplate.Type? templateType = null;
+                                if (args.Length > 2 + i && args[2 + i] != "null")
+                                {
+                                    templateType = new CreatureTemplate.Type(args[2 + i], false);
+                                }
+                                else if (options[i].RepresentedCreature != null)
+                                {
+                                    templateType = options[i].RepresentedCreature;
+                                }
+
+                                if (templateType != null && templateType.Index != -1)
+                                {
+                                    try
+                                    {
+                                        var results = historyItem.Value.results[resultsIndex];
+                                        foreach (var result in results)
+                                        {
+                                            var ac = new AbstractCreature(target.Room.world, StaticWorld.GetCreatureTemplate(templateType), null, wc, target.Room.world.game.GetNewID());
+                                            target.Room.AddEntity(ac);
+                                            if (target.Room.realizedRoom != null)
+                                            {
+                                                ac.RealizeInRoom();
+                                                ac.realizedObject.firstChunk.HardSetPosition(target.Pos);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Debug.LogException(ex);
+                                        GameConsole.WriteLine(ex.ToString(), Color.red);
+                                    }
+                                }
+                                else
+                                {
+                                    GameConsole.WriteLine($"WARNING: Invalid/missing creature for option {i + 1}! Skipping", Color.yellow);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            GameConsole.WriteLine("Could not parse integer for history index!", Color.red);
                         }
                     }
                     break;
