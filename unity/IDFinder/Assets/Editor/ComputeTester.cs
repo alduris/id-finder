@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Linq;
 using UnityEngine.Rendering;
+using static LizardCosmeticsTesting;
 
 
 public class ComputeTester : EditorWindow
@@ -359,7 +360,16 @@ public class ComputeTester : EditorWindow
             new Input("Ear width"),
             new Input("Ear length")
         },
+        ["PinkLizardCosmetics"] = SpineSpikesVars(LizardType.Pink)
+            .Concat(BumpHawkVars(LizardType.Pink))
+            .Concat(LongShoulderScalesVars(LizardType.Pink))
+            .Concat(ShortBodyScalesVars(LizardType.Pink))
+            .Concat(TailTuftVars(LizardType.Pink))
+            .Concat(LongHeadScalesVars())
+            .ToList(),
     };
+
+    private const string KERNEL_NAME = "CS_IDFinderMain";
 
     [SerializeField] private int startingId;
     [SerializeField] private int threadsX = 1;
@@ -371,6 +381,7 @@ public class ComputeTester : EditorWindow
     private ComputeShader selectedShader;
     private VisualElement inputPane;
     private VisualElement outputPane;
+    private Label countLabel;
 
 
     [MenuItem("ID Finder/Compute Shader Tester")]
@@ -413,7 +424,6 @@ public class ComputeTester : EditorWindow
         Box extraBox;
         IntegerField startInput, numResultsInput, threadsXInput, threadsYInput;
         Button startButton;
-        Label countLabel;
         rightPane.Add(new Label("Inputs:"));
         rightPane.Add(inputPane = new Box());
         rightPane.Add(new Label("Extra setup:"));
@@ -432,8 +442,26 @@ public class ComputeTester : EditorWindow
         rightPane.Add(outputPane = new Box());
 
         startInput.RegisterCallback<ChangeEvent<int>>((evt) => startingId = startInput.value);
-        threadsXInput.RegisterCallback<ChangeEvent<int>>((evt) => (threadsX, countLabel.text) = (threadsXInput.value, $"{threadsXInput.value * threadsY * 32 * 32 * 32} results"));
-        threadsYInput.RegisterCallback<ChangeEvent<int>>((evt) => (threadsY, countLabel.text) = (threadsYInput.value, $"{threadsYInput.value * threadsX * 32 * 32 * 32} results"));
+        threadsXInput.RegisterCallback<ChangeEvent<int>>((evt) =>
+        {
+            uint x = 32;
+            uint y = 32;
+            if (selectedShader != null)
+            {
+                selectedShader.GetKernelThreadGroupSizes(selectedShader.FindKernel(KERNEL_NAME), out x, out y, out _);
+            }
+            (threadsX, countLabel.text) = (threadsXInput.value, $"{threadsXInput.value * threadsY * 32 * x * y} results");
+        });
+        threadsYInput.RegisterCallback<ChangeEvent<int>>((evt) =>
+        {
+            uint x = 32;
+            uint y = 32;
+            if (selectedShader != null)
+            {
+                selectedShader.GetKernelThreadGroupSizes(selectedShader.FindKernel(KERNEL_NAME), out x, out y, out _);
+            }
+            (threadsY, countLabel.text) = (threadsYInput.value, $"{threadsYInput.value * threadsX * 32 * x * y} results");
+        });
         startButton.clicked += StartButton_clicked;
 
         // Set up shader panel
@@ -493,6 +521,15 @@ public class ComputeTester : EditorWindow
                 biasInput.RegisterCallback<ChangeEvent<int>>((evt) => input.bias = biasInput.value);
                 containerBox.Add(biasInput);
             }
+
+            // update expecting panel
+            uint x = 32;
+            uint y = 32;
+            if (selectedShader != null)
+            {
+                selectedShader.GetKernelThreadGroupSizes(selectedShader.FindKernel(KERNEL_NAME), out x, out y, out _);
+            }
+            countLabel.text = $"{threadsX * threadsY * 32 * x * y} results";
         }
         else
         {
@@ -513,7 +550,7 @@ public class ComputeTester : EditorWindow
         if (TestInputs.TryGetValue(selectedShader.name, out var inputs))
         {
             // Setup
-            int kernel = selectedShader.FindKernel("CS_IDFinderMain");
+            int kernel = selectedShader.FindKernel(KERNEL_NAME);
             selectedShader.GetKernelThreadGroupSizes(kernel, out uint sizeX, out uint sizeY, out _);
             int total = (int)sizeX * threadsX * (int)sizeY * threadsY * 32;
 
@@ -568,7 +605,7 @@ public class ComputeTester : EditorWindow
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 8)]
-    private struct Result
+    public struct Result
     {
         public int id;
         public float dist;
@@ -582,20 +619,27 @@ public class ComputeTester : EditorWindow
         {
             int IComparer<Result>.Compare(Result x, Result y)
             {
-                return x.dist.CompareTo(y.dist);
+                int dist = x.dist.CompareTo(y.dist);
+                if (dist == 0)
+                {
+                    if (x.id == int.MinValue) return 1;
+                    if (y.id == int.MinValue) return -1;
+                    return Math.Abs(x.id) - Math.Abs(y.id);
+                }
+                return dist;
             }
         }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 12)]
-    private struct GPUInput
+    public struct GPUInput
     {
         public float value;
         public float range;
         public int bias;
     }
 
-    private class Input
+    public class Input
     {
         [SerializeField] public bool enabled;
         [SerializeField] public string name;

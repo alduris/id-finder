@@ -45,7 +45,20 @@ inline void ShiftIf(inout uint4 state, int cond)
 {
     uint4 old = state;
     NextU32(state);
-    state = state * cond + old * (1 - cond);
+    state = cond ? state : old;
+}
+
+inline void Shift(inout uint4 state, int times)
+{
+    for (int i = 0; i < times; i++)
+        Shift(state);
+}
+
+inline void ShiftIf(inout uint4 state, int times, int cond)
+{
+    uint4 old = state;
+    Shift(state, times);
+    state = cond ? state : old;
 }
 
 inline float RandomValue(inout uint4 state)
@@ -75,7 +88,7 @@ inline float RandomValueIf(inout uint4 state, int cond)
 {
     uint4 old = state;
     float f = RandomValue(state);
-    state = state * cond + old * (1 - cond);
+    state = cond ? state : old;
     return f;
 }
 
@@ -83,7 +96,7 @@ inline int RandomRangeIf(int a, int b, inout uint4 state, int cond)
 {
     uint4 old = state;
     int i = RandomRange(a, b, state);
-    state = state * cond + old * (1 - cond);
+    state = cond ? state : old;
     return i;
 }
 
@@ -91,7 +104,7 @@ inline float RandomRangeIf(float a, float b, inout uint4 state, int cond)
 {
     uint4 old = state;
     float f = RandomRange(a, b, state);
-    state = state * cond + old * (1 - cond);
+    state = cond ? state : old;
     return f;
 }
 

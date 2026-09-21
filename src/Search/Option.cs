@@ -141,6 +141,14 @@ namespace FinderMod.Search.Options
             SearchTab.instance?.UpdateQueryBox();
         }
 
+        /// <summary>
+        /// Forces the GPU checkbox to update its enabled status.
+        /// </summary>
+        public static void UpdateGPUCheckbox()
+        {
+            SearchTab.instance?.UpdateGPUCheckbox();
+        }
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Save stuff

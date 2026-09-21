@@ -72,16 +72,19 @@ namespace FinderMod.Tabs
             {
                 description = GPU_INPUT_DESCRIPTION
             };
-            if (!canUseGPU)
+            if (canUseGPU)
+            {
+                input_gpu.OnValueUpdate += (_, _, _) =>
+                {
+                    input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
+                };
+            }
+            else
             {
                 input_gpu.colorEdge = RedColor;
                 input_gpu.greyedOut = true;
                 input_gpu.description = "Your hardware does not support compute shaders! Unable to use GPU to search.";
             }
-            input_gpu.OnValueUpdate += (_, _, _) =>
-            {
-                input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
-            };
 
             OpLabel? label_gpudispatch = null, label_gpumemory = null;
             if (canUseGPU)
@@ -179,6 +182,8 @@ namespace FinderMod.Tabs
                 }
                 cont_results.items.Clear();
                 cont_results.SetContentSize(0f, true);
+
+                UpdateGPUCheckbox();
 
                 bool useGPU = canUseGPU && input_gpu.GetValueBool() && !input_gpu.greyedOut;
                 var label_searching = new OpLabel(10f, cont_results.size.y - 40f, "SEARCHING...", true);
@@ -306,9 +311,14 @@ namespace FinderMod.Tabs
             cont_queries.SetContentSize(cont_queries.size.y - y + PADDING, true);
             cont_queries.ScrollOffset = oldScroll + (oldHeight - cont_queries.contentSize);
 
+            UpdateGPUCheckbox();
+        }
+
+        public void UpdateGPUCheckbox()
+        {
             if (canUseGPU)
             {
-                input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked);
+                input_gpu.greyedOut = !options.All(x => x is ICanGPU && !x.linked && x is not ICanGPUSometimes { AllowGPU: false });
                 input_gpu.description = input_gpu.greyedOut ? "GPU search not supported for this search!" : GPU_INPUT_DESCRIPTION;
                 input_threads.greyedOut = !input_gpu.greyedOut && input_gpu.GetValueBool();
                 if (input_gpudispatch != null)

@@ -54,9 +54,19 @@ inline float RandomDeviation(float k, inout uint4 random)
     return SCurve(RandomValue(random) * 0.5, k) * 2.0 * lerp(-1.0, 1.0, RandomValue(random) < 0.5);
 }
 
+inline float RandomDeviationIf(float k, inout uint4 random, int cond)
+{
+    return SCurve(RandomValueIf(random, cond) * 0.5, k) * 2.0 * lerp(-1.0, 1.0, RandomValueIf(random, cond) < 0.5);
+}
+
 inline float ClampedRandomVariation(float baseValue, float maxDeviation, float k, inout uint4 random)
 {
     return saturate(baseValue + RandomDeviation(k, random) * maxDeviation);
+}
+
+inline float ClampedRandomVariationIf(float baseValue, float maxDeviation, float k, inout uint4 random, int cond)
+{
+    return saturate(baseValue + RandomDeviationIf(k, random, cond) * maxDeviation);
 }
 
 inline float ClampedRandomVariation(float3 values, inout uint4 random)
@@ -67,6 +77,12 @@ inline float ClampedRandomVariation(float3 values, inout uint4 random)
 inline float WrappedRandomVariation(float baseValue, float maxDeviation, float k, inout uint4 random)
 {
     float val = baseValue + RandomDeviation(k, random) * maxDeviation;
+    return val - floor(val);
+}
+
+inline float WrappedRandomVariationIf(float baseValue, float maxDeviation, float k, inout uint4 random, int cond)
+{
+    float val = baseValue + RandomDeviationIf(k, random, cond) * maxDeviation;
     return val - floor(val);
 }
 
