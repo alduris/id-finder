@@ -196,5 +196,27 @@ namespace FinderMod.Search.Options
             }
             return 0f;
         }
+
+        /// <summary>Distance calculation checking for an exact match for integer inputs. Useful for checking against graphics.</summary>
+        /// <param name="num">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance of either 0 or bias</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float MatchDistanceIf(int num, Input<int>? target)
+        {
+            return target != null && target.enabled && target.value != num ? target.bias : 0f;
+        }
+
+        /// <summary>Distance calculation checking for an exact match for enum inputs.</summary>
+        /// <typeparam name="T">Enum type</typeparam>
+        /// <param name="value">Value to compare</param>
+        /// <param name="target">Input to check</param>
+        /// <returns>Distance of either 0 or bias</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float MatchDistanceIf<T>(T value, EnumInput<T>? target) where T : struct, Enum
+        {
+            // why do we have to box here...
+            return target != null && target.enabled && (int)(object)target.value != (int)(object)value ? target.bias : 0f;
+        }
     }
 }

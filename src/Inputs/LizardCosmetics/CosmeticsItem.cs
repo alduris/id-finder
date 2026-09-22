@@ -89,7 +89,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             {
                 return Option.DistanceIf(vars.rigor, RigorInput)
                     + Option.DistanceIf(vars.numGills, NumGillsInput)
-                    + (GraphicInput.enabled && vars.graphic != GraphicInput.value ? GraphicInput.bias : 0f);
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput);
             }
             else if (Enabled && !Toggled)
             {
@@ -215,7 +215,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                 return Option.DistanceIf(vars.length, LengthInput)
                     + Option.DistanceIf(vars.width, WidthInput)
                     + Option.DistanceIf(vars.rigor, RigorInput)
-                    + Option.DistanceIf(vars.graphic, GraphicInput)
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput)
                     + Option.DistanceIf(vars.colored, ColoredInput);
             }
             else if (Enabled && !Toggled)
@@ -254,7 +254,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.maxSize, MaxSizeInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + Option.DistanceIf(vars.colored, ColoredInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput)
                     + (ScaleTypeInput.enabled && ScaleTypeInput.value != vars.scaleType ? ScaleTypeInput.bias : 0f);
             }
             else if (Enabled && !Toggled)
@@ -295,7 +295,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.sizeSkewExponent, SizeSkewExponentInput)
                     + Option.DistanceIf(vars.bumps, BumpsInput)
                     + Option.DistanceIf(vars.scaleX, ScaleXInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput);
             }
             else if (Enabled && !Toggled)
             {
@@ -422,7 +422,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                 return Option.DistanceIf(vars.spineLength, LengthInput)
                     + Option.DistanceIf(vars.spinesFlipped, FlippedInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput)
                     + (ColoredInput != null && ColoredInput.enabled && ColoredInput.value != vars.colorMode ? ColoredInput.bias : 0f);
             }
             else if (Enabled && !Toggled)
@@ -464,7 +464,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.spineScaleX, ScaleXInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + Option.DistanceIf(vars.colored, ColoredInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f);
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput);
             }
             else if (Enabled && !Toggled)
             {
@@ -526,7 +526,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             {
                 return Option.DistanceIf(vars.numScales, NumScalesInput)
                     + Option.DistanceIf(vars.colored, ColoredInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0f)
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput)
                     + (ScaleTypeInput.enabled && ScaleTypeInput.value != vars.scaleType ? ScaleTypeInput.bias : 0f);
             }
             else if (Enabled && !Toggled)
@@ -585,7 +585,7 @@ namespace FinderMod.Inputs.LizardCosmetics
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + Option.DistanceIf(vars.frontDir, FrontDirInput)
                     + Option.DistanceIf(vars.backDir, BackDirInput)
-                    + (GraphicInput.enabled && GraphicInput.value != vars.graphic ? GraphicInput.bias : 0);
+                    + Option.MatchDistanceIf(vars.graphic, GraphicInput);
             }
             else if (Enabled && !Toggled)
             {

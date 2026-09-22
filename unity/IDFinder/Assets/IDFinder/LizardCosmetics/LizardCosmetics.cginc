@@ -118,7 +118,7 @@ void BumpHawkVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 
 void LongHeadScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, inout int tailTuftGraphic)
 {
     // Check that it is here at all
-    d += MatchDistance(condition, nextInput) * MISSING_PENALTY;
+    d = MatchDistance(condition, nextInput) * MISSING_PENALTY;
     
     // Rigor
     float rigor = RandomValueIf(random, condition);
@@ -141,10 +141,13 @@ void LongHeadScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout 
     
     // Graphic
     int graphic = RandomRangeIf(4, 6, random, condition);
-    int check = size < 0.5;
-    int check2 = RandomValueIf(random, condition && check) < 0.5; // the random state gets broken here I think
-    graphic = (check && check2) ? 6 : graphic;
-    graphic = (size > 0.8) ? 5 : graphic;
+    
+    bool check = size < 0.5;
+    check = RandomValueIf(random, condition && check) < 0.5 && check;
+    graphic = check ? 6 : graphic;      // equivalent: if (size < 0.5f && Random.Value < 0.5f) graphic = 6;
+    graphic = size > 0.8 ? 5 : graphic; // equivalent: else if (size > 0.8f) graphic = 5;
+                                        // notice: size < 0.5f and size > 0.8f are mutually exclusive so no need to check if the other condition failed
+    
     MaybeSetTailTuftGraphic(graphic, tailTuftGraphic, condition);
     d += MatchDistance(graphic, nextInput) * condition;
     
@@ -156,6 +159,7 @@ void LongHeadScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout 
     float width = lerp(0.65, 1.2, saturate(randomWidth * size));
     d += Distance(length, nextInput) * condition;
     d += Distance(width, nextInput) * condition;
+    
 }
 
 void LongShoulderScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, float tailLengthIVar, inout int tailTuftGraphic)
