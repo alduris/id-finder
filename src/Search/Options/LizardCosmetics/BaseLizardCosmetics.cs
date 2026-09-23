@@ -26,11 +26,10 @@ namespace FinderMod.Search.Options.LizardCosmetics
         /// </summary>
         protected bool returnMelanistic = false;
 
-        /// <summary>
-        /// Contains the <see cref="LizardRotCosmetic"/> instance for referencing during distance calculations.
-        /// </summary>
-        protected LizardRotCosmetic lizardRotCosmetic = null!;
-        private readonly EnumInput<RotType> rotTypeInput = null!;
+        /// <summary>Contains the <see cref="LizardRotCosmetic"/> instance for referencing during distance calculations. Only present if Watcher is enabled.</summary>
+        protected LizardRotCosmetic? lizardRotCosmetic = null;
+        /// <summary>Contains the enum input for referencing during distance calculations. Only present if Watcher is enabled.</summary>
+        protected readonly EnumInput<RotType>? rotTypeInput = null;
 
         /// <summary>
         /// The <see cref="CreatureTemplate.Type"/> of the represented lizard. Overrideable in the event of a modded lizard.
@@ -54,6 +53,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             {
                 var submodule = new LizardRotSubholder(lizardRotCosmetic = new LizardRotCosmetic());
                 rotTypeInput = submodule.RotTypeInput;
+                rotTypeInput.OnValueChanged += (_, _, _) => UpdateGPUCheckbox();
                 cosmetics.Add(submodule);
             }
         }
@@ -66,7 +66,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
         /// <seealso cref="GetResults(XORShift128, RotType)"/>
         protected IEnumerable GetResults(XORShift128 Random)
         {
-            return GetResults(Random, ModManager.Watcher ? rotTypeInput.value : RotType.None);
+            return GetResults(Random, rotTypeInput?.value ?? RotType.None);
         }
 
         /// <summary>

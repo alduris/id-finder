@@ -40,6 +40,8 @@ namespace FinderMod
         public static ComputeShader ratVarsShader;
         public static ComputeShader tardigradeVarsShader;
 
+        public static ComputeShader pinkLizardCosmeticsShader;
+
         public static void LoadShaders()
         {
             assetBundle?.Unload(true);
@@ -83,6 +85,8 @@ namespace FinderMod
             frogVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/FrogVars.compute");
             ratVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/RatVars.compute");
             tardigradeVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/TardigradeVars.compute");
+
+            pinkLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/PinkLizardCosmetics.compute");
         }
     }
 }

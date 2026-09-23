@@ -975,6 +975,10 @@ namespace FinderMod.Search.Util
 
                 float bumpDiv = Mathf.Lerp(4f, 7f, Mathf.Pow(Random.Value, 0.7f));
                 spineLength = Option.ClampedRandomVariation(0.5f, 0.17f, 0.5f, Random) * bodyAndTailLength;
+                if (type == LizardType.Peach)
+                {
+                    spineLength = Option.ClampedRandomVariation(0.4f, 0.17f, 0.5f, Random) * bodyAndTailLength;
+                }
                 undersideSize = Mathf.Lerp(0.3f, 0.9f, Random.Value);
                 Random.Shift(3);
                 graphic = Random.Range(0, 6);

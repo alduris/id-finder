@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FinderMod.Search;
 using FinderMod.Search.Options;
 using static FinderMod.Search.Util.LizardUtil;
 
@@ -13,11 +16,11 @@ namespace FinderMod.Inputs.LizardCosmetics
     {
         /// <summary>Parent subholder</summary>
         internal protected Subholder parent = null!;
-        /// <summary>Whether the parent is enabled</summary>
-        public bool Enabled => parent != null && parent.Enabled;
-        /// <summary>Whether the parent is toggled on</summary>
+        /// <summary>Whether the parent is enabled or is null</summary>
+        public bool Enabled => parent == null || parent.Enabled;
+        /// <summary>Whether the parent is toggled on or is null</summary>
         public bool Toggled => parent == null || parent.IsToggled;
-        /// <summary>Checks if input is enabled and toggled</summary>
+        /// <summary>Checks if input is enabled and toggled, or if it has no parent</summary>
         public bool Active => Enabled && Toggled;
         /// <summary>Cosmetic type</summary>
         public readonly CosmeticType cosmeticType = cosmeticType;
@@ -36,6 +39,25 @@ namespace FinderMod.Inputs.LizardCosmetics
             }
             yield break;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="checkIfPresent"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [new ICanGPU.GPUInput(Toggled ? 1 : 0, 1, checkIfPresent ? 1 : 0)];
+        }
+
+        /// <summary>
+        /// Please use <see cref="GetGPUInputs(bool)"/> for lizard cosmetics.
+        /// This overload returns using false as the checkIfPresent parameter.
+        /// </summary>
+        public override ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return GetGPUInputs(false).ToArray();
+        }
     }
 
     public class AntennaeCosmetic : CosmeticsItem
@@ -47,6 +69,14 @@ namespace FinderMod.Inputs.LizardCosmetics
         {
             children.Add(LengthInput = new("Length") { enabled = false });
             children.Add(AlphaInput = new("Alpha") { enabled = false });
+        }
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                LengthInput.AsGPUInput(),
+                AlphaInput.AsGPUInput()
+                ];
         }
 
         public float Distance(AntennaeVars vars)
@@ -83,6 +113,19 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(GraphicInput = new("Graphic", 0, 5) { enabled = false });
         }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                RigorInput.AsGPUInput(),
+                SizeFacInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                NumGillsInput.AsGPUInput(),
+                WidthFacInput.AsGPUInput(),
+                BackwardsFacInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(AxolotlGillsVars vars)
         {
             if (Active)
@@ -108,6 +151,14 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(NumScalesInput = new("Number of scales", 3, max) { enabled = false });
         }
         public BodyStripesCosmetic(LizardType type) : this(BodyStripesVars.MaxNumScales(type)) { }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                NumScalesInput.AsGPUInput()
+                ];
+        }
 
         public float Distance(BodyStripesVars vars)
         {
@@ -137,6 +188,16 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
         public BumpHawkCosmetic(LizardType type)
             : this(BumpHawkVars.MinSpineLength(type), BumpHawkVars.MaxSpineLength(type), BumpHawkVars.MinNumBumps(type), BumpHawkVars.MaxNumBumps(type)) { }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                ColoredInput.AsGPUInput(),
+                SpineLenInput.AsGPUInput(),
+                NumBumpsInput.AsGPUInput(),
+                ];
+        }
 
         public float Distance(BumpHawkVars vars)
         {
@@ -175,6 +236,11 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(NumEyesInput = new("Number of eyes", 2, 5) { enabled = false });
         }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            throw new InvalidOperationException(nameof(LizardRotCosmetic) + " is not accepted for GPU inputs!");
+        }
+
         public float Distance(LizardRotVars vars)
         {
             if (Active)
@@ -206,6 +272,18 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(RigorInput = new("Rigor") { enabled = false });
             children.Add(GraphicInput = new("Graphic", 4, 6) { enabled = false });
             children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
+        }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                RigorInput.AsGPUInput(),
+                ColoredInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                LengthInput.AsGPUInput(),
+                WidthInput.AsGPUInput(),
+                ];
         }
 
         public float Distance(LongHeadScalesVars vars)
@@ -245,6 +323,19 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
         }
         public LongShoulderScalesCosmetic(LizardType type) : this(LongShoulderScalesVars.MinNumScales(type), LongShoulderScalesVars.MaxNumScales(type)) { }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                ScaleTypeInput.AsGPUInput(),
+                NumScalesInput.AsGPUInput(),
+                MinSizeInput.AsGPUInput(),
+                MaxSizeInput.AsGPUInput(),
+                ColoredInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                ];
+        }
 
         public float Distance(LongShoulderScalesVars vars)
         {
@@ -286,6 +377,19 @@ namespace FinderMod.Inputs.LizardCosmetics
                 ]);
         }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                MinSizeInput.AsGPUInput(),
+                MaxSizeInput.AsGPUInput(),
+                SizeSkewExponentInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                BumpsInput.AsGPUInput(),
+                ScaleXInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(PeachBackFinVars vars)
         {
             if (Active)
@@ -314,6 +418,14 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(AlphaInput = new FloatInput("Alpha") { enabled = false });
         }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                AlphaInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(PeachHeadStripesVars vars)
         {
             if (Active)
@@ -340,6 +452,15 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
         public ShortBodyScalesCosmetic(LizardType type) : this(ShortBodyScalesVars.MinNumScales(type), ShortBodyScalesVars.MaxNumScales(type)) { }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                ScaleTypeInput.AsGPUInput(),
+                NumScalesInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(ShortBodyScalesVars vars)
         {
             if (Active)
@@ -362,6 +483,14 @@ namespace FinderMod.Inputs.LizardCosmetics
         public SkinkSpecklesCosmetic() : base(CosmeticType.SkinkSpeckles)
         {
             children.Add(NumSpotsInput = new("Number of speckles", 0, 49) { enabled = false });
+        }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                NumSpotsInput.AsGPUInput(),
+                ];
         }
 
         public float Distance(SkinkSpecklesVars vars)
@@ -415,6 +544,18 @@ namespace FinderMod.Inputs.LizardCosmetics
         public SpineSpikesCosmetic(LizardType type)
             : this(type, SpineSpikesVars.MinSpineLength(type), SpineSpikesVars.MaxSpineLength(type), SpineSpikesVars.MinNumScales(type), SpineSpikesVars.MaxNumScales(type)) { }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                LengthInput.AsGPUInput(),
+                NumScalesInput.AsGPUInput(),
+                FlippedInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                ColoredInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 2, 0)
+                ];
+        }
+
         public float Distance(SpineSpikesVars vars)
         {
             if (Active)
@@ -455,6 +596,19 @@ namespace FinderMod.Inputs.LizardCosmetics
         public TailFinCosmetic(LizardType type)
             : this(TailFinVars.MinSpineLength(type), TailFinVars.MaxSpineLength(type), TailFinVars.MinNumScales(type), TailFinVars.MaxNumScales(type)) { }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                LengthInput.AsGPUInput(),
+                UndersideSizeInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                NumScalesInput.AsGPUInput(),
+                ScaleXInput.AsGPUInput(),
+                ColoredInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(TailFinVars vars)
         {
             if (Active)
@@ -485,6 +639,16 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(RowsInput = new("Rows", 7, 18) { enabled = false });
             children.Add(LinesInput = new("Lines", 3, 4) { enabled = false });
             children.Add(BigScalesInput = new("Big scales", true) { enabled = false });
+        }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                BigScalesInput.AsGPUInput(),
+                RowsInput.AsGPUInput(),
+                LinesInput.AsGPUInput(),
+                ];
         }
 
         public float Distance(TailGeckoScalesVars vars)
@@ -520,6 +684,17 @@ namespace FinderMod.Inputs.LizardCosmetics
 
         public TailTuftCosmetic(LizardType type) : this(TailTuftVars.MinNumScales(type), TailTuftVars.MaxNumScales(type)) { }
 
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                ScaleTypeInput.AsGPUInput(),
+                NumScalesInput.AsGPUInput(),
+                ColoredInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                ];
+        }
+
         public float Distance(TailTuftVars vars)
         {
             if (Active)
@@ -544,6 +719,14 @@ namespace FinderMod.Inputs.LizardCosmetics
         public WhiskersCosmetic() : base(CosmeticType.Whiskers)
         {
             children.Add(NumWhiskersInput = new("Number of whiskers", 3, 4) { enabled = false });
+        }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                NumWhiskersInput.AsGPUInput(),
+                ];
         }
 
         public float Distance(WhiskersVars vars)
@@ -575,6 +758,18 @@ namespace FinderMod.Inputs.LizardCosmetics
             children.Add(FrontDirInput = new("Front direction", -0.1f, 0.2f) { enabled = false });
             children.Add(BackDirInput = new("Back direction", 0f, 0.8f) { enabled = false });
             children.Add(GraphicInput = new("Graphic", 0, 4) { enabled = false });
+        }
+
+        public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
+        {
+            return [
+                .. base.GetGPUInputs(checkIfPresent),
+                NumScalesInput.AsGPUInput(),
+                GraphicInput.AsGPUInput(),
+                LengthInput.AsGPUInput(),
+                FrontDirInput.AsGPUInput(),
+                BackDirInput.AsGPUInput(),
+                ];
         }
 
         public float Distance(WingScalesVars vars)

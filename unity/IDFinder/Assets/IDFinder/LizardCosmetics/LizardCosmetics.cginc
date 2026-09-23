@@ -118,7 +118,7 @@ void BumpHawkVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 
 void LongHeadScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, inout int tailTuftGraphic)
 {
     // Check that it is here at all
-    d = MatchDistance(condition, nextInput) * MISSING_PENALTY;
+    d += MatchDistance(condition, nextInput) * MISSING_PENALTY;
     
     // Rigor
     float rigor = RandomValueIf(random, condition);
@@ -410,6 +410,9 @@ void TailFinVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 r
     // Spine sizes
     float bumpDiv = lerp(4, 7, pow(RandomValueIf(random, condition), 0.7));
     float spineLength = ClampedRandomVariationIf(0.5, 0.17, 0.5, random, condition);
+#if defined(LizardType_Peach)
+    spineLength = ClampedRandomVariationIf(0.4, 0.17, 0.5, random, condition);
+#endif
     d += Distance(spineLength, nextInput) * condition;
     
     float undersideSize = lerp(0.3, 0.9, RandomValueIf(random, condition));
