@@ -367,6 +367,66 @@ public class ComputeTester : EditorWindow
             .Concat(TailTuftVars(LizardType.Pink))
             .Concat(LongHeadScalesVars())
             .ToList(),
+        ["GreenLizardCosmetics"] = SpineSpikesVars(LizardType.Green)
+            .Concat(BumpHawkVars(LizardType.Green))
+            .Concat(LongShoulderScalesVars(LizardType.Green))
+            .Concat(ShortBodyScalesVars(LizardType.Green)) // an optimization was made in LizardCosmetics.cginc because in the C# code, there are
+                                                           // two cases in which ShortBodyScales can be added but only one input to cover both cases
+            .Concat(TailTuftVars(LizardType.Green)) // there's another of the same that got made here, just with TailTuft
+            .Concat(LongShoulderScalesVars(LizardType.Green)) // and there's two LongShoulderScales possibilities
+            .Concat(LongHeadScalesVars())
+            .ToList(),
+        ["BlueLizardCosmetics"] = SpineSpikesVars(LizardType.Blue)
+            .Concat(BumpHawkVars(LizardType.Blue))
+            .Concat(LongShoulderScalesVars(LizardType.Blue))
+            .Concat(ShortBodyScalesVars(LizardType.Blue))
+            .Concat(TailTuftVars(LizardType.Blue))
+            .Concat(LongHeadScalesVars())
+            .ToList(),
+        ["YellowLizardCosmetics"] = SpineSpikesVars(LizardType.Yellow)
+            .Concat(BumpHawkVars(LizardType.Yellow))
+            .Concat(LongShoulderScalesVars(LizardType.Yellow))
+            .Concat(ShortBodyScalesVars(LizardType.Yellow))
+            .Concat(TailTuftVars(LizardType.Yellow))
+            .Concat(AntennaeVars())
+            .Concat(ShortBodyScalesVars(LizardType.Yellow))
+            .ToList(),
+        ["WhiteLizardCosmetics"] = BumpHawkVars(LizardType.White)
+            .Concat(BumpHawkVars(LizardType.White))
+            .Concat(ShortBodyScalesVars(LizardType.White))
+            .Concat(LongShoulderScalesVars(LizardType.White))
+            .Concat(LongHeadScalesVars())
+            .Concat(TailTuftVars(LizardType.White))
+            .ToList(),
+        ["RedLizardCosmetics"] = SpineSpikesVars(LizardType.Red)
+            .Concat(BumpHawkVars(LizardType.Red))
+            .Concat(LongShoulderScalesVars(LizardType.Red))
+            .Concat(ShortBodyScalesVars(LizardType.Red))
+            .Concat(TailTuftVars(LizardType.Red))
+            .Concat(LongHeadScalesVars())
+            .Concat(LongShoulderScalesVars(LizardType.Red))
+            .Concat(SpineSpikesVars(LizardType.Red))
+            .Concat(TailFinVars(LizardType.Red))
+            .Concat(TailTuftVars(LizardType.Red))
+            .ToList(),
+        ["BlackLizardCosmetics"] = SpineSpikesVars(LizardType.Black)
+            .Concat(BumpHawkVars(LizardType.Black))
+            .Concat(LongShoulderScalesVars(LizardType.Black))
+            .Concat(ShortBodyScalesVars(LizardType.Black))
+            .Concat(TailTuftVars(LizardType.Black))
+            .Concat(LongHeadScalesVars())
+            .Concat(WhiskersVars())
+            .ToList(),
+        ["SalamanderLizardCosmetics"] = Melanistic()
+            .Concat(SpineSpikesVars(LizardType.Salamander))
+            .Concat(BumpHawkVars(LizardType.Salamander))
+            .Concat(AxolotlGillsVars())
+            .Concat(TailFinVars(LizardType.Salamander))
+            .ToList(),
+        ["CyanLizardCosmetics"] = WingScalesVars()
+            .Concat(TailTuftVars(LizardType.Cyan))
+            .Concat(TailGeckoScalesVars())
+            .ToList(),
     };
 
     private const string KERNEL_NAME = "CS_IDFinderMain";
@@ -389,7 +449,7 @@ public class ComputeTester : EditorWindow
     {
         ComputeTester wnd = GetWindow<ComputeTester>();
         wnd.titleContent = new GUIContent("Compute Shader Tester");
-        wnd.minSize = new Vector2(250, 450);
+        wnd.minSize = new Vector2(1050, 650);
     }
 
     [MenuItem("ID Finder/Reset Compute Shader Tester")]
@@ -421,22 +481,34 @@ public class ComputeTester : EditorWindow
         var rightPane = new ScrollView();
         splitView.Add(rightPane);
 
-        Box extraBox;
+        Box extraBox, extraRow1, extraRow2, extraRow3;
         IntegerField startInput, numResultsInput, threadsXInput, threadsYInput;
         Button startButton;
         rightPane.Add(new Label("Inputs:"));
         rightPane.Add(inputPane = new Box());
+
         rightPane.Add(new Label("Extra setup:"));
         rightPane.Add(extraBox = new Box());
-        extraBox.Add(startInput = new IntegerField("Starting id"));
+        extraBox.Add(extraRow1 = new Box());
+        extraBox.Add(extraRow2 = new Box());
+        extraBox.Add(extraRow3 = new Box());
+        extraRow1.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+        extraRow2.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+        extraRow3.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+
+        extraRow1.Add(startInput = new IntegerField("Starting id"));
+        startInput.style.width = new StyleLength(Length.Percent(30f));
         startInput.value = startingId;
-        extraBox.Add(numResultsInput = new IntegerField("Results to show"));
+        extraRow1.Add(numResultsInput = new IntegerField("Results to show"));
+        numResultsInput.style.width = new StyleLength(Length.Percent(30f));
         numResultsInput.value = numResults;
-        extraBox.Add(threadsXInput = new IntegerField("Threads x"));
+        extraRow2.Add(threadsXInput = new IntegerField("Threads x"));
+        threadsXInput.style.width = new StyleLength(Length.Percent(30f));
         threadsXInput.value = threadsX;
-        extraBox.Add(threadsYInput = new IntegerField("Threads y"));
+        extraRow2.Add(threadsYInput = new IntegerField("Threads y"));
+        threadsYInput.style.width = new StyleLength(Length.Percent(30f));
         threadsYInput.value = threadsY;
-        extraBox.Add(countLabel = new Label($"{threadsX * threadsY * 32} results"));
+        extraRow3.Add(countLabel = new Label($"{threadsX * threadsY * 32} results"));
         rightPane.Add(startButton = new Button() { text = "Run" });
         rightPane.Add(new Label("Output:"));
         rightPane.Add(outputPane = new Box());
@@ -485,13 +557,28 @@ public class ComputeTester : EditorWindow
             foreach (var input in inputs)
             {
                 var containerBox = new Box();
+                containerBox.style.width = new StyleLength(Length.Percent(100));
+                containerBox.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+
+                var enableInput = new Toggle()
+                {
+                    value = input.enabled
+                };
+                enableInput.style.width = new StyleLength(new Length(20f, LengthUnit.Pixel));
+                enableInput.RegisterCallback<ChangeEvent<bool>>((evt) => input.enabled = enableInput.value);
+                containerBox.Add(enableInput);
+
                 inputPane.Add(containerBox);
-                containerBox.Add(new Label(input.name));
+                var label = new Label(input.name);
+                label.style.width = new StyleLength(Length.Percent(25));
+                containerBox.Add(label);
 
                 var valueInput = new Slider($"Value ({input.value})", input.min, input.max)
                 {
                     value = input.value
                 };
+                valueInput.style.width = new StyleLength(Length.Percent(55));
+                valueInput.GetInput().style.position = new StyleEnum<Position>(Position.Relative);
                 valueInput.RegisterCallback<ChangeEvent<float>>((evt) =>
                 {
                     if (input.step == 0)
@@ -507,17 +594,15 @@ public class ComputeTester : EditorWindow
                 });
                 containerBox.Add(valueInput);
 
-                var enableInput = new Toggle("Enabled")
-                {
-                    value = input.enabled
-                };
-                enableInput.RegisterCallback<ChangeEvent<bool>>((evt) => input.enabled = enableInput.value);
-                containerBox.Add(enableInput);
+                var biasLabel = new Label("Bias: ");
+                biasLabel.style.width = new StyleLength(StyleKeyword.Auto);
+                containerBox.Add(biasLabel);
 
-                var biasInput = new IntegerField("Bias")
+                var biasInput = new IntegerField()
                 {
                     value = input.bias
                 };
+                biasInput.style.flexGrow = new StyleFloat(1f);
                 biasInput.RegisterCallback<ChangeEvent<int>>((evt) => input.bias = biasInput.value);
                 containerBox.Add(biasInput);
             }

@@ -161,6 +161,11 @@ public static class LizardCosmeticsTesting
         yield return new Input("    WingScales back dir", 0f, 0.8f) { enabled = false };
     }
 
+    public static IEnumerable<Input> Melanistic()
+    {
+        yield return new Input("Is melanistic", 0, 1, 1) { enabled = false };
+    }
+
     #region calculations
 
     public enum LizardType

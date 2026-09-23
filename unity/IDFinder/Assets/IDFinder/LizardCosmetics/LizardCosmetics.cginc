@@ -3,8 +3,8 @@
 //   - LizardRotModule
 //   - LizardRotVars
 
-#ifndef IDFINDER_LIZARDS
-#define IDFINDER_LIZARDS
+#ifndef IDFINDER_LIZARDCOSMETICS
+#define IDFINDER_LIZARDCOSMETICS
 
 #include "../IDFinder.cginc"
 #include "../RWCustom.cginc"
@@ -545,7 +545,7 @@ void WhiskersVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 
     ShiftIf(random, numWhiskers * 9 + (numWhiskers - 1) * 4, condition);
 }
 
-void WingScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, out float wingScalesScaleLength)
+void WingScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, inout float wingScalesScaleLength)
 {
     // Check that it is here at all
     d += MatchDistance(condition, nextInput) * MISSING_PENALTY;
@@ -574,7 +574,7 @@ void WingScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint
 }
 
 
-
+//#define LizardType_Cyan 1
 float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
 {
     int check, check2, check3, check4;
@@ -727,21 +727,19 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     check3 = RandomValueIf(random, !check && !check2) < 0.5 && !check && !check2;
     check2 = check3 || check2;
 #endif // blue
+#if defined(LizardType_Green)
+    // else if (type == LizardType.Green && Random.Value < 0.5f)
+    // this gets run here because it results in the same outcome, but the frontend only uses one set of inputs to cover both cases. so, optimization
+    check2 = RandomValueIf(random, !check) < 0.5 && !check && !check2;
+#endif // green
     ShortBodyScalesVars(d, inputs, inputPtr, random, check2, tailLengthIVar);
     shortBodyScales = shortBodyScales || check2;
     backDecals += check2;
-    check = check || check2;
+    //check = check || check2;
 #else // salamander
     ShiftIf(random, !check);
 #endif // salamander
     
-    // else if (type == LizardType.Green && Random.Value < 0.5f)
-#if defined(LizardType_Green)
-    check2 = RandomValueIf(random, !check) < 0.5 && !check;
-    ShortBodyScalesVars(d, inputs, inputPtr, random, check2, tailLengthIVar);
-    shortBodyScales = shortBodyScales || check2;
-    backDecals += check2;
-#endif // green
     
     // end of first if-else chain
     
@@ -766,21 +764,25 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     check3 = RandomValueIf(random, !check && !check2) < 0.96 && !check && !check2;
     check2 = check3 || check2;
 #endif // blue
+#if defined(LizardType_Green)
+    // else if (backDecals < 2 && type == LizardType.Green && Random.Value < 0.7f)
+    // similar to the ShortBodyScales scenario above, this gets shoehorned here because it leads to the same outcome, even if it's in a separate chain with additional code after
+    check3 = RandomValueIf(random, !check && !check2 && backDecals < 2) < 0.7 && !check && !check2 && backDecals < 2;
+    // this also gets shoved up here:
+    // if (Random.Value < 0.5f || longShoulderScales || shortBodyScales)
+    check4 = RandomValueIf(random, check3) < 0.5 || longShoulderScales || shortBodyScales;
+    check2 = (check3 && check4) || check2;
+#endif // green
     TailTuftVars(d, inputs, inputPtr, random, check2, tailLengthIVar, tailTuftGraphic);
     check = check || check2;
     
+    // continuation of:
     // else if (backDecals < 2 && type == LizardType.Green && Random.Value < 0.7f)
 #if defined(LizardType_Green)
-    check2 = RandomValueIf(random, !check && backDecals < 2) < 0.7 && !check && backDecals < 2;
-    
-    // if (Random.Value < 0.5f || longShoulderScales || shortBodyScales)
-    check3 = RandomValueIf(random, check2) < 0.5 || longShoulderScales || shortBodyScales;
-    
-    TailTuftVars(d, inputs, inputPtr, random, check2 && check3, tailLengthIVar, tailTuftGraphic);
-    
-    LongShoulderScalesVars(d, inputs, inputPtr, random, check2 && !check3, tailLengthIVar, tailTuftGraphic);
-    longShoulderScales = longShoulderScales || (check2 && !check3);
-    backDecals += (check2 && !check3);
+    // of note: check3 and check4 get defined before the TailTuftVars because if not for prevention of duplicate inputs, that stuff would be right here
+    LongShoulderScalesVars(d, inputs, inputPtr, random, check3 && !check4, tailLengthIVar, tailTuftGraphic);
+    longShoulderScales = longShoulderScales || (check3 && !check4);
+    backDecals += (check3 && !check4);
 #endif // green
     
 #endif // !salamdner && !indigo
