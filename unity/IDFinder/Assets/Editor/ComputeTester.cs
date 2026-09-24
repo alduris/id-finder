@@ -389,10 +389,8 @@ public class ComputeTester : EditorWindow
             .Concat(ShortBodyScalesVars(LizardType.Yellow))
             .Concat(TailTuftVars(LizardType.Yellow))
             .Concat(AntennaeVars())
-            .Concat(ShortBodyScalesVars(LizardType.Yellow))
             .ToList(),
         ["WhiteLizardCosmetics"] = BumpHawkVars(LizardType.White)
-            .Concat(BumpHawkVars(LizardType.White))
             .Concat(ShortBodyScalesVars(LizardType.White))
             .Concat(LongShoulderScalesVars(LizardType.White))
             .Concat(LongHeadScalesVars())
@@ -514,6 +512,7 @@ public class ComputeTester : EditorWindow
         rightPane.Add(outputPane = new Box());
 
         startInput.RegisterCallback<ChangeEvent<int>>((evt) => startingId = startInput.value);
+        numResultsInput.RegisterCallback<ChangeEvent<int>>((evt) => numResults = numResultsInput.value);
         threadsXInput.RegisterCallback<ChangeEvent<int>>((evt) =>
         {
             uint x = 32;
@@ -577,7 +576,8 @@ public class ComputeTester : EditorWindow
                 {
                     value = input.value
                 };
-                valueInput.style.width = new StyleLength(Length.Percent(55));
+                //valueInput.style.width = new StyleLength(Length.Percent(55));
+                valueInput.style.flexGrow = new StyleFloat(1f);
                 valueInput.GetInput().style.position = new StyleEnum<Position>(Position.Relative);
                 valueInput.RegisterCallback<ChangeEvent<float>>((evt) =>
                 {
@@ -602,7 +602,7 @@ public class ComputeTester : EditorWindow
                 {
                     value = input.bias
                 };
-                biasInput.style.flexGrow = new StyleFloat(1f);
+                biasInput.style.width = new StyleLength(new Length(40f, LengthUnit.Pixel));
                 biasInput.RegisterCallback<ChangeEvent<int>>((evt) => input.bias = biasInput.value);
                 containerBox.Add(biasInput);
             }

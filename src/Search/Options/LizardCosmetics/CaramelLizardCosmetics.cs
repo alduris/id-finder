@@ -32,7 +32,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     )
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
-            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
+            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
 
             if (ModManager.MSC) elements.Add(new Label("Note: colors may not be accurate in Saint's campaign"));
             elements.Add(bodyColorInput = new ColorHSLInput("Body color", true, 0.075f, 0.125f, true, 0.3f, 0.9f, true, 0.7f, 1f));

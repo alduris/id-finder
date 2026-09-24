@@ -1,11 +1,12 @@
 ﻿using System;
 using FinderMod.Inputs.LizardCosmetics;
+using UnityEngine;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class WhiteLizardCosmetics : BaseLizardCosmetics
+    internal class WhiteLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
         private readonly ShortBodyScalesCosmetic shortBodyScalesCosmetic;
@@ -21,11 +22,25 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     bumpHawkCosmetic = new BumpHawkCosmetic(type),
                     shortBodyScalesCosmetic = new ShortBodyScalesCosmetic(type),
                     longShoulderScalesCosmetic = new LongShoulderScalesCosmetic(type),
-                    longHeadScalesCosmetic = new LongHeadScalesCosmetic(),
+                    longHeadScalesCosmetic = new LongHeadScalesCosmetic(type),
                     None()
                     )
                 );
             cosmetics.Add(Toggleable("Has tail tuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.whiteLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -61,7 +76,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

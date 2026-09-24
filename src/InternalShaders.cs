@@ -41,6 +41,20 @@ namespace FinderMod
         public static ComputeShader tardigradeVarsShader;
 
         public static ComputeShader pinkLizardCosmeticsShader;
+        public static ComputeShader greenLizardCosmeticsShader;
+        public static ComputeShader blueLizardCosmeticsShader;
+        public static ComputeShader yellowLizardCosmeticsShader;
+        public static ComputeShader whiteLizardCosmeticsShader;
+        public static ComputeShader redLizardCosmeticsShader;
+        public static ComputeShader blackLizardCosmeticsShader;
+        public static ComputeShader salamanderLizardCosmeticsShader;
+        public static ComputeShader cyanLizardCosmeticsShader;
+        public static ComputeShader caramelLizardCosmeticsShader;
+        public static ComputeShader zoopLizardCosmeticsShader;
+        public static ComputeShader trainLizardCosmeticsShader;
+        public static ComputeShader eelLizardCosmeticsShader;
+        public static ComputeShader indigoLizardCosmeticsShader;
+        public static ComputeShader peachLizardCosmeticsShader;
 
         public static void LoadShaders()
         {
@@ -87,6 +101,20 @@ namespace FinderMod
             tardigradeVarsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/TardigradeVars.compute");
 
             pinkLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/PinkLizardCosmetics.compute");
+            greenLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/GreenLizardCosmetics.compute");
+            blueLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/BlueLizardCosmetics.compute");
+            yellowLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/YellowLizardCosmetics.compute");
+            whiteLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/WhiteLizardCosmetics.compute");
+            redLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/RedLizardCosmetics.compute");
+            blackLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/BlackLizardCosmetics.compute");
+            salamanderLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/SalamanderLizardCosmetics.compute");
+            cyanLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/CyanLizardCosmetics.compute");
+            //caramelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/CaramelLizardCosmetics.compute");
+            //zoopLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/ZoopLizardCosmetics.compute");
+            //trainLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/TrainLizardCosmetics.compute");
+            //eelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/EelLizardCosmetics.compute");
+            //indigoLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/IndigoLizardCosmetics.compute");
+            //peachLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/PeachLizardCosmetics.compute");
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using FinderMod.Inputs.LizardCosmetics;
+using UnityEngine;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class CyanLizardCosmetics : BaseLizardCosmetics
+    internal class CyanLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly WingScalesCosmetic wingScalesInput;
         private readonly TailTuftCosmetic tailTuftInput;
@@ -20,6 +21,18 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 tailGeckoScalesInput = new TailGeckoScalesCosmetic()
                 ));
             // cosmetics.Add(new JumpRingsCosmetic());
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.cyanLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. wingScalesInput.GetGPUInputs(true),
+                .. tailTuftInput.GetGPUInputs(true),
+                .. tailGeckoScalesInput.GetGPUInputs(true)
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -45,7 +58,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

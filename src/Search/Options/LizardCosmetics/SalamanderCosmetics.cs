@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
+using UnityEngine;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class SalamanderCosmetics : BaseLizardCosmetics
+    internal class SalamanderCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
@@ -30,6 +31,20 @@ namespace FinderMod.Search.Options.LizardCosmetics
             elements.Add(melanisticInput = new BoolInput("Is melanistic") {
                 description = "Regions are able to change the chance of this happening, so for some mod regions this may not be accurate."
             });
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.salamanderLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                melanisticInput.AsGPUInput(),
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. axolotlGillsCosmetic.GetGPUInputs(true),
+                .. tailFinCosmetic.GetGPUInputs(true),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -62,7 +77,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

@@ -41,7 +41,7 @@ void AntennaeVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 
     
     // Offset for next
     int segments = (int) floor(lerp(3, 8, pow(length, lerp(1, 6, length))));
-    ShiftIf(random, segments, condition);
+    ShiftIf(random, segments * 2, condition);
 }
 
 void AxolotlGillsVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 random, int condition, inout int tailTuftGraphic)
@@ -210,8 +210,8 @@ void LongShoulderScalesVars(inout float d, Inputs inputs, inout int inputPtr, in
     maxSize = max(25, maxSize) * 1.2;
 #endif
     
-    d += Distance(minSize, nextInput);
-    d += Distance(maxSize, nextInput);
+    d += Distance(minSize, nextInput) * condition;
+    d += Distance(maxSize, nextInput) * condition;
     
     // Colored
 #if defined(LizardType_Green) || defined(LizardType_Red)
@@ -219,7 +219,7 @@ void LongShoulderScalesVars(inout float d, Inputs inputs, inout int inputPtr, in
 #else
     int colored = RandomValueIf(random, condition) < 0.4;
 #endif
-    d += MatchDistance(colored, nextInput);
+    d += MatchDistance(colored, nextInput) * condition;
     
     // Graphic
     int check = RandomValueIf(random, condition) < 0.1;
@@ -233,7 +233,7 @@ void LongShoulderScalesVars(inout float d, Inputs inputs, inout int inputPtr, in
     ShiftIf(random, condition && check);
 #endif
     MaybeSetTailTuftGraphic(graphic, tailTuftGraphic, condition);
-    d += MatchDistance(graphic, nextInput);
+    d += MatchDistance(graphic, nextInput) * condition;
     
     // Final offsetting
     ShiftIf(random, condition);
@@ -413,7 +413,7 @@ void TailFinVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 r
 #if defined(LizardType_Peach)
     spineLength = ClampedRandomVariationIf(0.4, 0.17, 0.5, random, condition);
 #endif
-    d += Distance(spineLength, nextInput) * condition;
+    // distance gets checked later because of red lizards
     
     float undersideSize = lerp(0.3, 0.9, RandomValueIf(random, condition));
     d += Distance(undersideSize, nextInput) * condition;
@@ -425,7 +425,10 @@ void TailFinVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 r
     int graphic = RandomRangeIf(0, 6, random, condition);
 #if defined(LizardType_Red)
     graphic = 0;
+    spineLength = ClampedRandomVariationIf(0.3, 0.17, 0.5, random, condition);
 #endif
+    spineLength *= bodyAndTailLength;
+    d += Distance(spineLength, nextInput) * condition;
     d += MatchDistance(graphic, nextInput) * condition;
     
     // More scale stuff
@@ -437,7 +440,7 @@ void TailFinVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 r
     
     // Offsetting
     bool check = (graphic == 3);
-    check = RandomValueIf(random, condition && check) && check;
+    check = RandomValueIf(random, condition && check) < 0.5 && check;
     check = !check && graphic != 0;
     ShiftIf(random, condition && check);
     
@@ -458,8 +461,8 @@ void TailGeckoScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout
     ShiftIf(random, condition);
     
     // Big scales
-    int bigScales = tailColorIVar > 0.1;
-    bigScales = RandomValueIf(random, condition && bigScales) < lerp(0.7, 0.99, tailColorIVar);
+    bool bigScales = tailColorIVar > 0.1;
+    bigScales = RandomValueIf(random, condition && bigScales) < lerp(0.7, 0.99, tailColorIVar) && bigScales;
     bigScales = bigScales && wingScalesScaleLength <= 10;
 
     d += MatchDistance(bigScales, nextInput) * condition;
@@ -512,7 +515,7 @@ void TailTuftVars(inout float d, Inputs inputs, inout int inputPtr, inout uint4 
     
     // More stuff
     int colored = RandomValueIf(random, condition) < 0.8;
-    d += MatchDistance(colored, nextInput);
+    d += MatchDistance(colored, nextInput) * condition;
     
     int graphic = RandomRangeIf(3, 7, random, condition);
     graphic = (graphic == 3) ? 1 : graphic;
@@ -574,7 +577,7 @@ void WingScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint
 }
 
 
-//#define LizardType_Cyan 1
+//#define LizardType_Yellow 1
 float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
 {
     int check, check2, check3, check4;
@@ -665,6 +668,10 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     bool longShoulderScales = false;
     bool shortBodyScales = false;
     
+    // Evil yellow lizard variables
+    int yellowLizardPtrCache;
+    float yellowLizardDiffCache;
+    
     // else if (type == LizardType.Caramel && Random.Value < 0.6f)
     check = 0;
 #if defined(LizardType_Caramel)
@@ -730,9 +737,13 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
 #if defined(LizardType_Green)
     // else if (type == LizardType.Green && Random.Value < 0.5f)
     // this gets run here because it results in the same outcome, but the frontend only uses one set of inputs to cover both cases. so, optimization
-    check2 = RandomValueIf(random, !check) < 0.5 && !check && !check2;
+    check3 = RandomValueIf(random, !check && !check2) < 0.5 && !check;
+    check2 = check3 || check2;
 #endif // green
+    yellowLizardPtrCache = inputPtr;
+    float yellowLizardDCache = d;
     ShortBodyScalesVars(d, inputs, inputPtr, random, check2, tailLengthIVar);
+    yellowLizardDiffCache = d - yellowLizardDCache;
     shortBodyScales = shortBodyScales || check2;
     backDecals += check2;
     //check = check || check2;
@@ -755,13 +766,14 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     
     // else if (Random.Value < 0.11111111f || (backDecals == 0 && Random.Value < 0.7f) || (type == LizardType.Pink && Random.Value < 0.6f) || (type == LizardType.Blue && Random.Value < 0.96f))
     check2 = RandomValueIf(random, !check) < 0.11111111 && !check;
-    check2 = check2 || (backDecals == 0 && RandomValueIf(random, !check && !check2 && backDecals == 0) < 0.7 && !check);
+    check3 = RandomValueIf(random, !check && !check2 && backDecals == 0) < 0.7 && backDecals == 0 && !check;
+    check2 = check3 || check2;
 #if defined(LizardType_Pink)
-    check3 = RandomValueIf(random, !check && !check2) < 0.6 && !check && !check2;
+    check3 = RandomValueIf(random, !check && !check2) < 0.6 && !check;
     check2 = check3 || check2;
 #endif // pink
 #if defined(LizardType_Blue)
-    check3 = RandomValueIf(random, !check && !check2) < 0.96 && !check && !check2;
+    check3 = RandomValueIf(random, !check && !check2) < 0.96 && !check;
     check2 = check3 || check2;
 #endif // blue
 #if defined(LizardType_Green)
@@ -812,8 +824,14 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     
     // if (backDecals == 0 && Random.Value < 0.6f)
     check = RandomValueIf(random, backDecals == 0) < 0.6 && backDecals == 0;
+    // plus a bunch of other bullshit to make sure the earlier ShortBodyScalesVars doesn't count
+    int yellowLizardPtrCache2 = inputPtr;
+    float yellowLizardDCache2 = d;
+    inputPtr = yellowLizardPtrCache; // necessary to consider it the same inputs
     ShortBodyScalesVars(d, inputs, inputPtr, random, check, tailLengthIVar);
+    inputPtr = yellowLizardPtrCache2;
     backDecals += check;
+    d = check ? d - yellowLizardDiffCache : yellowLizardDCache2; // reverse other SBS distance if needed
 #elif defined(LizardType_Red) || defined(LizardType_Train)
     LongShoulderScalesVars(d, inputs, inputPtr, random, 1, tailLengthIVar, tailTuftGraphic);
     SpineSpikesVars(d, inputs, inputPtr, random, 1, tailLengthIVar, tailTuftGraphic);

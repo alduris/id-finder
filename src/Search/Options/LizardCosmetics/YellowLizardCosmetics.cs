@@ -2,10 +2,11 @@
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Search.Util.LizardUtil;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using UnityEngine;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class YellowLizardCosmetics : BaseLizardCosmetics
+    internal class YellowLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly AntennaeCosmetic antennaeCosmetic;
 
@@ -30,6 +31,21 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     )
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.yellowLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. antennaeCosmetic.GetGPUInputs(true),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -69,7 +85,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

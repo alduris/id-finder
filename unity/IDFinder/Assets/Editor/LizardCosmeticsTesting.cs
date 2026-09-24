@@ -114,10 +114,16 @@ public static class LizardCosmeticsTesting
     public static IEnumerable<Input> TailFinVars(LizardType type)
     {
         yield return new Input("Has TailFin", 0, 1, 1) { enabled = false };
-        float minSpineLen = (type == LizardType.Red ? 0.3f - 0.17f : 0.5f - 0.17f) * GetMinBodyAndTailLength(type);
-        float maxSpineLen = (type == LizardType.Red ? 0.3f + 0.17f : 0.5f + 0.17f) * GetMaxBodyAndTailLength(type);
+        yield return new Input("    TailFin underside size", 0.3f, 0.9f) { enabled = false };
+        float spineLenFac = type switch
+        {
+            LizardType.Red => 0.3f,
+            LizardType.Peach => 0.4f,
+            _ => 0.5f
+        };
+        float minSpineLen = (spineLenFac - 0.17f) * GetMinBodyAndTailLength(type);
+        float maxSpineLen = (spineLenFac + 0.17f) * GetMaxBodyAndTailLength(type);
         yield return new Input("    TailFin spine len", minSpineLen, maxSpineLen) { enabled = false };
-        yield return new Input("    TailFin  underside size", 0.3f, 0.9f) { enabled = false };
         yield return new Input("    TailFin graphic", 0, 5, 1) { enabled = false };
         int minScales = (int)(minSpineLen / 7f);
         int maxScales = (int)(maxSpineLen / 4f);

@@ -998,8 +998,14 @@ namespace FinderMod.Search.Util
                 colored = Random.Value > 0.33333334f;
             }
 
-            public static float MinSpineLength(LizardType type) => (type == LizardType.Red ? 0.3f - 0.17f : 0.5f - 0.17f) * GetMinBodyAndTailLength(type);
-            public static float MaxSpineLength(LizardType type) => (type == LizardType.Red ? 0.3f + 0.17f : 0.5f + 0.17f) * GetMaxBodyAndTailLength(type);
+            private static float SpineLengthFactor(LizardType type) => type switch
+            {
+                LizardType.Red => 0.3f,
+                LizardType.Peach => 0.4f,
+                _ => 0.5f
+            };
+            public static float MinSpineLength(LizardType type) => (SpineLengthFactor(type) - 0.17f) * GetMinBodyAndTailLength(type);
+            public static float MaxSpineLength(LizardType type) => (SpineLengthFactor(type) + 0.17f) * GetMaxBodyAndTailLength(type);
             public static int MinNumScales(LizardType type) => (int)(MinSpineLength(type) / 7f);
             public static int MaxNumScales(LizardType type) => (int)(MaxSpineLength(type) / 4f);
 

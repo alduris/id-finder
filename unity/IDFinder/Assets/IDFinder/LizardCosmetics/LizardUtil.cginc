@@ -54,7 +54,7 @@ inline int NumTongueSegments()
 #elif defined(LizardType_White)
     return 10;
 #elif defined(LizardType_Red)
-    if (cfgAlphaRedLizards)
+    if (_cfgAlphaRedLizards)
     {
         return 10;
     }

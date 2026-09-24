@@ -32,7 +32,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     )
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
-            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
+            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
             cosmetics.Add(
                 Group("Peach-specific cosmetics",
                     tailFinCosmetic = new TailFinCosmetic(LizardType.Peach),

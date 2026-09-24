@@ -2,10 +2,11 @@
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Search.Util.LizardUtil;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using UnityEngine;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class GreenLizardCosmetics : BaseLizardCosmetics
+    internal class GreenLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly LongShoulderScalesCosmetic longShoulderScalesCosmetic1;
@@ -35,7 +36,23 @@ namespace FinderMod.Search.Options.LizardCosmetics
                     None()
                     )
                 );
-            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic()));
+            cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.greenLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic1.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic2.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -87,7 +104,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic.NumTentaclesInput);
+                        r += DistanceIf(lizardRotVars.numLegs, lizardRotCosmetic!.NumTentaclesInput);
                         r += DistanceIf(lizardRotVars.numDeadLegs, lizardRotCosmetic.NumDeadTentaclesInput);
                         r += DistanceIf(lizardRotVars.numEyes, lizardRotCosmetic.NumEyesInput);
                         break;

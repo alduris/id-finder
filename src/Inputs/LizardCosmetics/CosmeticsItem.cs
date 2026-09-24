@@ -68,7 +68,7 @@ namespace FinderMod.Inputs.LizardCosmetics
         public AntennaeCosmetic() : base(CosmeticType.Antennae)
         {
             children.Add(LengthInput = new("Length") { enabled = false });
-            children.Add(AlphaInput = new("Alpha") { enabled = false });
+            children.Add(AlphaInput = new("Effect alpha") { enabled = false });
         }
         public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
         {
@@ -131,6 +131,9 @@ namespace FinderMod.Inputs.LizardCosmetics
             if (Active)
             {
                 return Option.DistanceIf(vars.rigor, RigorInput)
+                    + Option.DistanceIf(vars.sizeFac, SizeFacInput)
+                    + Option.DistanceIf(vars.widthFac, WidthFacInput)
+                    + Option.DistanceIf(vars.backwardsFac, BackwardsFacInput)
                     + Option.DistanceIf(vars.numGills, NumGillsInput)
                     + Option.MatchDistanceIf(vars.graphic, GraphicInput);
             }
@@ -263,15 +266,18 @@ namespace FinderMod.Inputs.LizardCosmetics
         public FloatInput WidthInput;
         public FloatInput RigorInput;
         public IntInput GraphicInput;
-        public BoolInput ColoredInput;
+        public BoolInput? ColoredInput;
 
-        public LongHeadScalesCosmetic() : base(CosmeticType.LongHeadScales)
+        public LongHeadScalesCosmetic(LizardType type) : base(CosmeticType.LongHeadScales)
         {
             children.Add(LengthInput = new("Length", 5f, 35f) { enabled = false });
             children.Add(WidthInput = new("Width", 0.65f, 1.2f) { enabled = false });
             children.Add(RigorInput = new("Rigor") { enabled = false });
             children.Add(GraphicInput = new("Graphic", 4, 6) { enabled = false });
-            children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
+            if (type != LizardType.White && type != LizardType.Black)
+            {
+                children.Add(ColoredInput = new("Is colored") { enabled = false, hasBias = true });
+            }
         }
 
         public override IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
@@ -279,7 +285,7 @@ namespace FinderMod.Inputs.LizardCosmetics
             return [
                 .. base.GetGPUInputs(checkIfPresent),
                 RigorInput.AsGPUInput(),
-                ColoredInput.AsGPUInput(),
+                ColoredInput?.AsGPUInput() ?? new ICanGPU.GPUInput(0, 1, 0),
                 GraphicInput.AsGPUInput(),
                 LengthInput.AsGPUInput(),
                 WidthInput.AsGPUInput(),
@@ -613,8 +619,8 @@ namespace FinderMod.Inputs.LizardCosmetics
         {
             if (Active)
             {
-                return Option.DistanceIf(vars.spineLength, LengthInput)
-                    + Option.DistanceIf(vars.undersideSize, UndersideSizeInput)
+                return Option.DistanceIf(vars.undersideSize, UndersideSizeInput)
+                    + Option.DistanceIf(vars.spineLength, LengthInput)
                     + Option.DistanceIf(vars.spineScaleX, ScaleXInput)
                     + Option.DistanceIf(vars.numScales, NumScalesInput)
                     + Option.DistanceIf(vars.colored, ColoredInput)

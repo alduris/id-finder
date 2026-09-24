@@ -2,7 +2,8 @@
 
 #define IDFINDER_Y 8
 #define LizardType_Red true
-#pragma multi_compile _ cfgAlphaRedLizards
+
+int _cfgAlphaRedLizards;
 
 #include "../IDFinder.cginc"
 #include "LizardCosmetics.cginc"
