@@ -44,7 +44,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 .. longShoulderScalesCosmetic.GetGPUInputs(true),
                 .. shortBodyScalesCosmetic.GetGPUInputs(true),
                 .. tailTuftCosmetic.GetGPUInputs(true),
-                .. antennaeCosmetic.GetGPUInputs(true),
+                .. antennaeCosmetic.GetGPUInputs(false),
                 ];
         }
 

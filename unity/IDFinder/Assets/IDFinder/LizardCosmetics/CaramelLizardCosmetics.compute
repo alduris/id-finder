@@ -1,0 +1,12 @@
+#pragma kernel CS_IDFinderMain
+
+#define IDFINDER_Y 8
+#define LizardType_Caramel true
+
+#include "../IDFinder.cginc"
+#include "LizardCosmetics.cginc"
+
+float Execute(uint4 random, StructuredBuffer<Input> inputs)
+{
+    return GenerateLizardCosmetics(random, inputs);
+}

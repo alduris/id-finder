@@ -29,7 +29,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
         public ICanGPU.GPUInput[] GetGPUInputs()
         {
             return [
-                .. wingScalesInput.GetGPUInputs(true),
+                .. wingScalesInput.GetGPUInputs(false),
                 .. tailTuftInput.GetGPUInputs(true),
                 .. tailGeckoScalesInput.GetGPUInputs(true)
                 ];

@@ -41,22 +41,22 @@ namespace FinderMod.Inputs.LizardCosmetics
         }
 
         /// <summary>
-        /// 
+        /// Returns GPU inputs for this lizard cosmetic
         /// </summary>
-        /// <param name="checkIfPresent"></param>
-        /// <returns></returns>
+        /// <param name="checkIfPresent">Whether or not the implicit input to check if the item is toggled will be enabled</param>
+        /// <returns>The GPU inputs for this lizard cosmetic</returns>
         public virtual IEnumerable<ICanGPU.GPUInput> GetGPUInputs(bool checkIfPresent)
         {
-            return [new ICanGPU.GPUInput(Toggled ? 1 : 0, 1, checkIfPresent ? 1 : 0)];
+            return [new ICanGPU.GPUInput(Toggled || checkIfPresent ? 1 : 0, 1, checkIfPresent ? 1 : 0)];
         }
 
         /// <summary>
         /// Please use <see cref="GetGPUInputs(bool)"/> for lizard cosmetics.
-        /// This overload returns using false as the checkIfPresent parameter.
+        /// This overload returns using true as the checkIfPresent parameter.
         /// </summary>
         public override ICanGPU.GPUInput[] GetGPUInputs()
         {
-            return GetGPUInputs(false).ToArray();
+            return GetGPUInputs(true).ToArray();
         }
     }
 

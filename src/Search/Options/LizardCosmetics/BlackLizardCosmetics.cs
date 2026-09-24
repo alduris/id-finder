@@ -49,7 +49,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 .. shortBodyScalesCosmetic.GetGPUInputs(true),
                 .. tailTuftCosmetic.GetGPUInputs(true),
                 .. longHeadScalesCosmetic.GetGPUInputs(true),
-                .. whiskersCosmetic.GetGPUInputs(true),
+                .. whiskersCosmetic.GetGPUInputs(false),
                 ];
         }
 

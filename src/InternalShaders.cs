@@ -109,12 +109,12 @@ namespace FinderMod
             blackLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/BlackLizardCosmetics.compute");
             salamanderLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/SalamanderLizardCosmetics.compute");
             cyanLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/CyanLizardCosmetics.compute");
-            //caramelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/CaramelLizardCosmetics.compute");
-            //zoopLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/ZoopLizardCosmetics.compute");
-            //trainLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/TrainLizardCosmetics.compute");
-            //eelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/EelLizardCosmetics.compute");
-            //indigoLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/IndigoLizardCosmetics.compute");
-            //peachLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/PeachLizardCosmetics.compute");
+            caramelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/CaramelLizardCosmetics.compute");
+            zoopLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/ZoopLizardCosmetics.compute");
+            trainLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/TrainLizardCosmetics.compute");
+            eelLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/EelLizardCosmetics.compute");
+            indigoLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/IndigoLizardCosmetics.compute");
+            peachLizardCosmeticsShader = assetBundle.LoadAsset<ComputeShader>("Assets/IDFinder/LizardCosmetics/PeachLizardCosmetics.compute");
         }
     }
 }

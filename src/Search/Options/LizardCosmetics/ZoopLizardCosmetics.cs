@@ -2,12 +2,13 @@
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Search.Util.LizardUtil;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using UnityEngine;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class ZoopLizardCosmetics : BaseLizardCosmetics
+    internal class ZoopLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
-        private readonly WingScalesCosmetic wingScalesCosmetic;
+        private readonly WingScalesCosmetic mainWingScalesCosmetic;
         private readonly SpineSpikesCosmetic mainSpineSpikesCosmetic;
         private readonly TailTuftCosmetic mainTailTuftCosmetic;
 
@@ -26,7 +27,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             cosmetics.Add(
                 OneOf(
                     "Zoop-specific cosmetic",
-                    wingScalesCosmetic = new WingScalesCosmetic(),
+                    mainWingScalesCosmetic = new WingScalesCosmetic(),
                     mainSpineSpikesCosmetic = new SpineSpikesCosmetic(type)
                     )
                 );
@@ -48,6 +49,24 @@ namespace FinderMod.Search.Options.LizardCosmetics
             cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
         }
 
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.zoopLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. mainWingScalesCosmetic.GetGPUInputs(true),
+                .. mainSpineSpikesCosmetic.GetGPUInputs(true),
+                .. mainTailTuftCosmetic.GetGPUInputs(true),
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                ];
+        }
+
         public override float Execute(XORShift128 Random)
         {
             float r = 0f;
@@ -60,7 +79,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 switch (result)
                 {
                     case WingScalesVars wingScalesVars:
-                        r += wingScalesCosmetic.Distance(wingScalesVars);
+                        r += mainWingScalesCosmetic.Distance(wingScalesVars);
                         break;
                     case SpineSpikesVars spineSpikesVars:
                         if (spineSpikesVars.id == 0)
@@ -105,7 +124,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     case SnowAccumulationVars: break;

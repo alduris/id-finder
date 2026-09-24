@@ -282,8 +282,9 @@ namespace FinderMod.Search
             KernelThreads[] threadCounts = new KernelThreads[kernels.Length];
             for (int i = 0; i < kernels.Length; i++)
             {
-                kernels[i] = gpuOptions[i].Shader.FindKernel("CS_IDFinderMain");
-                gpuOptions[i].Shader.GetKernelThreadGroupSizes(kernels[i], out uint x, out uint y, out uint z);
+                var shader = gpuOptions[i].Shader;
+                kernels[i] = shader.FindKernel("CS_IDFinderMain");
+                shader.GetKernelThreadGroupSizes(kernels[i], out uint x, out uint y, out uint z);
                 threadCounts[i] = new KernelThreads(x, y, z);
             }
 

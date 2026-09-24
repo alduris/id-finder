@@ -577,12 +577,19 @@ void WingScalesVars(inout float d, Inputs inputs, inout int inputPtr, inout uint
 }
 
 
-//#define LizardType_Yellow 1
+//#define LizardType_Peach 1
 float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
 {
     int check, check2, check3, check4;
     int inputPtr = 0;
     float d = 0;
+    
+    // Caramel head color precalculation
+#if defined(LizardType_Caramel)
+    uint4 oldState = random;
+    float3 headColor = float3(WrappedRandomVariation(0.1, 0.03, 0.2, random), 0.55, ClampedRandomVariation(0.55, 0.36, 0.2, random));
+    random = oldState;
+#endif // caramel
     
     // Calculate IVars ahead of time
     Shift(random, 5);
@@ -669,8 +676,10 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     bool shortBodyScales = false;
     
     // Evil yellow lizard variables
+#if defined(LizardType_Yellow)
     int yellowLizardPtrCache;
     float yellowLizardDiffCache;
+#endif // yellow
     
     // else if (type == LizardType.Caramel && Random.Value < 0.6f)
     check = 0;
@@ -740,11 +749,15 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     check3 = RandomValueIf(random, !check && !check2) < 0.5 && !check;
     check2 = check3 || check2;
 #endif // green
+#if defined(LizardType_Yellow)
     yellowLizardPtrCache = inputPtr;
     float yellowLizardDCache = d;
+#endif // yellow
     ShortBodyScalesVars(d, inputs, inputPtr, random, check2, tailLengthIVar);
+#if defined(LizardType_Yellow)
     yellowLizardDiffCache = d - yellowLizardDCache;
     shortBodyScales = shortBodyScales || check2;
+#endif // yellow
     backDecals += check2;
     //check = check || check2;
 #else // salamander
@@ -761,13 +774,12 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     check = 0;
 #if defined(LizardType_Caramel)
     check = RandomValue(random) < 0.5;
-    TailTuftVars(d, inputs, inputPtr, random, check, tailLengthIVar, tailTuftGraphic);
 #endif // caramel
     
     // else if (Random.Value < 0.11111111f || (backDecals == 0 && Random.Value < 0.7f) || (type == LizardType.Pink && Random.Value < 0.6f) || (type == LizardType.Blue && Random.Value < 0.96f))
     check2 = RandomValueIf(random, !check) < 0.11111111 && !check;
     check3 = RandomValueIf(random, !check && !check2 && backDecals == 0) < 0.7 && backDecals == 0 && !check;
-    check2 = check3 || check2;
+    check2 = check3 || check2 || check;
 #if defined(LizardType_Pink)
     check3 = RandomValueIf(random, !check && !check2) < 0.6 && !check;
     check2 = check3 || check2;
@@ -882,6 +894,24 @@ float GenerateLizardCosmetics(inout uint4 random, Inputs inputs)
     
     // if zoop: SnowAccumulationVars
     // (not that it matters because it has no searchable properties)
+    
+    // Caramel color finalization
+#if defined(LizardType_Caramel)
+    Shift(random, 5);
+    
+    float val = RandomRange(0.7, 1.0, random);
+    check = val >= 0.8;
+    
+    float3 bodyColor = float3(RandomRange(0.075, 0.125, random), RandomRange(check ? 0.4 : 0.3, check ? 0.9 : 0.5, random), val);
+    float3 altHeadColor = float3(WrappedRandomVariationIf(0.1, 0.03, 0.2, random, check), 0.55, ClampedRandomVariationIf(0.55, 0.05, 0.2, random, check));
+    headColor = check ? altHeadColor : headColor;
+    
+    d += Distance(bodyColor.x, nextInput);
+    d += Distance(bodyColor.y, nextInput);
+    d += Distance(bodyColor.z, nextInput);
+    d += Distance(headColor.x, nextInput);
+    d += Distance(headColor.z, nextInput);
+#endif // caramel
     
 #endif // outer
     

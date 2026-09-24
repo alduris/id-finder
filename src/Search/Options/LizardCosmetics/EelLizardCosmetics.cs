@@ -2,10 +2,11 @@
 using FinderMod.Inputs.LizardCosmetics;
 using static FinderMod.Search.Util.LizardUtil;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
+using UnityEngine;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class EelLizardCosmetics : BaseLizardCosmetics
+    internal class EelLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly AxolotlGillsCosmetic axolotlGillsCosmetic;
         private readonly TailGeckoScalesCosmetic tailGeckoScalesCosmetic;
@@ -13,7 +14,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
         private readonly ShortBodyScalesCosmetic mainShortBodyScalesCosmetic;
         private readonly TailFinCosmetic lssTailFinCosmetic;
         private readonly TailFinCosmetic sbsTailFinCosmetic;
-        private readonly TailTuftCosmetic mainTailTuftCosmetic;
+        private readonly TailTuftCosmetic sbsTailTuftCosmetic;
 
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
@@ -50,7 +51,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         OneOf(
                             "Tail decoration",
                             sbsTailFinCosmetic = new TailFinCosmetic(type),
-                            mainTailTuftCosmetic = new TailTuftCosmetic(type)
+                            sbsTailTuftCosmetic = new TailTuftCosmetic(type)
                             )
                         )
                     )
@@ -69,6 +70,28 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
             cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.eelLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. axolotlGillsCosmetic.GetGPUInputs(false),
+                .. tailGeckoScalesCosmetic.GetGPUInputs(false),
+                .. mainLongShoulderScalesCosmetic.GetGPUInputs(true),
+                .. lssTailFinCosmetic.GetGPUInputs(true),
+                .. mainShortBodyScalesCosmetic.GetGPUInputs(true),
+                .. sbsTailFinCosmetic.GetGPUInputs(true),
+                .. sbsTailTuftCosmetic.GetGPUInputs(true),
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -129,7 +152,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         {
                             if (tailTuftVars.id == 0)
                             {
-                                r += mainTailTuftCosmetic.Distance(tailTuftVars);
+                                r += sbsTailTuftCosmetic.Distance(tailTuftVars);
                             }
                             else
                             {
@@ -154,7 +177,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

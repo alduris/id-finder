@@ -1,11 +1,12 @@
 ﻿using System;
 using FinderMod.Inputs.LizardCosmetics;
+using UnityEngine;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class PeachLizardCosmetics : BaseLizardCosmetics
+    internal class PeachLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
         private readonly BumpHawkCosmetic bumpHawkCosmetic;
@@ -21,6 +22,14 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
         public PeachLizardCosmetics() : base(LizardType.Peach)
         {
+            cosmetics.Add(Label("Peach-specific cosmetics group"));
+            cosmetics.Add(
+                Group("Peach-specific cosmetics",
+                    tailFinCosmetic = new TailFinCosmetic(LizardType.Peach),
+                    peachBodyFinCosmetic = new PeachBodyFinCosmetic(),
+                    peachHeadStripesCosmetic = new PeachHeadStripesCosmetic()
+                    ));
+            cosmetics.Add(Label("Generic cosmetics group"));
             cosmetics.Add(
                 OneOf(
                     "Body cosmetic",
@@ -33,12 +42,24 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 );
             cosmetics.Add(Toggleable("Has TailTuft", tailTuftCosmetic = new TailTuftCosmetic(type)));
             cosmetics.Add(Toggleable("Has LongHeadScales", longHeadScalesCosmetic = new LongHeadScalesCosmetic(type)));
-            cosmetics.Add(
-                Group("Peach-specific cosmetics",
-                    tailFinCosmetic = new TailFinCosmetic(LizardType.Peach),
-                    peachBodyFinCosmetic = new PeachBodyFinCosmetic(),
-                    peachHeadStripesCosmetic = new PeachHeadStripesCosmetic()
-                    ));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.peachLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                .. peachHeadStripesCosmetic.GetGPUInputs(false),
+                .. tailFinCosmetic.GetGPUInputs(false),
+                .. peachBodyFinCosmetic.GetGPUInputs(false),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -90,7 +111,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using FinderMod.Inputs;
 using FinderMod.Inputs.LizardCosmetics;
+using UnityEngine;
 using static FinderMod.Inputs.LizardCosmetics.CosmeticsItemContainer;
 using static FinderMod.Search.Util.LizardUtil;
 
 namespace FinderMod.Search.Options.LizardCosmetics
 {
-    internal class CaramelLizardCosmetics : BaseLizardCosmetics
+    internal class CaramelLizardCosmetics : BaseLizardCosmetics, ICanGPUSometimes
     {
         private readonly BodyStripesCosmetic bodyStripesCosmetic;
         private readonly SpineSpikesCosmetic spineSpikesCosmetic;
@@ -36,7 +37,25 @@ namespace FinderMod.Search.Options.LizardCosmetics
 
             if (ModManager.MSC) elements.Add(new Label("Note: colors may not be accurate in Saint's campaign"));
             elements.Add(bodyColorInput = new ColorHSLInput("Body color", true, 0.075f, 0.125f, true, 0.3f, 0.9f, true, 0.7f, 1f));
-            elements.Add(headColorInput = new ColorHSLInput("Head color", true, 0.07f, 0.13f, false, 0.55f, 0.55f, true, 0.5f, 0.6f));
+            elements.Add(headColorInput = new ColorHSLInput("Head color", true, 0.07f, 0.13f, false, 0.55f, 0.55f, true, 0.19f, 0.91f));
+        }
+
+        public bool AllowGPU => rotTypeInput == null || rotTypeInput.value == RotType.None;
+        public ComputeShader Shader => InternalShaders.caramelLizardCosmeticsShader;
+
+        public ICanGPU.GPUInput[] GetGPUInputs()
+        {
+            return [
+                .. bodyStripesCosmetic.GetGPUInputs(true),
+                .. spineSpikesCosmetic.GetGPUInputs(true),
+                .. longShoulderScalesCosmetic.GetGPUInputs(true),
+                .. shortBodyScalesCosmetic.GetGPUInputs(true),
+                .. tailTuftCosmetic.GetGPUInputs(true),
+                .. longHeadScalesCosmetic.GetGPUInputs(true),
+                .. bumpHawkCosmetic.GetGPUInputs(true),
+                .. bodyColorInput.GetGPUInputs(),
+                .. headColorInput.GetGPUInputs(),
+                ];
         }
 
         public override float Execute(XORShift128 Random)
@@ -89,7 +108,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
                         break;
 
                     case LizardRotVars lizardRotVars:
-                        r += lizardRotCosmetic.Distance(lizardRotVars);
+                        r += lizardRotCosmetic!.Distance(lizardRotVars);
                         break;
 
                     default:
@@ -110,7 +129,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             if (!lhs && longHeadScalesCosmetic.Enabled && longHeadScalesCosmetic.Toggled) r += MISSING_PENALTY;
 
             // Caramel colors
-            Random.Shift(4); // techinically there is also a shift for saint but boo hoo I don't care
+            Random.Shift(5); // techinically there is also a shift for saint but boo hoo I don't care
 
             float val = Random.Range(0.7f, 1f);
             if (val >= 0.8f)
@@ -132,7 +151,7 @@ namespace FinderMod.Search.Options.LizardCosmetics
             r += DistanceIf(bodyColor.lightness, bodyColorInput.LightInput);
 
             r += WrapDistanceIf(headColor.hue, headColorInput.HueInput);
-            r += DistanceIf(headColor.saturation, headColorInput.SatInput);
+            //r += DistanceIf(headColor.saturation, headColorInput.SatInput);
             r += DistanceIf(headColor.lightness, headColorInput.LightInput);
 
             return r;

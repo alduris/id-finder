@@ -360,6 +360,7 @@ public class ComputeTester : EditorWindow
             new Input("Ear width"),
             new Input("Ear length")
         },
+        #region Lizard cosmetics
         ["PinkLizardCosmetics"] = SpineSpikesVars(LizardType.Pink)
             .Concat(BumpHawkVars(LizardType.Pink))
             .Concat(LongShoulderScalesVars(LizardType.Pink))
@@ -425,6 +426,67 @@ public class ComputeTester : EditorWindow
             .Concat(TailTuftVars(LizardType.Cyan))
             .Concat(TailGeckoScalesVars())
             .ToList(),
+        ["CaramelLizardCosmetics"] = BodyStripesVars(LizardType.Caramel)
+            .Concat(SpineSpikesVars(LizardType.Caramel))
+            .Concat(LongShoulderScalesVars(LizardType.Caramel))
+            .Concat(ShortBodyScalesVars(LizardType.Caramel))
+            .Concat(TailTuftVars(LizardType.Caramel))
+            .Concat(LongHeadScalesVars())
+            .Concat(BumpHawkVars(LizardType.Caramel))
+            .Append(new Input("Body color hue", 0.075f, 0.125f))
+            .Append(new Input("Body color sat", 0.3f, 0.9f))
+            .Append(new Input("Body color light", 0.7f, 1f))
+            .Append(new Input("Head color hue", 0.07f, 0.13f))
+            .Append(new Input("Head color light", 0.19f, 0.91f))
+            .ToList(),
+        ["ZoopLizardCosmetics"] = WingScalesVars()
+            .Concat(SpineSpikesVars(LizardType.Zoop))
+            .Concat(TailTuftVars(LizardType.Zoop))
+            .Concat(SpineSpikesVars(LizardType.Zoop))
+            .Concat(BumpHawkVars(LizardType.Zoop))
+            .Concat(LongShoulderScalesVars(LizardType.Zoop))
+            .Concat(ShortBodyScalesVars(LizardType.Zoop))
+            .Concat(TailTuftVars(LizardType.Zoop))
+            .Concat(LongHeadScalesVars())
+            .ToList(),
+        ["TrainLizardCosmetics"] = SpineSpikesVars(LizardType.Train)
+            .Concat(BumpHawkVars(LizardType.Train))
+            .Concat(LongShoulderScalesVars(LizardType.Train))
+            .Concat(ShortBodyScalesVars(LizardType.Train))
+            .Concat(TailTuftVars(LizardType.Train))
+            .Concat(LongHeadScalesVars())
+            .Concat(LongShoulderScalesVars(LizardType.Train))
+            .Concat(SpineSpikesVars(LizardType.Train))
+            .Concat(TailFinVars(LizardType.Train))
+            .Concat(TailTuftVars(LizardType.Train))
+            .ToList(),
+        ["EelLizardCosmetics"] = AxolotlGillsVars()
+            .Concat(TailGeckoScalesVars())
+            .Concat(LongShoulderScalesVars(LizardType.Eel))
+            .Concat(TailFinVars(LizardType.Eel))
+            .Concat(ShortBodyScalesVars(LizardType.Eel))
+            .Concat(TailFinVars(LizardType.Eel))
+            .Concat(TailTuftVars(LizardType.Eel))
+            .Concat(SpineSpikesVars(LizardType.Eel))
+            .Concat(BumpHawkVars(LizardType.Eel))
+            .Concat(LongShoulderScalesVars(LizardType.Eel))
+            .Concat(ShortBodyScalesVars(LizardType.Eel))
+            .Concat(TailTuftVars(LizardType.Eel))
+            .Concat(LongHeadScalesVars())
+            .ToList(),
+        ["IndigoLizardCosmetics"] = SkinkSpecklesVars()
+            .ToList(),
+        ["PeachLizardCosmetics"] = SpineSpikesVars(LizardType.Peach)
+            .Concat(BumpHawkVars(LizardType.Peach))
+            .Concat(LongShoulderScalesVars(LizardType.Peach))
+            .Concat(ShortBodyScalesVars(LizardType.Peach))
+            .Concat(TailTuftVars(LizardType.Peach))
+            .Concat(LongHeadScalesVars())
+            .Concat(PeachHeadStripesVars())
+            .Concat(TailFinVars(LizardType.Peach))
+            .Concat(PeachBackFinVars())
+            .ToList(),
+        #endregion
     };
 
     private const string KERNEL_NAME = "CS_IDFinderMain";
@@ -644,6 +706,7 @@ public class ComputeTester : EditorWindow
             ComputeBuffer resultsBuffer = new ComputeBuffer(total, 8);
 
             var gpuInputs = inputs.Select(x => x.AsGPUInput()).ToArray();
+            //Debug.Log(string.Join("\n", gpuInputs));
             inputBuffer.SetData(gpuInputs);
 
             selectedShader.SetBuffer(kernel, "_IDFinderInputs", inputBuffer);
@@ -722,6 +785,11 @@ public class ComputeTester : EditorWindow
         public float value;
         public float range;
         public int bias;
+
+        public override readonly string ToString()
+        {
+            return $"GPUInput(value={value}, range={range}, bias={bias})";
+        }
     }
 
     public class Input

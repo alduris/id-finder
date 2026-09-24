@@ -42,8 +42,8 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 melanisticInput.AsGPUInput(),
                 .. spineSpikesCosmetic.GetGPUInputs(true),
                 .. bumpHawkCosmetic.GetGPUInputs(true),
-                .. axolotlGillsCosmetic.GetGPUInputs(true),
-                .. tailFinCosmetic.GetGPUInputs(true),
+                .. axolotlGillsCosmetic.GetGPUInputs(false),
+                .. tailFinCosmetic.GetGPUInputs(false),
                 ];
         }
 

@@ -68,8 +68,8 @@ namespace FinderMod.Search.Options.LizardCosmetics
                 .. shortBodyScalesCosmetic.GetGPUInputs(true),
                 .. tailTuftCosmetic.GetGPUInputs(true),
                 .. longHeadScalesCosmetic.GetGPUInputs(true),
-                .. mainLongShoulderScalesCosmetic.GetGPUInputs(true),
-                .. mainSpineSpikesCosmetic.GetGPUInputs(true),
+                .. mainLongShoulderScalesCosmetic.GetGPUInputs(false),
+                .. mainSpineSpikesCosmetic.GetGPUInputs(false),
                 .. mainTailFinCosmetic.GetGPUInputs(true),
                 .. mainTailTuftCosmetic.GetGPUInputs(true),
                 ];
